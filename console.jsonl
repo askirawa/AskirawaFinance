@@ -1,344 +1,3 @@
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792436981642}
-{"level":"log","message":"postMessage {\"securityToken\":\"cdb6f59c-211c-491d-b506-33a33d8a8d0b\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792436981643}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792436981643}
-{"level":"log","message":"postMessage {\"securityToken\":\"cdb6f59c-211c-491d-b506-33a33d8a8d0b\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792436981644}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792436981647}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792436981647}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792437015497}
-{"level":"log","message":"postMessage {\"securityToken\":\"cdb6f59c-211c-491d-b506-33a33d8a8d0b\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792437015497}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792437015500}
-{"level":"debug","message":"[vite] hot updated: /src/App.tsx","timestamp":1792437109652}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437109652}
-{"level":"debug","message":"[vite] hot updated: /src/App.tsx","timestamp":1792437109671}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437109671}
-{"level":"debug","message":"[vite] hot updated: /src/components/Header.tsx","timestamp":1792437114405}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437114405}
-{"level":"debug","message":"[vite] hot updated: /src/components/Header.tsx","timestamp":1792437114405}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437114405}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437121872}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437121872}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437121874}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437121874}
-{"level":"debug","message":"(previous line repeated 1× more)","timestamp":1792437125484}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792437125484}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437125484}
-{"level":"debug","message":"(previous line repeated 1× more)","timestamp":1792437125486}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792437125486}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437125486}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437127330}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792437127330}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437127330}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437127331}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792437127331}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437127331}
-{"level":"debug","message":"[vite] hot updated: /src/components/ui/Card.tsx","timestamp":1792437131359}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437131360}
-{"level":"debug","message":"[vite] hot updated: /src/components/ui/Card.tsx","timestamp":1792437131361}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437131362}
-{"level":"debug","message":"[vite] hot updated: /src/components/ui/Card.tsx","timestamp":1792437132838}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437132838}
-{"level":"debug","message":"[vite] hot updated: /src/components/ui/Card.tsx","timestamp":1792437132839}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437132839}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792437135629}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437135629}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792437135630}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437135630}
-{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792437135632}
-{"level":"error","message":"[vite] Failed to reload /src/pages/Dashboard.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792437135632}
-{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792437135632}
-{"level":"error","message":"[vite] Failed to reload /src/index.css. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792437135632}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792437135632}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437135632}
-{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792437135645}
-{"level":"error","message":"[vite] Failed to reload /src/pages/Dashboard.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792437135645}
-{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792437135645}
-{"level":"error","message":"[vite] Failed to reload /src/index.css. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792437135645}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792437135645}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437135645}
-{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792437135656}
-{"level":"error","message":"[vite] Failed to reload /src/pages/Dashboard.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792437135656}
-{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792437135656}
-{"level":"error","message":"[vite] Failed to reload /src/index.css. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792437135656}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792437135656}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437135656}
-{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792437135667}
-{"level":"error","message":"[vite] Failed to reload /src/pages/Automations.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792437135667}
-{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792437135667}
-{"level":"error","message":"[vite] Failed to reload /src/index.css. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792437135667}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437135667}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437135667}
-{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792437135669}
-{"level":"error","message":"[vite] Failed to reload /src/pages/Automations.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792437135669}
-{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792437135669}
-{"level":"error","message":"[vite] Failed to reload /src/index.css. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792437135669}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437135669}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437135669}
-{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792437135670}
-{"level":"error","message":"[vite] Failed to reload /src/components/Header.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792437135670}
-{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792437135670}
-{"level":"error","message":"[vite] Failed to reload /src/index.css. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792437135670}
-{"level":"debug","message":"[vite] hot updated: /src/components/Header.tsx","timestamp":1792437135670}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437135670}
-{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792437136217}
-{"level":"error","message":"[vite] Failed to reload /src/components/Header.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792437136217}
-{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792437136217}
-{"level":"error","message":"[vite] Failed to reload /src/index.css. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792437136217}
-{"level":"debug","message":"[vite] hot updated: /src/components/Header.tsx","timestamp":1792437136217}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437136217}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792437140227}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437140227}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792437143482}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437143482}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792437154451}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437154451}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792437158951}
-{"level":"log","message":"postMessage {\"securityToken\":\"cdb6f59c-211c-491d-b506-33a33d8a8d0b\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792437158951}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437158955}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437158955}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792437158956}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437171365}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437171365}
-{"level":"debug","message":"[vite] hot updated: /src/components/Header.tsx","timestamp":1792437172555}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437172555}
-{"level":"debug","message":"[vite] hot updated: /src/components/Header.tsx","timestamp":1792437173524}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437173525}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437174045}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437174045}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437174798}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437174798}
-{"level":"debug","message":"(previous line repeated 1× more)","timestamp":1792437176850}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792437176850}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437176850}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437178385}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437178385}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437180147}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437180147}
-{"level":"debug","message":"(previous line repeated 1× more)","timestamp":1792437180147}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437180147}
-{"level":"debug","message":"(previous line repeated 1× more)","timestamp":1792437181999}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792437181999}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437181999}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437183731}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437183731}
-{"level":"debug","message":"(previous line repeated 1× more)","timestamp":1792437184567}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437184567}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437185636}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437185636}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437185637}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437185637}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437186600}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437186600}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437187004}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437187004}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792437187005}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792437187005}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792437234522}
-{"level":"log","message":"postMessage {\"securityToken\":\"cdb6f59c-211c-491d-b506-33a33d8a8d0b\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792437234522}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792437234525}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792437237941}
-{"level":"log","message":"postMessage {\"securityToken\":\"cdb6f59c-211c-491d-b506-33a33d8a8d0b\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792437237942}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792437237949}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792437275671}
-{"level":"log","message":"postMessage {\"securityToken\":\"cdb6f59c-211c-491d-b506-33a33d8a8d0b\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792437275671}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792437275675}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792437362720}
-{"level":"log","message":"postMessage {\"securityToken\":\"cdb6f59c-211c-491d-b506-33a33d8a8d0b\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792437362720}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792437362806}
-{"level":"log","message":"postMessage {\"securityToken\":\"cdb6f59c-211c-491d-b506-33a33d8a8d0b\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792437362806}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792437362806}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792437362827}
-{"level":"debug","message":"[vite] connected.","timestamp":1792437365868}
-{"level":"debug","message":"[vite] connected.","timestamp":1792437366688}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792437939142}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792437939142}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792437939180}
-{"level":"debug","message":"[vite] connected.","timestamp":1792437940789}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792437979137}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792437979137}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792437979145}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792438064982}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792438064982}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792438065018}
-{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792438152569}
-{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792438152574}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792438520525}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792438520526}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792438520541}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792438603919}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792438603919}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792438603928}
-{"level":"debug","message":"[vite] connected.","timestamp":1792438606374}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792438826784}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792438826784}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792438826788}
-{"level":"debug","message":"[vite] hot updated: /src/App.tsx","timestamp":1792438855566}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792438855566}
-{"level":"debug","message":"[vite] hot updated: /src/App.tsx","timestamp":1792438855568}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792438855568}
-{"level":"debug","message":"[vite] hot updated: /src/components/Header.tsx","timestamp":1792438871859}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792438871860}
-{"level":"debug","message":"[vite] hot updated: /src/components/Header.tsx","timestamp":1792438871861}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792438871861}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792438874821}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792438874821}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792438882206}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792438882206}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792438903576}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792438903576}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Payroll.tsx","timestamp":1792439002590}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792439002590}
-{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792439002591}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Payroll.tsx","timestamp":1792439002592}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792439002592}
-{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792439002592}
-{"level":"debug","message":"[vite] hot updated: /src/components/payroll/CreateBatchModal.tsx","timestamp":1792439019793}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792439019793}
-{"level":"debug","message":"[vite] hot updated: /src/components/payroll/CreateBatchModal.tsx","timestamp":1792439019795}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792439019795}
-{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792439058291}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792439058291}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792439058458}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792439058459}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792439058493}
-{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792439083594}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792439083594}
-{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792439084505}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792439084505}
-{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792439087065}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792439087066}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Payroll.tsx","timestamp":1792439099145}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792439099145}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Payroll.tsx","timestamp":1792439099146}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792439099146}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Payroll.tsx","timestamp":1792439112152}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792439112152}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Payroll.tsx","timestamp":1792439112154}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792439112154}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792439188271}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792439188272}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792439188290}
-{"level":"debug","message":"[vite] connected.","timestamp":1792439188967}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792439192437}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792439192437}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792439192439}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792439526570}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792439526570}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792439526585}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792439578387}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792439578388}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792439578390}
-{"level":"debug","message":"[vite] connected.","timestamp":1792439579177}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792439965012}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792439965012}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792439965015}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792443013852}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792443013852}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792443013893}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792443422655}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792443422658}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792443422784}
-{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792443583174}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792443702137}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792443702137}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792443702140}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792443702255}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792443702255}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792443702257}
-{"level":"debug","message":"[vite] connected.","timestamp":1792443704709}
-{"level":"debug","message":"[vite] connected.","timestamp":1792443706348}
-{"level":"debug","message":"[vite] hot updated: /src/App.tsx","timestamp":1792443874896}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792443874896}
-{"level":"debug","message":"[vite] hot updated: /src/App.tsx","timestamp":1792443882775}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792443882775}
-{"level":"debug","message":"[vite] hot updated: /src/App.tsx","timestamp":1792443882777}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792443882777}
-{"level":"debug","message":"[vite] hot updated: /src/App.tsx","timestamp":1792443883832}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792443883832}
-{"level":"debug","message":"[vite] hot updated: /src/components/Header.tsx","timestamp":1792443891085}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792443891085}
-{"level":"debug","message":"[vite] hot updated: /src/components/Header.tsx","timestamp":1792443891086}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792443891086}
-{"level":"debug","message":"[vite] hot updated: /src/pages/RecurringPayments.tsx","timestamp":1792443929161}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792443929161}
-{"level":"debug","message":"[vite] hot updated: /src/pages/RecurringPayments.tsx","timestamp":1792443931309}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792443931309}
-{"level":"debug","message":"[vite] hot updated: /src/pages/RecurringPayments.tsx","timestamp":1792443984150}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792443984151}
-{"level":"debug","message":"[vite] hot updated: /src/pages/RecurringPayments.tsx","timestamp":1792443984153}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792443984153}
-{"level":"debug","message":"[vite] hot updated: /src/pages/RecurringPayments.tsx","timestamp":1792443991624}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792443991624}
-{"level":"debug","message":"[vite] hot updated: /src/pages/RecurringPayments.tsx","timestamp":1792443991625}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792443991625}
-{"level":"debug","message":"[vite] hot updated: /src/pages/RecurringPayments.tsx","timestamp":1792443995819}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792443995819}
-{"level":"debug","message":"[vite] hot updated: /src/pages/RecurringPayments.tsx","timestamp":1792443995820}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792443995820}
-{"level":"debug","message":"(previous line repeated 1× more)","timestamp":1792443997851}
-{"level":"debug","message":"[vite] hot updated: /src/pages/RecurringPayments.tsx","timestamp":1792443997851}
-{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792443997851}
-{"level":"debug","message":"(previous line repeated 1× more)","timestamp":1792443997852}
-{"level":"debug","message":"[vite] hot updated: /src/pages/RecurringPayments.tsx","timestamp":1792443997852}
-{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792443997852}
-{"level":"debug","message":"[vite] hot updated: /src/components/recurring/CreateScheduleModal.tsx","timestamp":1792444001247}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792444001247}
-{"level":"debug","message":"[vite] hot updated: /src/components/recurring/CreateScheduleModal.tsx","timestamp":1792444001248}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792444001248}
-{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792444003717}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792444003717}
-{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792444003717}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792444003717}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792444120070}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792444120070}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792444120086}
-{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792444321336}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792444360186}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792444360187}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792444360190}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792444431246}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792444431246}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792444431249}
-{"level":"debug","message":"[vite] hot updated: /src/App.tsx","timestamp":1792444713737}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792444713737}
-{"level":"debug","message":"[vite] hot updated: /src/App.tsx","timestamp":1792444717635}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792444717635}
-{"level":"debug","message":"[vite] hot updated: /src/App.tsx","timestamp":1792444728585}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792444728585}
-{"level":"debug","message":"[vite] hot updated: /src/App.tsx","timestamp":1792444728586}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792444728586}
-{"level":"debug","message":"[vite] hot updated: /src/components/Header.tsx","timestamp":1792444740771}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792444740771}
-{"level":"debug","message":"[vite] hot updated: /src/components/Header.tsx","timestamp":1792444740771}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792444740771}
-{"level":"debug","message":"(previous line repeated 1× more)","timestamp":1792444793713}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792444793713}
-{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792444793713}
-{"level":"debug","message":"(previous line repeated 1× more)","timestamp":1792444793715}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792444793715}
-{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792444793715}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792444807018}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792444807018}
-{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792444807018}
-{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792444807019}
-{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792444807019}
-{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792444807019}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792444898091}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792444898091}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792444898092}
-{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792445964966}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792445998979}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792445998980}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792445998986}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792446100591}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792446100591}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792446100595}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792446126783}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792446126783}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792446126784}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792446262673}
-{"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792446262673}
-{"level":"log","message":"postMessage resolve undefined","timestamp":1792446262677}
-{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792446317193}
 {"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792446317194}
 {"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792446317286}
 {"level":"log","message":"postMessage {\"securityToken\":\"725654cd-4c6e-47d2-88ab-cf1874cb64d6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792446317286}
@@ -826,3 +485,564 @@
 {"level":"log","message":"postMessage {\"securityToken\":\"6cd97254-bd41-4c1b-a2cb-adb8115d1013\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792504945373}
 {"level":"log","message":"postMessage resolve undefined","timestamp":1792504945376}
 {"level":"debug","message":"[vite] connected.","timestamp":1792506280957}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792599877367}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7b55b51-d027-420f-ae38-5afa7f756824\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792599877367}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792599877390}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792599931208}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792599966423}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7b55b51-d027-420f-ae38-5afa7f756824\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792599966426}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792599966553}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792599975104}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792600068424}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7b55b51-d027-420f-ae38-5afa7f756824\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792600068426}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792600068535}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792600101825}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792600119079}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7b55b51-d027-420f-ae38-5afa7f756824\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792600119080}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792600119175}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792600123803}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792600152419}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7b55b51-d027-420f-ae38-5afa7f756824\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792600152420}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792600152434}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792600959013}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792601136247}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7b55b51-d027-420f-ae38-5afa7f756824\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792601136248}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792601136326}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792601381061}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792601486979}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7b55b51-d027-420f-ae38-5afa7f756824\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792601486979}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792601486988}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792601610028}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792601610028}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792601610028}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792601621181}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7b55b51-d027-420f-ae38-5afa7f756824\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792601621181}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792601621183}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Payroll.tsx","timestamp":1792601673681}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792601673681}
+{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792601673681}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Payroll.tsx","timestamp":1792601673682}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792601673682}
+{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792601673682}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792601734238}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7b55b51-d027-420f-ae38-5afa7f756824\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792601734238}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792601734298}
+{"level":"debug","message":"(previous line repeated 1× more)","timestamp":1792601735098}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792601735098}
+{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792601770312}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792601770313}
+{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792601770313}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792601770314}
+{"level":"debug","message":"[vite] hot updated: /src/components/layout/Sidebar.tsx","timestamp":1792601794364}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792601794364}
+{"level":"debug","message":"[vite] hot updated: /src/components/layout/Sidebar.tsx","timestamp":1792601794365}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792601794365}
+{"level":"debug","message":"[vite] hot updated: /src/components/layout/MobileNav.tsx","timestamp":1792601806181}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792601806181}
+{"level":"debug","message":"[vite] hot updated: /src/components/layout/MobileNav.tsx","timestamp":1792601806182}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792601806182}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792601868667}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7b55b51-d027-420f-ae38-5afa7f756824\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792601868667}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792601868764}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7b55b51-d027-420f-ae38-5afa7f756824\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792601868764}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792601868765}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792601868765}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792601880384}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7b55b51-d027-420f-ae38-5afa7f756824\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792601880384}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792601880386}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792602020041}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7b55b51-d027-420f-ae38-5afa7f756824\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792602020041}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792602020044}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792602050802}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7b55b51-d027-420f-ae38-5afa7f756824\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792602050802}
+{"level":"debug","message":"[vite] connected.","timestamp":1792602050804}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792602050807}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792602053319}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7b55b51-d027-420f-ae38-5afa7f756824\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792602053319}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792602053342}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792618616902}
+{"level":"log","message":"postMessage {\"securityToken\":\"5015b5ec-c695-4a1a-833d-b38170a1dae6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792618616902}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792618616937}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792618908934}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792618908934}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792618908935}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Payroll.tsx","timestamp":1792618908935}
+{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792618908935}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792618918778}
+{"level":"log","message":"postMessage {\"securityToken\":\"5015b5ec-c695-4a1a-833d-b38170a1dae6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792618918778}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792618918831}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792619000745}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792619000745}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792619000747}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792619000747}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792619035272}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792619035272}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792619035273}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792619035273}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792619077643}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792619077643}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792619077645}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792619077645}
+{"level":"debug","message":"(previous line repeated 1× more)","timestamp":1792619104603}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792619104603}
+{"level":"debug","message":"(previous line repeated 1× more)","timestamp":1792619104604}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792619104604}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792619116140}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792619116141}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792619116142}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792619116142}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792619184295}
+{"level":"log","message":"postMessage {\"securityToken\":\"5015b5ec-c695-4a1a-833d-b38170a1dae6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792619184295}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792619184392}
+{"level":"log","message":"postMessage {\"securityToken\":\"5015b5ec-c695-4a1a-833d-b38170a1dae6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792619184392}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792619184393}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792619184393}
+{"level":"debug","message":"[vite] connected.","timestamp":1792619184753}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792619195278}
+{"level":"log","message":"postMessage {\"securityToken\":\"5015b5ec-c695-4a1a-833d-b38170a1dae6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792619195278}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792619195281}
+{"level":"debug","message":"[vite] connected.","timestamp":1792619196626}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792619201716}
+{"level":"log","message":"postMessage {\"securityToken\":\"5015b5ec-c695-4a1a-833d-b38170a1dae6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792619201716}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792619201720}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792619866210}
+{"level":"log","message":"postMessage {\"securityToken\":\"9be09b71-0101-424b-9cdc-8597ac4c9d66\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792619866211}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792619866242}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792619983666}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792619983666}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalRequestModal.tsx","timestamp":1792619989577}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792619989577}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792619994086}
+{"level":"log","message":"postMessage {\"securityToken\":\"9be09b71-0101-424b-9cdc-8597ac4c9d66\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792619994086}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792619994127}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalRequestModal.tsx","timestamp":1792619999624}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792619999625}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalRequestModal.tsx","timestamp":1792619999627}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792619999627}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalRequestModal.tsx","timestamp":1792620006516}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620006516}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalRequestModal.tsx","timestamp":1792620006516}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620006516}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620030233}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620030233}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620030234}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620030234}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620039654}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620039654}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620039655}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620039655}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620045339}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620045339}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620045339}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620045340}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620049978}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620049979}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620049979}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620049979}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620055386}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620055386}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620055389}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620055389}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620068616}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620068616}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620068616}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620068616}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620093513}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620093513}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620093514}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620093514}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792620188624}
+{"level":"log","message":"postMessage {\"securityToken\":\"9be09b71-0101-424b-9cdc-8597ac4c9d66\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792620188624}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792620188627}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792620224630}
+{"level":"log","message":"postMessage {\"securityToken\":\"9be09b71-0101-424b-9cdc-8597ac4c9d66\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792620224630}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792620224632}
+{"level":"debug","message":"[vite] connected.","timestamp":1792620224908}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792620450752}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792620469664}
+{"level":"log","message":"postMessage {\"securityToken\":\"9be09b71-0101-424b-9cdc-8597ac4c9d66\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792620469664}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792620469705}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620567482}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792620567482}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620567482}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalRequestModal.tsx","timestamp":1792620567482}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Analytics.tsx","timestamp":1792620567482}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792620571904}
+{"level":"log","message":"postMessage {\"securityToken\":\"9be09b71-0101-424b-9cdc-8597ac4c9d66\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792620571904}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792620571907}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792620590712}
+{"level":"log","message":"postMessage {\"securityToken\":\"9be09b71-0101-424b-9cdc-8597ac4c9d66\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792620590712}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792620590742}
+{"level":"debug","message":"[vite] connected.","timestamp":1792620591985}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalRequestModal.tsx","timestamp":1792620628596}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620628596}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalRequestModal.tsx","timestamp":1792620628597}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620628597}
+{"level":"debug","message":"(previous line repeated 1× more)","timestamp":1792620643940}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792620643940}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620643941}
+{"level":"debug","message":"(previous line repeated 1× more)","timestamp":1792620643943}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792620643943}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620643943}
+{"level":"debug","message":"(previous line repeated 1× more)","timestamp":1792620656103}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620656103}
+{"level":"debug","message":"(previous line repeated 1× more)","timestamp":1792620656104}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620656104}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620670777}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620670777}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620670778}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620670778}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620688682}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620688682}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620688683}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620688683}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620702347}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620702347}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620702348}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620702348}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620716248}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620716248}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620716249}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620716249}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620728635}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620728635}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792620728636}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620728636}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalRequestModal.tsx","timestamp":1792620792143}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620792143}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalRequestModal.tsx","timestamp":1792620792144}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792620792144}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792621114679}
+{"level":"log","message":"postMessage {\"securityToken\":\"9be09b71-0101-424b-9cdc-8597ac4c9d66\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792621114680}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792621114683}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792621116812}
+{"level":"log","message":"postMessage {\"securityToken\":\"9be09b71-0101-424b-9cdc-8597ac4c9d66\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792621116812}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792621116818}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792668544172}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7431e61-6748-4d5f-9009-b9a6de41adc6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792668544173}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792668544223}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792668643256}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7431e61-6748-4d5f-9009-b9a6de41adc6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792668643256}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792668643282}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792668868067}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7431e61-6748-4d5f-9009-b9a6de41adc6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792668868067}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792668868070}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792668868169}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7431e61-6748-4d5f-9009-b9a6de41adc6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792668868169}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792668868194}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792668879337}
+{"level":"debug","message":"[vite] hot updated: /src/pages/RecurringPayments.tsx","timestamp":1792668879338}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792668879338}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/CreateScheduleModal.tsx","timestamp":1792668879338}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Analytics.tsx","timestamp":1792668879338}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792668879339}
+{"level":"debug","message":"[vite] hot updated: /src/pages/RecurringPayments.tsx","timestamp":1792668879339}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792668879339}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/CreateScheduleModal.tsx","timestamp":1792668879339}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Analytics.tsx","timestamp":1792668879339}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792668907671}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792668907671}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792668907672}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalRequestModal.tsx","timestamp":1792668907672}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792668907673}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792668907673}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792668907673}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalRequestModal.tsx","timestamp":1792668907673}
+{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792668998930}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792668998930}
+{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792668998931}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792668998931}
+{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792669028650}
+{"level":"error","message":"[vite] Failed to reload /src/components/recurring/ScheduleDetail.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792669028650}
+{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792669028650}
+{"level":"error","message":"[vite] Failed to reload /src/components/recurring/ScheduleDetail.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792669028650}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792669028707}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669028707}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792669028709}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669028709}
+{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792669041983}
+{"level":"error","message":"[vite] Failed to reload /src/components/recurring/ScheduleDetail.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792669041983}
+{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792669041984}
+{"level":"error","message":"[vite] Failed to reload /src/components/recurring/ScheduleDetail.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792669041984}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792669042186}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669042186}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792669042187}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669042187}
+{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792669074873}
+{"level":"error","message":"[vite] Failed to reload /src/components/recurring/ScheduleDetail.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792669074873}
+{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792669074873}
+{"level":"error","message":"[vite] Failed to reload /src/components/recurring/ScheduleDetail.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792669074873}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792669075237}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669075237}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792669075238}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669075239}
+{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792669113969}
+{"level":"error","message":"[vite] Failed to reload /src/components/recurring/ScheduleDetail.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792669113970}
+{"level":"error","message":"[vite] TypeError: Importing a module script failed.","timestamp":1792669113970}
+{"level":"error","message":"[vite] Failed to reload /src/components/recurring/ScheduleDetail.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)","timestamp":1792669113970}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792669114182}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669114182}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792669114182}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669114182}
+{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792669203703}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669203704}
+{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792669203705}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669203706}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792669275546}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669275546}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792669275547}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669275547}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792669290878}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669290878}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792669290879}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669290879}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792669306806}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669306806}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792669306807}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669306807}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792669319748}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669319748}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792669319749}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669319749}
+{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792669334833}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669334833}
+{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792669334834}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669334834}
+{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792669350433}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669350433}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792669355578}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7431e61-6748-4d5f-9009-b9a6de41adc6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792669355578}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792669355628}
+{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792669367976}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669367976}
+{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792669367977}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792669367977}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792669488735}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7431e61-6748-4d5f-9009-b9a6de41adc6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792669488735}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792669488736}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792669488827}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7431e61-6748-4d5f-9009-b9a6de41adc6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792669488827}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792669488829}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792669794571}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792669794675}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792670058289}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7431e61-6748-4d5f-9009-b9a6de41adc6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792670058289}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792670058318}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792670073237}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792670073237}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792670105614}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792670105614}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792670112988}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792670112988}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792670198180}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792670198180}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792670215722}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792670215722}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792670233517}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792670233517}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792670254997}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792670254997}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792670275314}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792670275315}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792670288826}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792670288826}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792670490575}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7431e61-6748-4d5f-9009-b9a6de41adc6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792670490575}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792670490684}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7431e61-6748-4d5f-9009-b9a6de41adc6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792670490684}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792670490685}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792670490719}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792670494276}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7431e61-6748-4d5f-9009-b9a6de41adc6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792670494276}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792670494281}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792670602668}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7431e61-6748-4d5f-9009-b9a6de41adc6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792670602668}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792670602674}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792670611922}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7431e61-6748-4d5f-9009-b9a6de41adc6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792670611922}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792670611924}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792670695817}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792670695820}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792670701238}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7431e61-6748-4d5f-9009-b9a6de41adc6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792670701238}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792670701263}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792670701498}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7431e61-6748-4d5f-9009-b9a6de41adc6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792670701498}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792670701514}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792670971679}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7431e61-6748-4d5f-9009-b9a6de41adc6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792670971682}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792670971895}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792671062569}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7431e61-6748-4d5f-9009-b9a6de41adc6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792671062570}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792671062713}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792671136927}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7431e61-6748-4d5f-9009-b9a6de41adc6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792671136927}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792671136932}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792671193737}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792671200696}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7431e61-6748-4d5f-9009-b9a6de41adc6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792671200697}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792671200806}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7431e61-6748-4d5f-9009-b9a6de41adc6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792671200806}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792671200810}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792671200812}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792671218969}
+{"level":"log","message":"postMessage {\"securityToken\":\"a7431e61-6748-4d5f-9009-b9a6de41adc6\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792671218969}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792671218971}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792678193393}
+{"level":"debug","message":"[vite] connected.","timestamp":1792678358071}
+{"level":"debug","message":"[vite] connected.","timestamp":1792678359458}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792678367635}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792678367635}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792678367635}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Payroll.tsx","timestamp":1792678367635}
+{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792678367636}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792678367636}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792678367636}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalRequestModal.tsx","timestamp":1792678367636}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792678367636}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792678367637}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792678367637}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792678367637}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Payroll.tsx","timestamp":1792678367637}
+{"level":"debug","message":"[vite] hot updated: /src/components/payroll/BatchDetail.tsx","timestamp":1792678367637}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792678367637}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalDetail.tsx","timestamp":1792678367637}
+{"level":"debug","message":"[vite] hot updated: /src/components/approvals/ApprovalRequestModal.tsx","timestamp":1792678367637}
+{"level":"debug","message":"[vite] hot updated: /src/components/recurring/ScheduleDetail.tsx","timestamp":1792678367637}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792679564341}
+{"level":"debug","message":"[vite] hot updated: /src/components/WalletGate.tsx","timestamp":1792679901844}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792679901845}
+{"level":"debug","message":"[vite] invalidate /src/components/WalletGate.tsx: Could not Fast Refresh (new export)","timestamp":1792679970424}
+{"level":"debug","message":"[vite] hot updated: /src/components/WalletGate.tsx","timestamp":1792679970424}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792679970424}
+{"level":"debug","message":"(previous line repeated 1× more)","timestamp":1792679972285}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Automations.tsx","timestamp":1792679972285}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Payroll.tsx","timestamp":1792679972286}
+{"level":"debug","message":"[vite] hot updated: /src/pages/RecurringPayments.tsx","timestamp":1792679972286}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Approvals.tsx","timestamp":1792679972286}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792680945549}
+{"level":"log","message":"postMessage {\"securityToken\":\"031947f5-1a04-466f-af7e-6e83a5b85dd8\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792680945549}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792680945550}
+{"level":"log","message":"postMessage {\"securityToken\":\"031947f5-1a04-466f-af7e-6e83a5b85dd8\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792680945550}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792680945559}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792680945559}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792681066767}
+{"level":"log","message":"postMessage {\"securityToken\":\"031947f5-1a04-466f-af7e-6e83a5b85dd8\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792681066767}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792681066778}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792681074222}
+{"level":"log","message":"postMessage {\"securityToken\":\"031947f5-1a04-466f-af7e-6e83a5b85dd8\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792681074222}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792681074313}
+{"level":"log","message":"postMessage {\"securityToken\":\"031947f5-1a04-466f-af7e-6e83a5b85dd8\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792681074314}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792681074314}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792681074315}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792681074407}
+{"level":"log","message":"postMessage {\"securityToken\":\"031947f5-1a04-466f-af7e-6e83a5b85dd8\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792681074407}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792681074433}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792681093800}
+{"level":"log","message":"postMessage {\"securityToken\":\"031947f5-1a04-466f-af7e-6e83a5b85dd8\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792681093800}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792681094052}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792681272166}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792681272173}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792681292897}
+{"level":"log","message":"postMessage {\"securityToken\":\"031947f5-1a04-466f-af7e-6e83a5b85dd8\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792681292898}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792681292902}
+{"level":"debug","message":"[vite] connected.","timestamp":1792681293266}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792681774613}
+{"level":"log","message":"postMessage {\"securityToken\":\"031947f5-1a04-466f-af7e-6e83a5b85dd8\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792681774613}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792681774617}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792681994963}
+{"level":"log","message":"postMessage {\"securityToken\":\"031947f5-1a04-466f-af7e-6e83a5b85dd8\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792681994963}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792681994966}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792764589758}
+{"level":"log","message":"postMessage {\"securityToken\":\"9408ac4f-07e5-4999-9b5e-10b81ed14593\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792764589759}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792764589819}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792764606881}
+{"level":"debug","message":"[vite] connected.","timestamp":1792764798801}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792764799976}
+{"level":"log","message":"postMessage {\"securityToken\":\"9408ac4f-07e5-4999-9b5e-10b81ed14593\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792764799978}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792764800073}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792764936547}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792764952826}
+{"level":"log","message":"postMessage {\"securityToken\":\"9408ac4f-07e5-4999-9b5e-10b81ed14593\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792764952826}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792764952845}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792764962821}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792764976008}
+{"level":"log","message":"postMessage {\"securityToken\":\"9408ac4f-07e5-4999-9b5e-10b81ed14593\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792764976008}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792764976026}
+{"level":"debug","message":"[vite] connected.","timestamp":1792764977438}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792765044461}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792765059671}
+{"level":"log","message":"postMessage {\"securityToken\":\"9408ac4f-07e5-4999-9b5e-10b81ed14593\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792765059673}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792765059753}
+{"level":"log","message":"[vite] server connection lost. Polling for restart...","timestamp":1792765084068}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792773382651}
+{"level":"log","message":"postMessage {\"securityToken\":\"44c31b47-e1dd-4642-9f57-15bc6be1eb4b\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792773382652}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792773382684}
+{"level":"debug","message":"[vite] connected.","timestamp":1792773478799}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792773479149}
+{"level":"log","message":"postMessage {\"securityToken\":\"44c31b47-e1dd-4642-9f57-15bc6be1eb4b\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792773479149}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792773479153}
+{"level":"log","message":"postMessage {\"securityToken\":\"44c31b47-e1dd-4642-9f57-15bc6be1eb4b\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":1,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792773479153}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792773479193}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792773479193}
+{"level":"debug","message":"[vite] hot updated: /src/components/layout/Topbar.tsx","timestamp":1792773491685}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773491686}
+{"level":"debug","message":"[vite] hot updated: /src/components/layout/Topbar.tsx","timestamp":1792773491687}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773491688}
+{"level":"debug","message":"[vite] hot updated: /src/App.tsx","timestamp":1792773494449}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773494449}
+{"level":"debug","message":"[vite] hot updated: /src/App.tsx","timestamp":1792773494450}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773494450}
+{"level":"debug","message":"[vite] hot updated: /src/components/layout/Sidebar.tsx","timestamp":1792773512441}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773512441}
+{"level":"debug","message":"[vite] hot updated: /src/components/layout/Sidebar.tsx","timestamp":1792773512443}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773512443}
+{"level":"debug","message":"[vite] hot updated: /src/components/layout/MobileNav.tsx","timestamp":1792773530788}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773530788}
+{"level":"debug","message":"[vite] hot updated: /src/components/layout/MobileNav.tsx","timestamp":1792773530789}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773530789}
+{"level":"debug","message":"[vite] hot updated: /src/components/ui/Button.tsx","timestamp":1792773543399}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773543400}
+{"level":"debug","message":"[vite] hot updated: /src/components/ui/Button.tsx","timestamp":1792773543402}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773543402}
+{"level":"debug","message":"[vite] hot updated: /src/components/ui/Card.tsx","timestamp":1792773549611}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773549611}
+{"level":"debug","message":"[vite] hot updated: /src/components/ui/Card.tsx","timestamp":1792773549613}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773549613}
+{"level":"debug","message":"[vite] hot updated: /src/components/ui/Badge.tsx","timestamp":1792773557047}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773557047}
+{"level":"debug","message":"[vite] hot updated: /src/components/ui/Badge.tsx","timestamp":1792773557049}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773557050}
+{"level":"debug","message":"[vite] hot updated: /src/components/ui/StatCard.tsx","timestamp":1792773563083}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773563083}
+{"level":"debug","message":"[vite] hot updated: /src/components/ui/StatCard.tsx","timestamp":1792773563085}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773563085}
+{"level":"debug","message":"[vite] hot updated: /src/components/ui/PageHeader.tsx","timestamp":1792773570991}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773570991}
+{"level":"debug","message":"[vite] hot updated: /src/components/ui/PageHeader.tsx","timestamp":1792773570992}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773570992}
+{"level":"debug","message":"[vite] hot updated: /src/components/ui/SectionCard.tsx","timestamp":1792773577911}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773577912}
+{"level":"debug","message":"[vite] hot updated: /src/components/ui/SectionCard.tsx","timestamp":1792773577914}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773577914}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792773807824}
+{"level":"log","message":"postMessage {\"securityToken\":\"44c31b47-e1dd-4642-9f57-15bc6be1eb4b\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792773807824}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792773807875}
+{"level":"debug","message":"[vite] hot updated: /src/App.tsx","timestamp":1792773864320}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773864320}
+{"level":"debug","message":"[vite] hot updated: /src/App.tsx","timestamp":1792773865383}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773865383}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792773904310}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773904310}
+{"level":"debug","message":"[vite] hot updated: /src/pages/Dashboard.tsx","timestamp":1792773904312}
+{"level":"debug","message":"[vite] hot updated: /src/index.css","timestamp":1792773904312}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792773933904}
+{"level":"log","message":"postMessage {\"securityToken\":\"44c31b47-e1dd-4642-9f57-15bc6be1eb4b\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792773933904}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792773933965}
+{"level":"log","message":"postMessage {\"securityToken\":\"44c31b47-e1dd-4642-9f57-15bc6be1eb4b\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792773933965}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792773933969}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792773933970}
+{"level":"debug","message":"[vite] connected.","timestamp":1792773933971}
+{"level":"log","message":"got local storage {\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}","timestamp":1792773938190}
+{"level":"log","message":"postMessage {\"securityToken\":\"44c31b47-e1dd-4642-9f57-15bc6be1eb4b\",\"object\":\"window\",\"method\":\"handleStorage\",\"args\":[{\"wagmi.store\":\"{\\\"state\\\":{\\\"connections\\\":{\\\"__type\\\":\\\"Map\\\",\\\"value\\\":[]},\\\"chainId\\\":5042,\\\"current\\\":null},\\\"version\\\":2}\"}]}","timestamp":1792773938190}
+{"level":"log","message":"postMessage resolve undefined","timestamp":1792773938208}

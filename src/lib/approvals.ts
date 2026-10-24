@@ -87,6 +87,21 @@ export interface ApprovalRequest {
   errorMessage?: string
   /** Optional note added at execution time */
   executionNote?: string
+  /**
+   * The bytes32 proposal ID registered on AskirawaFiTreasury.
+   * Set after a successful proposeTransfer / proposePayroll transaction.
+   * This is the authoritative ID for vote() and execute() calls.
+   * Absent = proposal has not yet been submitted on-chain.
+   */
+  onChainProposalId?: `0x${string}`
+  /** Transaction hash of the propose() transaction (confirmation that proposal exists on-chain). */
+  proposeTxHash?: string
+  /**
+   * Unix timestamp (seconds) when the on-chain proposal expires.
+   * Set at propose time; must match the value passed to the contract exactly.
+   * Needed so execute() can verify the proposal is not expired before submitting.
+   */
+  onChainExpiresAt?: number
 }
 
 // ─── Approval policy ─────────────────────────────────────────────────────────

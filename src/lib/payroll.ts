@@ -47,6 +47,17 @@ export interface EmployeePayment extends EmployeeEntry {
   errorMessage?: string
 }
 
+/**
+ * Treasury proposal status for a batch when AskirawaFiTreasury is deployed.
+ * null = treasury not used for this batch (personal-wallet or pre-treasury).
+ */
+export type BatchTreasuryStatus =
+  | 'proposed'   // proposePayroll tx confirmed on-chain; awaiting votes
+  | 'approved'   // quorum reached (approvalCount >= quorum on-chain); ready to execute
+  | 'executing'  // execute tx in flight
+  | 'executed'   // execute tx confirmed
+  | 'cancelled'  // cancelled on-chain or abandoned
+
 export interface PayrollBatch {
   id: string
   name: string
@@ -60,6 +71,31 @@ export interface PayrollBatch {
   payments: EmployeePayment[]
   /** Note shown to treasury team */
   note: string
+
+  // ─── Treasury proposal fields (set only when AskirawaFiTreasury is deployed) ──
+  /**
+   * On-chain bytes32 proposal ID, stored after proposePayroll is confirmed.
+   * This is the authoritative ID for vote/execute calls.
+   */
+  treasuryProposalId?: string
+  /** Tx hash of the proposePayroll transaction. */
+  treasuryProposeTxHash?: string
+  /** Tx hash of the execute transaction (set after treasury execution is confirmed). */
+  treasuryExecuteTxHash?: string
+  /** Unix seconds expiry passed to proposePayroll. */
+  treasuryExpiresAt?: number
+  /**
+   * Frozen recipients at propose time — the only payload accepted by execute().
+   * These MUST NOT be updated after propose confirmation.
+   */
+  treasuryRecipients?: string[]
+  /**
+   * Frozen amounts (raw bigint serialized as decimal strings) at propose time.
+   * These MUST NOT be updated after propose confirmation.
+   */
+  treasuryAmounts?: string[]
+  /** Treasury proposal lifecycle state. */
+  treasuryStatus?: BatchTreasuryStatus
 }
 
 // ─── USDC decimal helpers (integer bigint arithmetic, no floats) ───────────────

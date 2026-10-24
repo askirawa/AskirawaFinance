@@ -63,13 +63,15 @@ export default function App() {
 
             {/* Topbar */}
             <Topbar
+              activePage={activePage}
               onNavigate={navigate}
               onMobileMenuToggle={() => setMobileNavOpen(o => !o)}
+              mobileMenuOpen={mobileNavOpen}
             />
 
             {/* Page content */}
             <main style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
-              <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 28px 80px' }}>
+              <div style={{ maxWidth: 1200, margin: '0 auto', padding: '40px 32px 96px' }}>
                 {activePage === 'dashboard'     && <Dashboard onNavigate={navigate} />}
                 {activePage === 'activity'      && <Activity />}
                 {activePage === 'automations'   && <Automations />}
@@ -88,27 +90,39 @@ export default function App() {
                 style={{
                   maxWidth: 1200,
                   margin: '0 auto',
-                  padding: '16px 28px 24px',
+                  padding: '16px 32px 28px',
                   borderTop: '1px solid var(--border)',
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  fontSize: 12,
-                  color: 'var(--subtle)',
+                  gap: 12,
+                  flexWrap: 'wrap',
                 }}
               >
-                <span>AskirawaFi &copy; 2026</span>
-                <span>
+                <span style={{
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: 10,
+                  letterSpacing: '0.10em',
+                  textTransform: 'uppercase',
+                  color: 'var(--subtle)',
+                }}>AskirawaFi &copy; 2026</span>
+                <span style={{
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: 10,
+                  letterSpacing: '0.10em',
+                  textTransform: 'uppercase',
+                  color: 'var(--subtle)',
+                }}>
                   Built on{' '}
                   <a
                     href="https://arc.io"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: 'var(--accent)', fontWeight: 600 }}
+                    style={{ color: 'var(--muted)', fontWeight: 600 }}
                   >
                     Arc
                   </a>
-                  {' '}· USDC Programmable Treasury
+                  {' '}· USDC Treasury
                 </span>
               </div>
             </main>

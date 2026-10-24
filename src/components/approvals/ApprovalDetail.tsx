@@ -1,12 +1,24 @@
 /**
  * ApprovalDetail — side drawer showing full request details, approval decisions,
  * approve/reject actions, and execution controls.
+ *
+ * Two execution modes selected at runtime:
+ *
+ *   ON-CHAIN MODE (isTreasuryDeployed = true)
+ *     Local vote/approval decisions remain for UI tracking, but the execution
+ *     path calls AskirawaFiTreasury.vote() and AskirawaFiTreasury.execute().
+ *     USDC moves only through the treasury contract, after on-chain quorum.
+ *
+ *   LOCAL MODE (isTreasuryDeployed = false)
+ *     Approval decisions are stored in localStorage only.
+ *     Execution calls USDC.transfer() directly from the connected wallet —
+ *     NOT protected by treasury approval.  Clearly disclosed.
  */
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import {
   X, CheckCircle2, XCircle, PlayCircle, ArrowUpRight,
-  AlertCircle, Info, Clock, Loader2, ShieldCheck,
+  AlertCircle, Info, Clock, Loader2, ShieldCheck, Lock,
 } from 'lucide-react'
 import { useAccount, useSwitchChain } from 'wagmi'
 import Badge from '../ui/Badge'
@@ -25,6 +37,13 @@ import {
   isAuthorizedApprover,
 } from '../../lib/approvals'
 import { useRequestExecutor } from '../../hooks/useApprovals'
+import {
+  isTreasuryDeployed,
+  useTreasuryVote,
+  useTreasuryExecute,
+  useTreasuryProposal,
+  useTreasuryConfig,
+} from '../../hooks/useTreasury'
 import { buildTxExplorerUrl } from '../../onchain-facts'
 import { ARC_MAINNET_CHAIN_ID } from '../../config'
 import { useNotifications } from '../../context/NotificationContext'
@@ -101,9 +120,73 @@ export default function ApprovalDetail({ request, policy, onClose, onApprove, on
   const isWrongChain = chainId !== ARC_MAINNET_CHAIN_ID
 
   const stats = getRequestStats(request)
-  const { isExecuting, execError, canExecute, executeRequest } = useRequestExecutor(request, policy, onUpdate, { onNotify: emit })
-  const { ok: canExec, reason: execBlockReason } = canExecute()
 
+  // ── Local mode (no treasury) ───────────────────────────────────────────────
+  const { isExecuting: isLocalExec, execError: localExecError, canExecute: localCanExec, executeRequest } =
+    useRequestExecutor(request, policy, onUpdate, { onNotify: emit })
+  const { ok: canLocalExec, reason: localExecBlockReason } = localCanExec()
+
+  // ── On-chain treasury mode ─────────────────────────────────────────────────
+  // Use the confirmed on-chain proposalId stored at propose time.
+  // Never re-derive from the off-chain ID: a re-derived ID only matches if the
+  // propose tx actually succeeded, and deriving it without checking would allow
+  // vote/execute calls that revert with ProposalNotFound.
+  const proposalId = isTreasuryDeployed
+    ? (request.onChainProposalId ?? null)
+    : null
+  const isOnChainProposalMissing = isTreasuryDeployed && !request.onChainProposalId
+  const { vote, isPending: isVoting, error: voteError } = useTreasuryVote()
+  const { execute: treasuryExecute, isPending: isTreasuryExec, error: treasuryExecError } = useTreasuryExecute()
+
+  // Read on-chain proposal state for accurate vote count when treasury is deployed
+  const { proposal: onChainProposal, refetch: refetchOnChainProposal } = useTreasuryProposal(
+    isTreasuryDeployed && proposalId ? proposalId : null
+  )
+  const { quorum: onChainQuorum } = useTreasuryConfig()
+
+  const [voteHash, setVoteHash] = useState<string | null>(null)
+  const [execHash, setExecHash] = useState<string | null>(null)
+  const [treasuryErr, setTreasuryErr] = useState<string | null>(null)
+
+  // useCallback wrapping tells the linter these are stable event handlers, not render-time calls
+  const handleTreasuryVote = useCallback(async () => {
+    if (!proposalId || !address) return
+    setTreasuryErr(null)
+    const hash = await vote(proposalId)
+    if (hash) {
+      setVoteHash(hash)
+      // Record locally and refresh on-chain state
+      onApprove(request.id, address)
+      void refetchOnChainProposal()
+    } else if (voteError) {
+      setTreasuryErr(voteError)
+    }
+  }, [proposalId, address, vote, voteError, onApprove, request.id, refetchOnChainProposal])
+
+  const handleTreasuryExecute = useCallback(async () => {
+    if (!proposalId) return
+    setTreasuryErr(null)
+    let recipients: `0x${string}`[] = []
+    let amounts: bigint[] = []
+    try {
+      recipients = [request.recipientAddress as `0x${string}`]
+      amounts = [parseUsdcString(request.amountUsdc)]
+    } catch {
+      setTreasuryErr('Invalid request amount or recipient.')
+      return
+    }
+    const hash = await treasuryExecute({ proposalId, recipients, amounts })
+    const ts = Date.now()
+    if (hash) {
+      setExecHash(hash)
+      onUpdate({ ...request, status: 'executed', txHash: hash, confirmedAt: ts, updatedAt: ts })
+    } else if (treasuryExecError) {
+      setTreasuryErr(treasuryExecError)
+      onUpdate({ ...request, status: 'failed', errorMessage: treasuryExecError, updatedAt: ts })
+    }
+  }, [proposalId, request, treasuryExecute, treasuryExecError, onUpdate])
+
+  // ── UI helpers ──────────────────────────────────────────────────────────────
   const isApprover = address ? isAuthorizedApprover(address, policy) : false
   const alreadyDecided = address
     ? request.decisions.some(d => d.approverAddress.toLowerCase() === address.toLowerCase())
@@ -116,6 +199,8 @@ export default function ApprovalDetail({ request, policy, onClose, onApprove, on
   try { amountRaw = parseUsdcString(request.amountUsdc) } catch { /* noop */ }
 
   const explorerBase = 'https://explorer.arc.io'
+  const activeError = isTreasuryDeployed ? (treasuryErr ?? voteError ?? treasuryExecError) : (request.errorMessage ?? localExecError)
+  const isAnyPending = isVoting || isTreasuryExec || isLocalExec
 
   return (
     <div
@@ -134,7 +219,10 @@ export default function ApprovalDetail({ request, policy, onClose, onApprove, on
         {confirmAction === 'approve' && address && (
           <ConfirmDialog
             title="Approve Request"
-            message={`You are approving "${request.title}" for ${formatUsdcBigint(amountRaw)} USDC. This approval is locally recorded.`}
+            message={isTreasuryDeployed
+              ? `You are recording a local approval decision for "${request.title}". To enforce this on-chain, use the Vote button after the local quorum is reached.`
+              : `You are approving "${request.title}" for ${formatUsdcBigint(amountRaw)} USDC. This approval is locally recorded.`
+            }
             confirmLabel="Approve"
             onConfirm={reason => { onApprove(request.id, address, reason); setConfirmAction(null) }}
             onCancel={() => setConfirmAction(null)}
@@ -183,31 +271,81 @@ export default function ApprovalDetail({ request, policy, onClose, onApprove, on
 
         {/* Body */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '24px 24px 0' }}>
-          {/* Local storage notice */}
-          <div className="flex items-start gap-3 rounded-xl p-4 mb-5" style={{ background: 'rgba(232,184,76,0.07)', border: '1px solid rgba(232,184,76,0.2)' }}>
-            <Info size={14} style={{ color: 'var(--warning)', flexShrink: 0, marginTop: 2 }} />
-            <span style={{ fontSize: 12, color: 'var(--warning)', lineHeight: 1.5 }}>
-              Locally recorded — not cryptographically enforced on-chain.
-            </span>
-          </div>
+
+          {/* Mode banner */}
+          {isTreasuryDeployed ? (
+            isOnChainProposalMissing ? (
+              <div className="flex items-start gap-3 rounded-xl p-4 mb-5" style={{ background: 'rgba(232,184,76,0.07)', border: '1px solid rgba(232,184,76,0.25)' }}>
+                <AlertCircle size={14} style={{ color: 'var(--warning)', flexShrink: 0, marginTop: 2 }} />
+                <span style={{ fontSize: 12, color: 'var(--warning)', lineHeight: 1.5 }}>
+                  <strong>Not yet registered on-chain.</strong> This request was saved locally but has not been submitted to AskirawaFiTreasury.
+                  Voting and execution are disabled until the proposal is confirmed on-chain.
+                  Create a new request to submit a <code>proposeTransfer</code> transaction.
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-start gap-3 rounded-xl p-4 mb-5" style={{ background: 'rgba(0,200,100,0.07)', border: '1px solid rgba(0,200,100,0.2)' }}>
+                <Lock size={14} style={{ color: 'var(--success)', flexShrink: 0, marginTop: 2 }} />
+                <span style={{ fontSize: 12, color: 'var(--success)', lineHeight: 1.5 }}>
+                  <strong>On-chain treasury mode.</strong> Proposal confirmed on AskirawaFiTreasury.
+                  Voting and execution call the contract on Arc Mainnet.
+                  USDC moves only after on-chain quorum is reached.
+                </span>
+              </div>
+            )
+          ) : (
+            <div className="flex items-start gap-3 rounded-xl p-4 mb-5" style={{ background: 'rgba(232,184,76,0.07)', border: '1px solid rgba(232,184,76,0.2)' }}>
+              <Info size={14} style={{ color: 'var(--warning)', flexShrink: 0, marginTop: 2 }} />
+              <span style={{ fontSize: 12, color: 'var(--warning)', lineHeight: 1.5 }}>
+                <strong>Local mode.</strong> Approval decisions are stored in this browser only — not enforced on-chain.
+                Execution sends USDC directly from your connected wallet without treasury quorum.
+                Deploy AskirawaFiTreasury and set <code>VITE_TREASURY_ADDRESS</code> to enable on-chain enforcement.
+              </span>
+            </div>
+          )}
 
           {/* Approval progress */}
-          <div className="rounded-xl p-4 mb-5" style={{ background: 'var(--surface-muted)', border: '1px solid var(--border)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Approval Progress</span>
-              <span style={{ fontSize: 12, fontWeight: 700, color: stats.isFullyApproved ? 'var(--accent)' : 'var(--muted)' }}>{stats.progressLabel}</span>
-            </div>
-            {/* Progress bar */}
-            <div style={{ height: 6, borderRadius: 4, background: 'var(--border)', overflow: 'hidden' }}>
-              <div style={{
-                height: '100%',
-                width: `${Math.min(100, (stats.approvedCount / Math.max(1, request.requiredApprovals)) * 100)}%`,
-                background: stats.hasRejection ? 'var(--danger)' : stats.isFullyApproved ? 'var(--accent)' : 'var(--warning)',
-                borderRadius: 4,
-                transition: 'width 0.4s ease',
-              }} />
-            </div>
-          </div>
+          {(() => {
+            // In treasury mode, use on-chain vote count when the proposal exists.
+            // In local mode, use the local decisions count.
+            const onChainCount = isTreasuryDeployed && onChainProposal ? onChainProposal.approvalCount : null
+            const onChainTotal = isTreasuryDeployed && onChainQuorum ? onChainQuorum : null
+            const displayCount = onChainCount ?? stats.approvedCount
+            const displayTotal = onChainTotal ?? request.requiredApprovals
+            const displayApproved = displayTotal > 0 && displayCount >= displayTotal
+            const displayLabel = onChainCount !== null
+              ? `${displayCount}/${displayTotal} on-chain vote${displayTotal !== 1 ? 's' : ''}`
+              : stats.progressLabel
+            return (
+              <div className="rounded-xl p-4 mb-5" style={{ background: 'var(--surface-muted)', border: '1px solid var(--border)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Approval Progress</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: displayApproved ? 'var(--accent)' : 'var(--muted)' }}>{displayLabel}</span>
+                </div>
+                <div style={{ height: 6, borderRadius: 4, background: 'var(--border)', overflow: 'hidden' }}>
+                  <div style={{
+                    height: '100%',
+                    width: `${Math.min(100, (displayCount / Math.max(1, displayTotal)) * 100)}%`,
+                    background: stats.hasRejection ? 'var(--danger)' : displayApproved ? 'var(--accent)' : 'var(--warning)',
+                    borderRadius: 4,
+                    transition: 'width 0.4s ease',
+                  }} />
+                </div>
+                {onChainCount !== null && (
+                  <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 6 }}>
+                    Source: on-chain contract state
+                    {onChainProposal?.executed && <span style={{ color: 'var(--success)', marginLeft: 8 }}>✓ Executed on-chain</span>}
+                    {onChainProposal?.cancelled && <span style={{ color: 'var(--danger)', marginLeft: 8 }}>✗ Cancelled on-chain</span>}
+                    {onChainProposal?.expiresAt && !onChainProposal.executed && !onChainProposal.cancelled && (
+                      <span style={{ color: 'var(--muted)', marginLeft: 8 }}>
+                        (exp: {new Date(onChainProposal.expiresAt * 1000).toLocaleDateString()})
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            )
+          })()}
 
           {/* Amount highlight */}
           <div className="rounded-xl p-4 mb-5" style={{ background: 'var(--surface-muted)', border: '1px solid var(--border)' }}>
@@ -230,15 +368,35 @@ export default function ApprovalDetail({ request, policy, onClose, onApprove, on
               <Row label="Updated">{formatTs(request.updatedAt)}</Row>
             )}
             {request.confirmedAt && <Row label="Executed">{formatTs(request.confirmedAt)}</Row>}
-            {request.txHash && (
-              <Row label="Tx Hash">
+            {isTreasuryDeployed && request.onChainProposalId && (
+              <Row label="On-chain Proposal ID">
+                <span title={request.onChainProposalId}>
+                  {request.onChainProposalId.slice(0, 10)}…{request.onChainProposalId.slice(-6)}
+                </span>
+              </Row>
+            )}
+            {request.proposeTxHash && (
+              <Row label="Propose Tx">
                 <a
-                  href={buildTxExplorerUrl(ARC_MAINNET_CHAIN_ID, request.txHash) ?? `${explorerBase}/tx/${request.txHash}`}
+                  href={buildTxExplorerUrl(ARC_MAINNET_CHAIN_ID, request.proposeTxHash) ?? `${explorerBase}/tx/${request.proposeTxHash}`}
                   target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-1"
                   style={{ color: 'var(--accent)' }}
                 >
-                  {request.txHash.slice(0, 10)}…{request.txHash.slice(-6)}
+                  {request.proposeTxHash.slice(0, 10)}…{request.proposeTxHash.slice(-6)}
+                  <ArrowUpRight size={12} />
+                </a>
+              </Row>
+            )}
+            {(request.txHash ?? voteHash ?? execHash) && (
+              <Row label="Tx Hash">
+                <a
+                  href={buildTxExplorerUrl(ARC_MAINNET_CHAIN_ID, (execHash ?? voteHash ?? request.txHash)!) ?? `${explorerBase}/tx/${execHash ?? voteHash ?? request.txHash}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-1"
+                  style={{ color: 'var(--accent)' }}
+                >
+                  {((execHash ?? voteHash ?? request.txHash) as string).slice(0, 10)}…{((execHash ?? voteHash ?? request.txHash) as string).slice(-6)}
                   <ArrowUpRight size={12} />
                 </a>
               </Row>
@@ -280,10 +438,10 @@ export default function ApprovalDetail({ request, policy, onClose, onApprove, on
           )}
 
           {/* Error */}
-          {(request.errorMessage || execError) && (
+          {activeError && (
             <div className="flex items-start gap-3 rounded-xl p-4 mb-4" style={{ background: 'rgba(232,109,122,0.08)', border: '1px solid rgba(232,109,122,0.25)' }}>
               <AlertCircle size={15} style={{ color: 'var(--danger)', flexShrink: 0, marginTop: 1 }} />
-              <span style={{ fontSize: 13, color: 'var(--danger)' }}>{request.errorMessage ?? execError}</span>
+              <span style={{ fontSize: 13, color: 'var(--danger)' }}>{activeError}</span>
             </div>
           )}
 
@@ -304,7 +462,8 @@ export default function ApprovalDetail({ request, policy, onClose, onApprove, on
 
         {/* Footer actions */}
         <div style={{ padding: '20px 24px', borderTop: '1px solid var(--border)', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {/* Approve/Reject */}
+
+          {/* Approve/Reject (always local decisions) */}
           {canDecide && (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               <button
@@ -330,24 +489,61 @@ export default function ApprovalDetail({ request, policy, onClose, onApprove, on
             </div>
           )}
 
-          {/* Execute */}
-          {request.status === 'approved' && (
+          {/* ON-CHAIN MODE: Vote button (when proposal confirmed on-chain and status is pending/partial/approved) */}
+          {isTreasuryDeployed && !isOnChainProposalMissing && !isWrongChain && (request.status === 'pending' || request.status === 'partial' || request.status === 'approved') && !request.decisions.some(d => d.approverAddress.toLowerCase() === (address ?? '').toLowerCase()) && (
             <button
-              onClick={() => { void executeRequest() }}
-              disabled={isExecuting || !canExec}
+              onClick={() => { void handleTreasuryVote() }}
+              disabled={isVoting || !address}
               style={{
                 width: '100%', padding: '13px 0', borderRadius: 12, fontSize: 14, fontWeight: 700,
-                border: 'none', background: canExec ? 'var(--accent)' : 'var(--surface-strong)',
-                color: canExec ? '#021a0e' : 'var(--subtle)', cursor: canExec ? 'pointer' : 'not-allowed',
+                border: '1.5px solid var(--accent)', background: 'transparent',
+                color: 'var(--accent)', cursor: address ? 'pointer' : 'not-allowed',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                opacity: isExecuting ? 0.7 : 1,
+                opacity: isVoting ? 0.7 : 1,
               }}
             >
-              {isExecuting ? <><Loader2 size={16} className="animate-spin" /> Executing…</> : <><PlayCircle size={16} /> Execute Payment</>}
+              {isVoting ? <><Loader2 size={16} className="animate-spin" /> Submitting Vote…</> : <><ShieldCheck size={16} /> Vote On-Chain</>}
             </button>
           )}
-          {request.status === 'approved' && !canExec && execBlockReason && (
-            <div style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'center' }}>{execBlockReason}</div>
+
+          {/* ON-CHAIN MODE: Execute button (when approved, treasury deployed, proposal confirmed on-chain) */}
+          {isTreasuryDeployed && !isOnChainProposalMissing && request.status === 'approved' && (
+            <button
+              onClick={() => { void handleTreasuryExecute() }}
+              disabled={isTreasuryExec || isWrongChain || !address}
+              style={{
+                width: '100%', padding: '13px 0', borderRadius: 12, fontSize: 14, fontWeight: 700,
+                border: 'none', background: (!isTreasuryExec && !isWrongChain && address) ? 'var(--accent)' : 'var(--surface-strong)',
+                color: (!isTreasuryExec && !isWrongChain && address) ? '#021a0e' : 'var(--subtle)',
+                cursor: (!isTreasuryExec && !isWrongChain && address) ? 'pointer' : 'not-allowed',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                opacity: isTreasuryExec ? 0.7 : 1,
+              }}
+            >
+              {isTreasuryExec ? <><Loader2 size={16} className="animate-spin" /> Executing via Treasury…</> : <><Lock size={16} /> Execute via Treasury</>}
+            </button>
+          )}
+
+          {/* LOCAL MODE: Execute button (when approved, no treasury) */}
+          {!isTreasuryDeployed && request.status === 'approved' && (
+            <>
+              <button
+                onClick={() => { void executeRequest() }}
+                disabled={isLocalExec || !canLocalExec}
+                style={{
+                  width: '100%', padding: '13px 0', borderRadius: 12, fontSize: 14, fontWeight: 700,
+                  border: 'none', background: canLocalExec ? 'var(--accent)' : 'var(--surface-strong)',
+                  color: canLocalExec ? '#021a0e' : 'var(--subtle)', cursor: canLocalExec ? 'pointer' : 'not-allowed',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  opacity: isLocalExec ? 0.7 : 1,
+                }}
+              >
+                {isLocalExec ? <><Loader2 size={16} className="animate-spin" /> Executing…</> : <><PlayCircle size={16} /> Execute Payment (direct transfer)</>}
+              </button>
+              {!canLocalExec && localExecBlockReason && (
+                <div style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'center' }}>{localExecBlockReason}</div>
+              )}
+            </>
           )}
 
           {/* Executing state */}
@@ -367,7 +563,7 @@ export default function ApprovalDetail({ request, policy, onClose, onApprove, on
           )}
 
           {/* Pending — waiting for approvals */}
-          {(request.status === 'pending' || request.status === 'partial') && !canDecide && (
+          {(request.status === 'pending' || request.status === 'partial') && !canDecide && !isAnyPending && (
             <div className="flex items-center gap-2 rounded-xl p-3" style={{ background: 'var(--surface-muted)', border: '1px solid var(--border)' }}>
               <Clock size={14} style={{ color: 'var(--muted)', flexShrink: 0 }} />
               <span style={{ fontSize: 12, color: 'var(--muted)' }}>

@@ -1,10 +1,36 @@
 /**
  * ApprovalRequestModal — create a new treasury approval request.
- * Two-step: (1) fill details, (2) review and confirm.
+ *
+ * Two modes, selected at runtime by isTreasuryDeployed:
+ *
+ *   ON-CHAIN MODE (isTreasuryDeployed = true)
+ *     Step 1: collect details (including expiry days)
+ *     Step 2: review
+ *     Step 3: wallet confirmation — calls treasury.proposeTransfer() and waits
+ *             for the transaction receipt before reporting success.
+ *     Only after the receipt is confirmed does the modal:
+ *       - store the local record with onChainProposalId + proposeTxHash
+ *       - show the success screen
+ *     A failed or rejected transaction is shown as an error; the modal stays open.
+ *
+ *   LOCAL MODE (isTreasuryDeployed = false)
+ *     Step 1: collect details
+ *     Step 2: review
+ *     Confirm: saves to localStorage only. Clearly labeled as not on-chain enforced.
+ *
+ * Proposal ID derivation (on-chain mode):
+ *   proposalId = keccak256(encodePacked(offChainId, chainId, contractAddress))
+ *   The off-chain record ID is generated first, then used to derive the proposalId,
+ *   so the two are permanently linked. The proposalId is stored on the local record.
+ *
+ * Expiry (on-chain mode):
+ *   Defaults to 7 days. User can choose 1–30 days.
+ *   Passed as a unix timestamp (seconds) to proposeTransfer.
+ *   The contract enforces [now+1h, now+30d].
  */
 
 import { useState, useCallback } from 'react'
-import { X, AlertCircle, Info, ChevronRight, ChevronLeft, CheckCircle2 } from 'lucide-react'
+import { X, AlertCircle, Info, Lock, ChevronRight, ChevronLeft, CheckCircle2, Loader2, ExternalLink } from 'lucide-react'
 import { useAccount } from 'wagmi'
 import {
   type RequestType,
@@ -14,19 +40,31 @@ import {
   requiresApproval,
   type ApprovalPolicy,
   REQUEST_TYPE_LABELS,
+  generateId,
 } from '../../lib/approvals'
+import {
+  isTreasuryDeployed,
+  useTreasuryPropose,
+} from '../../hooks/useTreasury'
+import { ARC_MAINNET_CHAIN_ID } from '../../config'
+
+interface SubmitResult {
+  title: string
+  type: RequestType
+  recipientAddress: string
+  amountUsdc: string
+  description: string
+  requiredApprovals: number
+  requesterAddress: string
+  /** Set when treasury is deployed and propose tx confirmed */
+  onChainProposalId?: `0x${string}`
+  proposeTxHash?: string
+  onChainExpiresAt?: number
+}
 
 interface Props {
   policy: ApprovalPolicy
-  onSubmit: (fields: {
-    title: string
-    type: RequestType
-    recipientAddress: string
-    amountUsdc: string
-    description: string
-    requiredApprovals: number
-    requesterAddress: string
-  }) => void
+  onSubmit: (fields: SubmitResult) => void
   onClose: () => void
 }
 
@@ -75,6 +113,7 @@ interface FormState {
   recipientAddress: string
   amountUsdc: string
   description: string
+  expiryDays: number   // on-chain mode only: 1–30
 }
 
 const EMPTY: FormState = {
@@ -83,6 +122,7 @@ const EMPTY: FormState = {
   recipientAddress: '',
   amountUsdc: '',
   description: '',
+  expiryDays: 7,
 }
 
 function StepDetails({
@@ -94,7 +134,7 @@ function StepDetails({
   form: FormState
   errors: ReturnType<typeof validateApprovalRequest>['errors']
   policy: ApprovalPolicy
-  onUpdate: (k: keyof FormState, v: string) => void
+  onUpdate: (k: keyof FormState, v: string | number) => void
 }) {
   let amountRaw = 0n
   try { amountRaw = parseUsdcString(form.amountUsdc) } catch { /* noop */ }
@@ -171,6 +211,28 @@ function StepDetails({
         )}
       </Field>
 
+      {/* Expiry — only shown in on-chain mode */}
+      {isTreasuryDeployed && (
+        <Field label="Proposal Expiry">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <input
+              type="range"
+              min={1}
+              max={30}
+              value={form.expiryDays}
+              onChange={e => onUpdate('expiryDays', Number(e.target.value))}
+              style={{ flex: 1, accentColor: 'var(--accent)' }}
+            />
+            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink)', minWidth: 60, textAlign: 'right' }}>
+              {form.expiryDays} day{form.expiryDays !== 1 ? 's' : ''}
+            </span>
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>
+            Approvers have {form.expiryDays} day{form.expiryDays !== 1 ? 's' : ''} to vote before the proposal expires on-chain.
+          </div>
+        </Field>
+      )}
+
       <Field label="Business Justification" error={errors.description} required>
         <textarea
           style={{ ...inputStyle, resize: 'vertical', minHeight: 80 }}
@@ -210,15 +272,29 @@ function StepReview({ form, policy, requesterAddress }: {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      {/* Header notice */}
-      <div className="flex items-start gap-3 rounded-xl p-4" style={{ background: 'var(--surface-muted)', border: '1px solid var(--border)' }}>
-        <Info size={16} style={{ color: 'var(--warning)', flexShrink: 0, marginTop: 1 }} />
-        <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.5 }}>
-          <strong style={{ color: 'var(--ink)' }}>Locally recorded approval</strong>
-          <br />
-          Decisions are stored in your browser and are not cryptographically enforced on-chain. Production enforcement requires a treasury contract.
+      {/* Header notice — mode aware */}
+      {isTreasuryDeployed ? (
+        <div className="flex items-start gap-3 rounded-xl p-4" style={{ background: 'rgba(0,200,100,0.07)', border: '1px solid rgba(0,200,100,0.2)' }}>
+          <Lock size={16} style={{ color: 'var(--success)', flexShrink: 0, marginTop: 1 }} />
+          <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.5 }}>
+            <strong style={{ color: 'var(--success)' }}>On-chain treasury mode</strong>
+            <br />
+            Clicking <strong>Submit &amp; Propose</strong> will open your wallet to sign a <code>proposeTransfer</code> transaction on AskirawaFiTreasury.
+            The proposal is only registered on-chain after the transaction is confirmed.
+            Only then will this request appear as actionable for voters.
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex items-start gap-3 rounded-xl p-4" style={{ background: 'var(--surface-muted)', border: '1px solid var(--border)' }}>
+          <Info size={16} style={{ color: 'var(--warning)', flexShrink: 0, marginTop: 1 }} />
+          <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.5 }}>
+            <strong style={{ color: 'var(--ink)' }}>Local mode — not on-chain enforced</strong>
+            <br />
+            Decisions are stored in your browser only. Execution sends USDC directly from your wallet without treasury quorum.
+            Deploy AskirawaFiTreasury to enable cryptographic enforcement.
+          </div>
+        </div>
+      )}
 
       {/* Details */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12, paddingTop: 4 }}>
@@ -231,6 +307,9 @@ function StepReview({ form, policy, requesterAddress }: {
             {amountRaw > 0n ? formatUsdcBigint(amountRaw) : '—'} USDC
           </span>
         </Row>
+        {isTreasuryDeployed && (
+          <Row label="Expires in">{form.expiryDays} day{form.expiryDays !== 1 ? 's' : ''}</Row>
+        )}
         <Row label="Approval">
           {needsApproval
             ? `${policy.requiredApprovals} of ${policy.requiredApprovals} approver${policy.requiredApprovals !== 1 ? 's' : ''} required`
@@ -248,14 +327,24 @@ function StepReview({ form, policy, requesterAddress }: {
 
 // ─── Modal shell ──────────────────────────────────────────────────────────────
 
+type SubmittedState =
+  | { status: 'idle' }
+  | { status: 'submitting' }
+  | { status: 'success'; proposalId?: `0x${string}`; txHash?: string }
+  | { status: 'error'; message: string }
+
 export default function ApprovalRequestModal({ policy, onSubmit, onClose }: Props) {
-  const { address } = useAccount()
+  const { address, chainId } = useAccount()
   const [step, setStep] = useState<1 | 2>(1)
   const [form, setForm] = useState<FormState>(EMPTY)
   const [errors, setErrors] = useState<ReturnType<typeof validateApprovalRequest>['errors']>({})
-  const [submitted, setSubmitted] = useState(false)
+  const [submitState, setSubmitState] = useState<SubmittedState>({ status: 'idle' })
 
-  const update = useCallback((k: keyof FormState, v: string) => {
+  const { proposeTransfer } = useTreasuryPropose()
+
+  const isWrongChain = isTreasuryDeployed && chainId !== ARC_MAINNET_CHAIN_ID
+
+  const update = useCallback((k: keyof FormState, v: string | number) => {
     setForm(f => ({ ...f, [k]: v }))
     setErrors(e => ({ ...e, [k]: undefined }))
   }, [])
@@ -272,20 +361,79 @@ export default function ApprovalRequestModal({ policy, onSubmit, onClose }: Prop
     setStep(2)
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!address) return
+    setSubmitState({ status: 'submitting' })
+
     const needsApproval = requiresApproval(form.amountUsdc, policy)
-    onSubmit({
-      title: form.title,
-      type: form.type,
-      recipientAddress: form.recipientAddress,
-      amountUsdc: form.amountUsdc,
-      description: form.description,
-      requiredApprovals: needsApproval ? policy.requiredApprovals : 0,
-      requesterAddress: address,
-    })
-    setSubmitted(true)
+
+    // Generate the off-chain record ID now, before the tx, so proposalId is derived from it
+    const offChainId = generateId()
+
+    if (isTreasuryDeployed) {
+      // ── ON-CHAIN MODE ───────────────────────────────────────────────────────
+      // Validate chain before opening wallet
+      if (isWrongChain) {
+        setSubmitState({ status: 'error', message: 'Switch to Arc Mainnet before submitting.' })
+        return
+      }
+
+      let amount: bigint
+      try {
+        amount = parseUsdcString(form.amountUsdc)
+      } catch {
+        setSubmitState({ status: 'error', message: 'Invalid USDC amount.' })
+        return
+      }
+
+      const expiresAt = Math.floor(Date.now() / 1000) + form.expiryDays * 86400
+
+      const result = await proposeTransfer({
+        offChainId,
+        recipient: form.recipientAddress as `0x${string}`,
+        amount,
+        expiresAt,
+      })
+
+      if (!result) {
+        // useTreasuryPropose sets its own error; surface it
+        setSubmitState({ status: 'error', message: 'Proposal transaction failed or was rejected. No on-chain proposal was created.' })
+        return
+      }
+
+      // Transaction confirmed — now save the local record with the on-chain IDs
+      onSubmit({
+        title: form.title,
+        type: form.type,
+        recipientAddress: form.recipientAddress,
+        amountUsdc: form.amountUsdc,
+        description: form.description,
+        requiredApprovals: needsApproval ? policy.requiredApprovals : 0,
+        requesterAddress: address,
+        onChainProposalId: result.proposalId,
+        proposeTxHash: result.hash,
+        onChainExpiresAt: expiresAt,
+      })
+
+      setSubmitState({ status: 'success', proposalId: result.proposalId, txHash: result.hash })
+    } else {
+      // ── LOCAL MODE ──────────────────────────────────────────────────────────
+      onSubmit({
+        title: form.title,
+        type: form.type,
+        recipientAddress: form.recipientAddress,
+        amountUsdc: form.amountUsdc,
+        description: form.description,
+        requiredApprovals: needsApproval ? policy.requiredApprovals : 0,
+        requesterAddress: address,
+      })
+      setSubmitState({ status: 'success' })
+    }
   }
+
+  const isSubmitting = submitState.status === 'submitting'
+  const isSuccess = submitState.status === 'success'
+  const isError = submitState.status === 'error'
 
   return (
     <div
@@ -295,7 +443,7 @@ export default function ApprovalRequestModal({ policy, onSubmit, onClose }: Prop
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: 16,
       }}
-      onClick={e => { if (e.target === e.currentTarget) onClose() }}
+      onClick={e => { if (e.target === e.currentTarget && !isSubmitting) onClose() }}
     >
       <div
         style={{
@@ -309,31 +457,72 @@ export default function ApprovalRequestModal({ policy, onSubmit, onClose }: Prop
         <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: '1px solid var(--border)' }}>
           <div>
             <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>
-              {submitted ? 'Request Submitted' : step === 1 ? 'New Approval Request' : 'Review Request'}
+              {isSuccess
+                ? isTreasuryDeployed ? 'Proposal Registered On-Chain' : 'Request Saved'
+                : step === 1 ? 'New Approval Request' : 'Review Request'}
             </div>
-            {!submitted && (
+            {!isSuccess && (
               <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
                 Step {step} of 2
               </div>
             )}
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', padding: 4 }}>
+          <button
+            onClick={onClose}
+            disabled={isSubmitting}
+            style={{ background: 'none', border: 'none', cursor: isSubmitting ? 'not-allowed' : 'pointer', color: 'var(--muted)', padding: 4, opacity: isSubmitting ? 0.4 : 1 }}
+          >
             <X size={20} />
           </button>
         </div>
 
         {/* Body */}
         <div style={{ overflowY: 'auto', flex: 1, padding: '24px 24px 0' }}>
-          {submitted ? (
+          {isSuccess ? (
             <div className="flex flex-col items-center justify-center py-10 text-center gap-4">
               <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'var(--accent-dim)', border: '1px solid var(--accent-border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <CheckCircle2 size={24} style={{ color: 'var(--accent)' }} />
               </div>
-              <div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--ink)', marginBottom: 6 }}>Request submitted</div>
-                <div style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.5 }}>
-                  The approval request has been saved locally. Share it with your authorized approvers.
-                </div>
+              <div style={{ width: '100%' }}>
+                {isTreasuryDeployed ? (
+                  <>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--ink)', marginBottom: 6 }}>Proposal registered on-chain</div>
+                    <div style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.6, marginBottom: 16 }}>
+                      The <code>proposeTransfer</code> transaction was confirmed on Arc Mainnet.
+                      Authorized approvers can now vote using the <strong>Vote On-Chain</strong> button in the request detail.
+                    </div>
+                    {submitState.status === 'success' && submitState.txHash && (
+                      <div style={{ background: 'var(--surface-muted)', border: '1px solid var(--border)', borderRadius: 10, padding: '10px 14px', fontSize: 12, textAlign: 'left' }}>
+                        <div style={{ color: 'var(--muted)', marginBottom: 4 }}>Propose Tx</div>
+                        <a
+                          href={`https://explorer.arc.io/tx/${submitState.txHash}`}
+                          target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-1"
+                          style={{ color: 'var(--accent)', wordBreak: 'break-all', fontWeight: 600 }}
+                        >
+                          {submitState.txHash.slice(0, 12)}…{submitState.txHash.slice(-8)}
+                          <ExternalLink size={11} style={{ flexShrink: 0 }} />
+                        </a>
+                        {submitState.status === 'success' && submitState.proposalId && (
+                          <>
+                            <div style={{ color: 'var(--muted)', marginBottom: 4, marginTop: 10 }}>On-chain Proposal ID</div>
+                            <div style={{ color: 'var(--ink)', fontWeight: 600, wordBreak: 'break-all' }}>
+                              {submitState.proposalId.slice(0, 12)}…{submitState.proposalId.slice(-8)}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--ink)', marginBottom: 6 }}>Request saved locally</div>
+                    <div style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.5 }}>
+                      The approval request has been saved in this browser. Share it with your authorized approvers.
+                      Decisions are stored locally and not enforced on-chain.
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           ) : step === 1 ? (
@@ -341,11 +530,27 @@ export default function ApprovalRequestModal({ policy, onSubmit, onClose }: Prop
           ) : (
             <StepReview form={form} policy={policy} requesterAddress={address ?? ''} />
           )}
+
+          {/* Wrong-chain warning in review step */}
+          {step === 2 && isWrongChain && !isSuccess && (
+            <div className="flex items-center gap-2 rounded-xl p-3 mt-4" style={{ background: 'rgba(232,184,76,0.08)', border: '1px solid rgba(232,184,76,0.2)' }}>
+              <AlertCircle size={14} style={{ color: 'var(--warning)', flexShrink: 0 }} />
+              <span style={{ fontSize: 12, color: 'var(--warning)' }}>Switch to Arc Mainnet before submitting.</span>
+            </div>
+          )}
+
+          {/* Error banner */}
+          {isError && (
+            <div className="flex items-start gap-2 rounded-xl p-3 mt-4" style={{ background: 'rgba(232,109,122,0.08)', border: '1px solid rgba(232,109,122,0.25)' }}>
+              <AlertCircle size={14} style={{ color: 'var(--danger)', flexShrink: 0, marginTop: 1 }} />
+              <span style={{ fontSize: 13, color: 'var(--danger)', lineHeight: 1.5 }}>{submitState.message}</span>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
         <div className="flex items-center justify-between gap-3 px-6 py-5" style={{ borderTop: '1px solid var(--border)' }}>
-          {submitted ? (
+          {isSuccess ? (
             <button
               onClick={onClose}
               className="w-full rounded-xl py-3 text-sm font-semibold"
@@ -369,19 +574,30 @@ export default function ApprovalRequestModal({ policy, onSubmit, onClose }: Prop
           ) : (
             <>
               <button
-                onClick={() => setStep(1)}
+                onClick={() => { setStep(1); setSubmitState({ status: 'idle' }) }}
+                disabled={isSubmitting}
                 className="flex items-center gap-2"
-                style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 10, padding: '10px 20px', fontSize: 13, color: 'var(--muted)', cursor: 'pointer' }}
+                style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 10, padding: '10px 20px', fontSize: 13, color: 'var(--muted)', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.5 : 1 }}
               >
                 <ChevronLeft size={16} /> Back
               </button>
               <button
-                onClick={handleSubmit}
-                disabled={!address}
-                className="rounded-xl px-6 py-2.5 text-sm font-semibold transition-opacity"
-                style={{ background: 'var(--accent)', color: '#021a0e', border: 'none', cursor: 'pointer', opacity: address ? 1 : 0.5 }}
+                onClick={() => { void handleSubmit() }}
+                disabled={!address || isSubmitting || isWrongChain}
+                className="rounded-xl px-6 py-2.5 text-sm font-semibold transition-opacity flex items-center gap-2"
+                style={{
+                  background: (!address || isWrongChain) ? 'var(--surface-strong)' : 'var(--accent)',
+                  color: (!address || isWrongChain) ? 'var(--subtle)' : '#021a0e',
+                  border: 'none',
+                  cursor: (!address || isSubmitting || isWrongChain) ? 'not-allowed' : 'pointer',
+                  opacity: isSubmitting ? 0.8 : 1,
+                }}
               >
-                Submit Request
+                {isSubmitting ? (
+                  <><Loader2 size={15} className="animate-spin" />{isTreasuryDeployed ? 'Awaiting wallet…' : 'Saving…'}</>
+                ) : (
+                  isTreasuryDeployed ? 'Submit & Propose On-Chain' : 'Submit Request'
+                )}
               </button>
             </>
           )}

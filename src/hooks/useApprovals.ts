@@ -85,6 +85,10 @@ export function useApprovalRequests(opts?: { onNotify?: NotifyFn }) {
     linkedBatchId?: string
     linkedScheduleId?: string
     requesterAddress: string
+    /** Set when treasury is deployed and propose tx confirmed */
+    onChainProposalId?: `0x${string}`
+    proposeTxHash?: string
+    onChainExpiresAt?: number
   }): ApprovalRequest => {
     const now = Date.now()
     const req: ApprovalRequest = {
@@ -102,6 +106,9 @@ export function useApprovalRequests(opts?: { onNotify?: NotifyFn }) {
       updatedAt: now,
       linkedBatchId: fields.linkedBatchId,
       linkedScheduleId: fields.linkedScheduleId,
+      onChainProposalId: fields.onChainProposalId,
+      proposeTxHash: fields.proposeTxHash,
+      onChainExpiresAt: fields.onChainExpiresAt,
     }
     persist(prev => upsertRequest(prev, req))
 

@@ -62,6 +62,28 @@ export interface ExecutionRecord {
   txHash?: string
   amountUsdc: string
   errorMessage?: string
+
+  // ─── Treasury proposal fields (set when AskirawaFiTreasury is deployed) ───────
+  /**
+   * On-chain bytes32 proposal ID confirmed by proposeTransfer.
+   * Authoritative ID for vote/execute calls.
+   */
+  treasuryProposalId?: string
+  /** Tx hash of the proposeTransfer transaction. */
+  treasuryProposeTxHash?: string
+  /** Tx hash of the treasury execute transaction. */
+  treasuryExecuteTxHash?: string
+  /** Unix seconds expiry passed to proposeTransfer. */
+  treasuryExpiresAt?: number
+  /**
+   * Frozen recipient address at propose time.
+   * Must match the address passed to execute() exactly.
+   */
+  treasuryRecipient?: string
+  /**
+   * Frozen raw amount (decimal string of bigint, 6 decimals) at propose time.
+   */
+  treasuryAmountRaw?: string
 }
 
 // ─── USDC decimal helpers (integer bigint, no floats) ─────────────────────────

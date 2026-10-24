@@ -1,5 +1,7 @@
 import { ConnectKitButton } from 'connectkit'
-import { Wallet } from 'lucide-react'
+import { useSwitchChain } from 'wagmi'
+import { Wallet, AlertTriangle } from 'lucide-react'
+import { useWrongNetwork } from '../hooks/useTreasury'
 
 interface WalletGateProps {
   children: React.ReactNode
@@ -42,6 +44,50 @@ export function WalletRequired({ message }: { message?: string }) {
         {message ?? 'Connect your Arc wallet to continue.'}
       </p>
       <ConnectKitButton label="Connect Wallet" />
+    </div>
+  )
+}
+
+/**
+ * Renders an amber banner when the connected wallet is on the wrong chain.
+ * Renders nothing when the wallet is disconnected or on the correct chain.
+ * Place this at the top of any page that makes treasury transactions.
+ */
+export function WrongNetworkBanner() {
+  const { isWrongNetwork, requiredChainId, connectedChainId } = useWrongNetwork()
+  const { switchChain } = useSwitchChain()
+
+  if (!isWrongNetwork) return null
+
+  return (
+    <div
+      className="flex items-start gap-3 rounded-xl px-4 py-3 mb-4 text-sm"
+      style={{
+        background: 'rgba(234,179,8,0.10)',
+        border: '1px solid rgba(234,179,8,0.35)',
+        color: '#92400e',
+      }}
+    >
+      <AlertTriangle size={16} className="mt-0.5 shrink-0" style={{ color: '#b45309' }} />
+      <div className="flex-1 min-w-0">
+        <span className="font-semibold">Wrong network. </span>
+        Treasury transactions require Arc Mainnet (chain ID {requiredChainId}).
+        {connectedChainId !== null && (
+          <span> Your wallet is on chain ID {connectedChainId}.</span>
+        )}
+      </div>
+      <button
+        onClick={() => switchChain?.({ chainId: requiredChainId })}
+        className="shrink-0 rounded-lg px-3 py-1 text-xs font-semibold"
+        style={{
+          background: 'rgba(234,179,8,0.18)',
+          border: '1px solid rgba(234,179,8,0.40)',
+          color: '#92400e',
+          cursor: 'pointer',
+        }}
+      >
+        Switch Network
+      </button>
     </div>
   )
 }

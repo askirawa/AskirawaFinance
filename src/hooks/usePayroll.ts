@@ -1,16 +1,26 @@
 /**
  * usePayroll — manages payroll batch state and execution.
  *
- * Persistence: localStorage (browser-local, not on-chain).
- * Execution: sequential individual USDC ERC-20 `transfer()` calls via writeContractAsync.
+ * Execution modes (chosen automatically at runtime):
  *
- * Notification and audit callbacks are optional parameters so hooks remain
- * pure — they do not import React context directly, avoiding circular deps.
+ *   ATOMIC MODE  — When VITE_PAYROLL_BATCH_ADDRESS is set and the PayrollBatch
+ *                  contract is deployed on Arc Mainnet, execution proceeds as:
+ *                    1. USDC.approve(payrollBatchAddress, batchTotal)   — 1 tx
+ *                    2. PayrollBatch.executeBatch(batchId, [...], [...]) — 1 tx
+ *                  All payments succeed or all revert.  One batch = two wallet
+ *                  confirmations regardless of employee count.
+ *
+ *   SEQUENTIAL MODE — Fallback when the contract is not yet deployed.
+ *                  One USDC.transfer() per employee, each requiring a wallet
+ *                  confirmation.  Non-atomic: partial success is possible.
+ *
+ * Persistence: localStorage (browser-local, not on-chain).
+ * Notification/audit callbacks: optional, injected by the page component.
  */
 
 import { useState, useCallback } from 'react'
 import { useAccount, useReadContract, useWriteContract, usePublicClient } from 'wagmi'
-import { erc20Abi } from 'viem'
+import { erc20Abi, keccak256, toHex } from 'viem'
 import {
   type PayrollBatch,
   type EmployeeEntry,
@@ -25,6 +35,7 @@ import {
   deriveBatchStatus,
   USDC_DECIMALS,
 } from '../lib/payroll'
+import { PAYROLL_BATCH_ADDRESS, PAYROLL_BATCH_ABI } from '../lib/contract'
 import { Notify, type AppNotification } from '../lib/notifications'
 import { logAuditEvent, type AuditEntry } from '../lib/audit'
 import { getUsdc } from '../onchain-facts'
@@ -84,19 +95,9 @@ export function usePayrollBatches(opts?: { onNotify?: NotifyFn; onAudit?: AuditF
       }
       saveBatch(batch)
 
-      // Emit notification + audit at the action boundary
       const notif = Notify.payrollBatchCreated(batch.id, batch.name)
       opts?.onNotify?.(notif)
       logAuditEvent({
-        category: 'payroll',
-        action: 'payroll_batch_created',
-        actorAddress: params.createdBy ?? null,
-        description: `Payroll batch "${batch.name}" created with ${batch.payments.length} employees.`,
-        outcome: 'success',
-        entityId: batch.id,
-        entityLabel: batch.name,
-      })
-      opts?.onAudit?.({
         category: 'payroll',
         action: 'payroll_batch_created',
         actorAddress: params.createdBy ?? null,
@@ -138,29 +139,28 @@ export function useUsdcBalance() {
   return { rawBalance, formatted, isLoading, error, refetch }
 }
 
-// ─── useSingleUsdcTransfer — sends one USDC transfer and waits for receipt ─────
+// ─── usePayrollBatchAllowance — reads allowance for the PayrollBatch contract ──
 
-export function useSingleUsdcTransfer() {
+export function usePayrollBatchAllowance() {
+  const { address } = useAccount()
   const usdcFact = getUsdc(CHAIN_ID)
-  const { writeContractAsync } = useWriteContract()
 
-  async function sendTransfer(to: `0x${string}`, amountUsdc: string): Promise<`0x${string}`> {
-    if (!usdcFact) throw new Error('USDC not configured for Arc Mainnet')
-    const raw = parseUsdcString(amountUsdc)
-    const hash = await writeContractAsync({
-      address: usdcFact.address as `0x${string}`,
-      abi: erc20Abi,
-      functionName: 'transfer',
-      args: [to, raw],
-      chainId: CHAIN_ID,
-    })
-    return hash
-  }
+  const { data, isLoading, refetch } = useReadContract({
+    address: usdcFact?.address as `0x${string}`,
+    abi: erc20Abi,
+    functionName: 'allowance',
+    args: (address && PAYROLL_BATCH_ADDRESS)
+      ? [address, PAYROLL_BATCH_ADDRESS]
+      : undefined,
+    chainId: CHAIN_ID,
+    query: { enabled: !!address && !!usdcFact && !!PAYROLL_BATCH_ADDRESS },
+  })
 
-  return { sendTransfer }
+  const allowance: bigint = typeof data === 'bigint' ? data : 0n
+  return { allowance, isLoading, refetch }
 }
 
-// ─── usePayrollStats — aggregate stats for all batches ───────────────────────
+// ─── usePayrollStats ──────────────────────────────────────────────────────────
 
 export function usePayrollStats(batches: PayrollBatch[]) {
   const totalBatches = batches.length
@@ -174,7 +174,6 @@ export function usePayrollStats(batches: PayrollBatch[]) {
   const confirmedPayments = allPayments.filter(p => p.status === 'confirmed').length
   const pendingPayments = allPayments.filter(p => p.status === 'pending').length
   const failedPayments = allPayments.filter(p => p.status === 'failed').length
-
   const uniqueRecipients = new Set(allPayments.map(p => p.walletAddress.toLowerCase())).size
 
   const totalConfirmedRaw = allPayments
@@ -188,22 +187,37 @@ export function usePayrollStats(batches: PayrollBatch[]) {
   }, 0n)
 
   return {
-    totalBatches,
-    completedBatches,
-    processingBatches,
-    failedBatches,
-    draftBatches,
-    totalPayments,
-    confirmedPayments,
-    pendingPayments,
-    failedPayments,
-    uniqueRecipients,
-    totalConfirmedRaw,
-    totalAllRaw,
+    totalBatches, completedBatches, processingBatches, failedBatches, draftBatches,
+    totalPayments, confirmedPayments, pendingPayments, failedPayments,
+    uniqueRecipients, totalConfirmedRaw, totalAllRaw,
   }
 }
 
-// ─── useBatchRunner — orchestrates multi-step execution for one batch ─────────
+// ─── Execution mode ───────────────────────────────────────────────────────────
+
+export type ExecutionMode = 'atomic' | 'sequential'
+
+export function getExecutionMode(): ExecutionMode {
+  return PAYROLL_BATCH_ADDRESS ? 'atomic' : 'sequential'
+}
+
+// ─── useBatchRunner ───────────────────────────────────────────────────────────
+//
+// Orchestrates full batch execution.  Chooses atomic or sequential mode based
+// on whether PAYROLL_BATCH_ADDRESS is set.
+//
+// Atomic flow (2 txs, 2 wallet prompts):
+//   Step 1: USDC.approve(payrollBatchContract, batchTotal)
+//   Step 2: PayrollBatch.executeBatch(batchId, recipients, amounts)
+//
+// Sequential flow (N txs, N wallet prompts):
+//   One USDC.transfer(recipient, amount) per pending payment.
+
+export type BatchRunStep =
+  | 'idle'
+  | 'approving'   // atomic only — waiting for USDC approve tx
+  | 'executing'   // sending executeBatch or individual transfers
+  | 'confirming'  // waiting for receipt
 
 export function useBatchRunner(
   batch: PayrollBatch | null,
@@ -213,17 +227,24 @@ export function useBatchRunner(
   const { address, chainId } = useAccount()
   const publicClient = usePublicClient({ chainId: CHAIN_ID })
   const { rawBalance } = useUsdcBalance()
+  const { allowance, refetch: refetchAllowance } = usePayrollBatchAllowance()
   const [isRunning, setIsRunning] = useState(false)
+  const [step, setStep] = useState<BatchRunStep>('idle')
   const [currentIndex, setCurrentIndex] = useState<number | null>(null)
   const [runError, setRunError] = useState<string | null>(null)
 
   const usdcFact = getUsdc(CHAIN_ID)
   const { writeContractAsync } = useWriteContract()
-
+  const executionMode = getExecutionMode()
   const isWrongChain = chainId !== CHAIN_ID
 
   const pendingPayments = batch?.payments.filter(p => p.status === 'pending') ?? []
   const batchTotal = batch ? sumBatchAmounts(batch.payments.filter(p => p.status === 'pending')) : 0n
+
+  // Whether the current allowance already covers the batch total
+  const hasAllowance = executionMode === 'atomic'
+    ? allowance >= batchTotal
+    : true // sequential doesn't need pre-approval
 
   function canExecute(): { ok: boolean; reason?: string } {
     if (!address) return { ok: false, reason: 'Connect your wallet first.' }
@@ -238,13 +259,18 @@ export function useBatchRunner(
     return { ok: true }
   }
 
-  async function runBatch() {
-    if (!batch || !address || !usdcFact || !publicClient) return
+  // ─── Atomic execution ──────────────────────────────────────────────────────
+
+  async function runAtomic() {
+    if (!batch || !address || !usdcFact || !publicClient || !PAYROLL_BATCH_ADDRESS) return
     const { ok, reason } = canExecute()
     if (!ok) { setRunError(reason ?? 'Cannot execute.'); return }
 
     setIsRunning(true)
     setRunError(null)
+
+    // Derive a deterministic bytes32 batchId from the local batch id string
+    const batchIdBytes32 = keccak256(toHex(batch.id))
 
     let workingBatch: PayrollBatch = {
       ...batch,
@@ -254,12 +280,136 @@ export function useBatchRunner(
     }
     onBatchUpdate(workingBatch)
 
-    // Log audit: execution started
     logAuditEvent({
       category: 'payroll',
       action: 'payroll_batch_executed',
       actorAddress: opts?.actorAddress ?? address ?? null,
-      description: `Payroll batch "${batch.name}" execution started (${pendingPayments.length} payments).`,
+      description: `Atomic payroll batch "${batch.name}" execution started (${pendingPayments.length} payments, batchId=${batchIdBytes32.slice(0, 10)}…).`,
+      outcome: 'pending',
+      entityId: batch.id,
+      entityLabel: batch.name,
+    })
+
+    try {
+      // ── Step 1: Approve (only if allowance is insufficient) ──────────────
+      if (allowance < batchTotal) {
+        setStep('approving')
+
+        const approveHash = await writeContractAsync({
+          address: usdcFact.address as `0x${string}`,
+          abi: erc20Abi,
+          functionName: 'approve',
+          args: [PAYROLL_BATCH_ADDRESS, batchTotal],
+          chainId: CHAIN_ID,
+        })
+
+        setStep('confirming')
+        const approveReceipt = await publicClient.waitForTransactionReceipt({ hash: approveHash })
+        if (approveReceipt.status !== 'success') {
+          throw new Error('USDC approval transaction reverted.')
+        }
+
+        await refetchAllowance()
+      }
+
+      // ── Step 2: executeBatch ─────────────────────────────────────────────
+      setStep('executing')
+
+      const pendingRecipients = pendingPayments.map(p => p.walletAddress as `0x${string}`)
+      const pendingAmounts    = pendingPayments.map(p => parseUsdcString(p.amountUsdc))
+
+      const execHash = await writeContractAsync({
+        address: PAYROLL_BATCH_ADDRESS,
+        abi: PAYROLL_BATCH_ABI,
+        functionName: 'executeBatch',
+        args: [batchIdBytes32, pendingRecipients, pendingAmounts],
+        chainId: CHAIN_ID,
+      })
+
+      setStep('confirming')
+      const execReceipt = await publicClient.waitForTransactionReceipt({ hash: execHash })
+
+      if (execReceipt.status !== 'success') {
+        throw new Error('executeBatch reverted on-chain.')
+      }
+
+      // ── All payments confirmed atomically ────────────────────────────────
+      const confirmedAt = Date.now()
+      workingBatch = {
+        ...workingBatch,
+        status: 'completed',
+        completedAt: confirmedAt,
+        payments: workingBatch.payments.map((p) => {
+          if (p.status !== 'pending') return p
+          return {
+            ...p,
+            status: 'confirmed' as const,
+            txHash: execHash,
+            confirmedAt,
+          }
+        }),
+      }
+      onBatchUpdate(workingBatch)
+
+      const n = Notify.payrollBatchExecuted(batch.id, batch.name, pendingPayments.length, 0)
+      opts?.onNotify?.(n)
+      logAuditEvent({
+        category: 'payroll',
+        action: 'payroll_batch_executed',
+        actorAddress: opts?.actorAddress ?? address ?? null,
+        description: `Atomic payroll batch "${batch.name}" completed: ${pendingPayments.length} payments confirmed in a single transaction.`,
+        outcome: 'success',
+        entityId: batch.id,
+        entityLabel: batch.name,
+        txHash: execHash,
+      })
+    } catch (err) {
+      const e = err as { shortMessage?: string; message?: string }
+      const msg = e?.shortMessage || e?.message || 'Execution failed.'
+      const isRejection = msg.toLowerCase().includes('user rejected') || msg.toLowerCase().includes('user denied')
+
+      workingBatch = {
+        ...workingBatch,
+        status: isRejection ? 'ready' : 'failed',
+        payments: workingBatch.payments.map(p =>
+          p.status === 'processing' || p.status === 'pending'
+            ? { ...p, status: 'pending' as const, errorMessage: isRejection ? undefined : msg }
+            : p
+        ),
+      }
+      onBatchUpdate(workingBatch)
+      setRunError(isRejection ? 'Execution cancelled by user.' : msg)
+    } finally {
+      setIsRunning(false)
+      setStep('idle')
+      setCurrentIndex(null)
+    }
+  }
+
+  // ─── Sequential execution (fallback) ──────────────────────────────────────
+
+  async function runSequential() {
+    if (!batch || !address || !usdcFact || !publicClient) return
+    const { ok, reason } = canExecute()
+    if (!ok) { setRunError(reason ?? 'Cannot execute.'); return }
+
+    setIsRunning(true)
+    setRunError(null)
+    setStep('executing')
+
+    let workingBatch: PayrollBatch = {
+      ...batch,
+      status: 'processing',
+      submittedAt: Date.now(),
+      payments: batch.payments.map(p => ({ ...p })),
+    }
+    onBatchUpdate(workingBatch)
+
+    logAuditEvent({
+      category: 'payroll',
+      action: 'payroll_batch_executed',
+      actorAddress: opts?.actorAddress ?? address ?? null,
+      description: `Sequential payroll batch "${batch.name}" execution started (${pendingPayments.length} payments).`,
       outcome: 'pending',
       entityId: batch.id,
       entityLabel: batch.name,
@@ -309,7 +459,6 @@ export function useBatchRunner(
         }
         onBatchUpdate(workingBatch)
 
-        // Per-payment notification + audit at the receipt boundary
         if (succeeded) {
           const n = Notify.payrollPaymentConfirmed(batch.id, batch.name, p.name, hash)
           opts?.onNotify?.(n)
@@ -317,7 +466,7 @@ export function useBatchRunner(
             category: 'payroll',
             action: 'payroll_payment_confirmed',
             actorAddress: opts?.actorAddress ?? address ?? null,
-            description: `Payment to ${p.name} (${p.walletAddress.slice(0, 8)}…) confirmed. Amount: ${p.amountUsdc} USDC.`,
+            description: `Payment to ${p.name} confirmed. Amount: ${p.amountUsdc} USDC.`,
             outcome: 'success',
             entityId: batch.id,
             entityLabel: batch.name,
@@ -342,15 +491,12 @@ export function useBatchRunner(
         const e = err as { shortMessage?: string; message?: string }
         const msg = e?.shortMessage || e?.message || 'Transfer failed.'
         const isRejection = msg.toLowerCase().includes('user rejected') || msg.toLowerCase().includes('user denied')
+
         workingBatch = {
           ...workingBatch,
           payments: workingBatch.payments.map((pay, idx) =>
             idx === i
-              ? {
-                  ...pay,
-                  status: isRejection ? 'pending' : 'failed',
-                  errorMessage: isRejection ? undefined : msg,
-                }
+              ? { ...pay, status: isRejection ? 'pending' : 'failed', errorMessage: isRejection ? undefined : msg }
               : pay
           ),
         }
@@ -376,6 +522,7 @@ export function useBatchRunner(
           workingBatch = { ...workingBatch, status: finalStatus }
           onBatchUpdate(workingBatch)
           setIsRunning(false)
+          setStep('idle')
           setCurrentIndex(null)
           return
         }
@@ -383,14 +530,9 @@ export function useBatchRunner(
     }
 
     const finalStatus: BatchStatus = deriveBatchStatus(workingBatch.payments)
-    workingBatch = {
-      ...workingBatch,
-      status: finalStatus,
-      completedAt: Date.now(),
-    }
+    workingBatch = { ...workingBatch, status: finalStatus, completedAt: Date.now() }
     onBatchUpdate(workingBatch)
 
-    // Batch-complete notification
     const confirmedCount = workingBatch.payments.filter(p => p.status === 'confirmed').length
     const failedCount = workingBatch.payments.filter(p => p.status === 'failed').length
     const n = Notify.payrollBatchExecuted(batch.id, batch.name, confirmedCount, failedCount)
@@ -399,24 +541,39 @@ export function useBatchRunner(
       category: 'payroll',
       action: 'payroll_batch_executed',
       actorAddress: opts?.actorAddress ?? address ?? null,
-      description: `Payroll batch "${batch.name}" completed: ${confirmedCount} confirmed, ${failedCount} failed.`,
+      description: `Sequential payroll batch "${batch.name}" completed: ${confirmedCount} confirmed, ${failedCount} failed.`,
       outcome: failedCount === 0 ? 'success' : confirmedCount > 0 ? 'success' : 'failure',
       entityId: batch.id,
       entityLabel: batch.name,
     })
 
     setIsRunning(false)
+    setStep('idle')
     setCurrentIndex(null)
+  }
+
+  // ─── Public run function (dispatches to mode) ─────────────────────────────
+
+  async function runBatch() {
+    if (executionMode === 'atomic') {
+      await runAtomic()
+    } else {
+      await runSequential()
+    }
   }
 
   return {
     runBatch,
     isRunning,
+    step,
     currentIndex,
     runError,
     pendingPayments,
     batchTotal,
     canExecute,
     isWrongChain,
+    executionMode,
+    hasAllowance,
+    allowance,
   }
 }

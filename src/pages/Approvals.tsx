@@ -4,7 +4,8 @@
 
 import { useState, useMemo } from 'react'
 import { useAccount } from 'wagmi'
-import { Plus, Search, Filter, ShieldCheck, Clock, CheckCircle2, XCircle, PlayCircle, Info } from 'lucide-react'
+import { Plus, Search, Filter, ShieldCheck, Clock, CheckCircle2, XCircle, PlayCircle, Info, Lock } from 'lucide-react'
+import { isTreasuryDeployed, useTreasuryConfig } from '../hooks/useTreasury'
 import Badge from '../components/ui/Badge'
 import { WalletRequired } from '../components/WalletGate'
 import ApprovalRequestModal from '../components/approvals/ApprovalRequestModal'
@@ -119,6 +120,7 @@ export default function Approvals() {
   const { policy, updatePolicy } = useApprovalPolicy()
   const stats = useApprovalStats(requests, address)
   const { formatted: balanceFormatted } = useUsdcBalance()
+  const treasuryConfig = useTreasuryConfig()
 
   const [showCreate, setShowCreate] = useState(false)
   const [showPolicy, setShowPolicy] = useState(false)
@@ -204,13 +206,26 @@ export default function Approvals() {
         </div>
       </div>
 
-      {/* Local records notice */}
-      <div className="flex items-start gap-3 rounded-xl px-4 py-3" style={{ background: 'rgba(232,184,76,0.07)', border: '1px solid rgba(232,184,76,0.2)' }}>
-        <Info size={14} style={{ color: 'var(--warning)', flexShrink: 0, marginTop: 1 }} />
-        <span style={{ fontSize: 12, color: 'var(--warning)', lineHeight: 1.5 }}>
-          <strong>Local records only.</strong> Approval decisions are stored in this browser. They are not cryptographically enforced on-chain. A treasury multisig contract is required for production enforcement.
-        </span>
-      </div>
+      {/* On-chain / local mode banner */}
+      {isTreasuryDeployed ? (
+        <div className="flex items-start gap-3 rounded-xl px-4 py-3" style={{ background: 'rgba(0,200,100,0.07)', border: '1px solid rgba(0,200,100,0.2)' }}>
+          <Lock size={14} style={{ color: 'var(--success)', flexShrink: 0, marginTop: 1 }} />
+          <span style={{ fontSize: 12, color: 'var(--success)', lineHeight: 1.5 }}>
+            <strong>On-chain enforcement active.</strong> AskirawaFiTreasury is deployed.
+            Quorum: {treasuryConfig.quorum ?? '…'}-of-{treasuryConfig.approverCount ?? '…'}.
+            Approval decisions and executions are enforced by the contract — not the UI.
+            {' '}<em>This contract is unaudited. Do not hold substantial production funds until an independent security audit is complete.</em>
+          </span>
+        </div>
+      ) : (
+        <div className="flex items-start gap-3 rounded-xl px-4 py-3" style={{ background: 'rgba(232,184,76,0.07)', border: '1px solid rgba(232,184,76,0.2)' }}>
+          <Info size={14} style={{ color: 'var(--warning)', flexShrink: 0, marginTop: 1 }} />
+          <span style={{ fontSize: 12, color: 'var(--warning)', lineHeight: 1.5 }}>
+            <strong>Local records only.</strong> Approval decisions are stored in this browser. They are not cryptographically enforced on-chain.
+            Set <code>VITE_TREASURY_ADDRESS</code> in .env after deploying <code>AskirawaFiTreasury.sol</code> to enable on-chain enforcement.
+          </span>
+        </div>
+      )}
 
       {!isConnected && <WalletRequired message="Connect your wallet to manage approval requests." />}
 

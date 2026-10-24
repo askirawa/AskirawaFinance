@@ -8,19 +8,28 @@ interface BadgeProps {
   className?: string
 }
 
+// Monochrome-first: only semantic states get color; neutral stays pure gray
 const VARIANT_STYLES: Record<BadgeVariant, React.CSSProperties> = {
-  success: { color: 'var(--success)', background: 'var(--accent-dim)', border: '1px solid var(--accent-border)' },
-  active: { color: 'var(--success)', background: 'var(--accent-dim)', border: '1px solid var(--accent-border)' },
-  warning: { color: 'var(--warning)', background: 'var(--warning-dim)', border: '1px solid rgba(232,184,76,0.25)' },
-  danger: { color: 'var(--danger)', background: 'rgba(232,109,122,0.1)', border: '1px solid rgba(232,109,122,0.25)' },
-  neutral: { color: 'var(--muted)', background: 'var(--surface-muted)', border: '1px solid var(--border)' },
+  success: { color: 'var(--success)', background: 'var(--success-dim)', border: '1px solid var(--success-border)' },
+  active:  { color: 'var(--success)', background: 'var(--success-dim)', border: '1px solid var(--success-border)' },
+  warning: { color: 'var(--warning)', background: 'var(--warning-dim)', border: '1px solid var(--warning-border)' },
+  danger:  { color: 'var(--danger)',  background: 'var(--danger-dim)',  border: '1px solid var(--danger-border)' },
+  neutral: { color: 'var(--muted)',   background: 'var(--surface-2)',   border: '1px solid var(--border)' },
 }
 
 export default function Badge({ variant = 'neutral', children, className }: BadgeProps) {
   return (
     <span
-      className={cn('inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold', className)}
-      style={VARIANT_STYLES[variant]}
+      className={cn('inline-flex items-center px-2 py-0.5', className)}
+      style={{
+        fontFamily: "'JetBrains Mono', monospace",
+        fontSize: 10,
+        fontWeight: 500,
+        letterSpacing: '0.08em',
+        textTransform: 'uppercase',
+        borderRadius: 0,
+        ...VARIANT_STYLES[variant],
+      }}
     >
       {children}
     </span>

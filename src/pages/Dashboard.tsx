@@ -22,23 +22,23 @@ interface DashboardProps {
 
 // Demo activity — clearly labeled
 const DEMO_ACTIVITY = [
-  { type: 'Payroll', description: 'September Payroll Batch', amount: '24,300', date: 'Oct 19, 2026', status: 'completed' as const },
-  { type: 'Vendor', description: 'Arc Infrastructure Services', amount: '8,750', date: 'Oct 18, 2026', status: 'completed' as const },
-  { type: 'Recurring', description: 'Monthly SaaS Subscription', amount: '4,200', date: 'Oct 17, 2026', status: 'completed' as const },
-  { type: 'Deposit', description: 'USDC Treasury Deposit', amount: '100,000', date: 'Oct 16, 2026', status: 'pending' as const },
+  { type: 'Payroll',   description: 'September Payroll Batch',      amount: '24,300', date: 'Oct 19, 2026', status: 'completed' as const },
+  { type: 'Vendor',    description: 'Arc Infrastructure Services',   amount: '8,750',  date: 'Oct 18, 2026', status: 'completed' as const },
+  { type: 'Recurring', description: 'Monthly SaaS Subscription',    amount: '4,200',  date: 'Oct 17, 2026', status: 'completed' as const },
+  { type: 'Deposit',   description: 'USDC Treasury Deposit',        amount: '100,000',date: 'Oct 16, 2026', status: 'pending'   as const },
 ]
 
-const FEATURE_CARDS: { page: Page; label: string; desc: string; icon: React.ReactNode }[] = [
-  { page: 'payroll',       label: 'Payroll',            desc: 'Batch USDC payroll execution',        icon: <Wallet size={18} /> },
-  { page: 'recurring',     label: 'Recurring Payments', desc: 'Scheduled payment management',        icon: <RefreshCw size={18} /> },
-  { page: 'approvals',     label: 'Approvals',          desc: 'Multi-party treasury authorization',  icon: <CheckSquare size={18} /> },
-  { page: 'automations',   label: 'Automations',        desc: 'On-chain automation registry',        icon: <Zap size={18} /> },
-  { page: 'organization',  label: 'Team & Roles',       desc: 'Organisation and role management',    icon: <Building2 size={18} /> },
-  { page: 'analytics',     label: 'Analytics',          desc: 'Treasury reporting and CSV export',   icon: <BarChart2 size={18} /> },
-  { page: 'activity',      label: 'Activity',           desc: 'Transaction activity feed',           icon: <Activity size={18} /> },
-  { page: 'transactions',  label: 'Transactions',       desc: 'Full transaction history',            icon: <List size={18} /> },
-  { page: 'notifications', label: 'Notifications',      desc: 'Alerts and system events',            icon: <Bell size={18} /> },
-  { page: 'audit',         label: 'Audit Log',          desc: 'Immutable application event record',  icon: <BookOpen size={18} /> },
+const FEATURE_CARDS: { page: Page; index: string; label: string; desc: string; icon: React.ReactNode }[] = [
+  { page: 'payroll',       index: '01', label: 'Payroll',            desc: 'Batch USDC payroll execution',        icon: <Wallet size={14} strokeWidth={1.5} /> },
+  { page: 'recurring',     index: '02', label: 'Recurring Payments', desc: 'Scheduled payment management',        icon: <RefreshCw size={14} strokeWidth={1.5} /> },
+  { page: 'approvals',     index: '03', label: 'Approvals',          desc: 'Multi-party treasury authorization',  icon: <CheckSquare size={14} strokeWidth={1.5} /> },
+  { page: 'automations',   index: '04', label: 'Automations',        desc: 'On-chain automation registry',        icon: <Zap size={14} strokeWidth={1.5} /> },
+  { page: 'organization',  index: '05', label: 'Team & Roles',       desc: 'Organisation and role management',    icon: <Building2 size={14} strokeWidth={1.5} /> },
+  { page: 'analytics',     index: '06', label: 'Analytics',          desc: 'Treasury reporting and CSV export',   icon: <BarChart2 size={14} strokeWidth={1.5} /> },
+  { page: 'activity',      index: '07', label: 'Activity',           desc: 'Transaction activity feed',           icon: <Activity size={14} strokeWidth={1.5} /> },
+  { page: 'transactions',  index: '08', label: 'Transactions',       desc: 'Full transaction history',            icon: <List size={14} strokeWidth={1.5} /> },
+  { page: 'notifications', index: '09', label: 'Notifications',      desc: 'Alerts and system events',            icon: <Bell size={14} strokeWidth={1.5} /> },
+  { page: 'audit',         index: '10', label: 'Audit Log',          desc: 'Immutable application event record',  icon: <BookOpen size={14} strokeWidth={1.5} /> },
 ]
 
 export default function Dashboard({ onNavigate }: DashboardProps) {
@@ -63,152 +63,229 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
     : null
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 36 }}>
+
       <PageHeader
         eyebrow="Programmable USDC Treasury"
+        counter="00"
         title="Dashboard"
         subtitle="Your treasury overview on Arc Mainnet."
       />
 
-      {/* Hero: balance + network */}
+      {/* Hero row: balance (light card) + network status */}
       <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
-        {/* Treasury Balance */}
-        <div
-          style={{
-            background: 'linear-gradient(135deg, rgba(53,217,139,0.1) 0%, rgba(7,13,20,0.95) 55%)',
-            border: '1px solid var(--accent-border)',
-            borderRadius: 'var(--radius-lg)',
-            padding: '24px 26px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 8,
-            minHeight: 180,
-          }}
-        >
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--accent)' }}>
-            Treasury Balance
+
+        {/* Hero balance card — light gradient */}
+        <div style={{
+          background: 'linear-gradient(135deg, #F2F2F2 0%, #E0E0E0 100%)',
+          border: '1px solid #CCCCCC',
+          clipPath: 'polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%)',
+          padding: '28px 28px 24px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 10,
+          minHeight: 200,
+        }}>
+          <div style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 10,
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            color: '#6B6B6B',
+          }}>
+            Wallet Balance / USDC
           </div>
+
           {!isConnected ? (
             <>
-              <div className="display" style={{ fontSize: 38, fontWeight: 700, color: 'var(--subtle)', letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums' }}>—</div>
-              <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 4 }}>Connect wallet to view live balance</div>
+              <div style={{
+                fontFamily: "'Space Grotesk', sans-serif",
+                fontSize: 44,
+                fontWeight: 700,
+                color: '#AAAAAA',
+                letterSpacing: '-0.04em',
+                lineHeight: 1.0,
+                fontVariantNumeric: 'tabular-nums',
+              }}>—</div>
+              <div style={{ fontSize: 13, color: '#888888', marginTop: 4 }}>Connect wallet to view live balance</div>
             </>
           ) : balanceLoading ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
               <Spinner size={18} />
-              <span style={{ fontSize: 13, color: 'var(--muted)' }}>Loading balance…</span>
+              <span style={{ fontSize: 13, color: '#888888' }}>Loading…</span>
             </div>
           ) : (
             <>
-              <div className="display" style={{ fontSize: 38, fontWeight: 700, color: 'var(--ink)', letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums' }}>
+              <div style={{
+                fontFamily: "'Space Grotesk', sans-serif",
+                fontSize: 44,
+                fontWeight: 700,
+                color: '#111111',
+                letterSpacing: '-0.04em',
+                lineHeight: 1.0,
+                fontVariantNumeric: 'tabular-nums',
+              }}>
                 ${formattedBalance ?? '0.00'}
               </div>
-              <div style={{ fontSize: 13, color: 'var(--muted)' }}>USDC · Arc Mainnet</div>
+              <div style={{ fontSize: 13, color: '#666666' }}>USDC · Arc Mainnet</div>
             </>
           )}
+
           {isConnected && address && (
-            <div className="mono" style={{ fontSize: 12, color: 'var(--subtle)', marginTop: 'auto' }}>
+            <div style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 11,
+              color: '#888888',
+              marginTop: 'auto',
+              letterSpacing: '0.04em',
+            }}>
               {formatAddress(address)}
             </div>
           )}
+
+          {/* Primary action */}
+          <button
+            onClick={() => onNavigate('payroll')}
+            style={{
+              marginTop: 8,
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '0 16px',
+              height: 44,
+              background: '#1C1C1C',
+              color: '#FFFFFF',
+              border: 'none',
+              cursor: 'pointer',
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: 13,
+              fontWeight: 600,
+              borderRadius: 0,
+              transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#333333' }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#1C1C1C' }}
+          >
+            <span>New Payment</span>
+            <ArrowUpRight size={13} strokeWidth={1.5} style={{ marginLeft: 8 }} />
+          </button>
         </div>
 
-        {/* Network Status */}
-        <div
-          style={{
-            background: 'var(--surface)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-lg)',
-            padding: '24px 26px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 8,
-            minHeight: 180,
-          }}
-        >
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--muted)' }}>
+        {/* Network status — dark card */}
+        <div style={{
+          background: 'var(--surface)',
+          border: '1px solid var(--border)',
+          padding: '28px 28px 24px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 10,
+          minHeight: 200,
+        }}>
+          <div style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 10,
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            color: 'var(--subtle)',
+          }}>
             Network Status
           </div>
-          <div className="display" style={{ fontSize: 24, fontWeight: 700, color: 'var(--accent)' }}>
+          <div style={{
+            fontFamily: "'Space Grotesk', sans-serif",
+            fontSize: 32,
+            fontWeight: 700,
+            color: 'var(--ink)',
+            letterSpacing: '-0.03em',
+            lineHeight: 1.0,
+          }}>
             Operational
           </div>
           <div style={{ fontSize: 13, color: 'var(--muted)' }}>Arc Mainnet · USDC native gas</div>
-          <div style={{ marginTop: 'auto', fontSize: 12, color: 'var(--muted)', display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-            <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--accent)', display: 'inline-block', flexShrink: 0 }} />
-            <span>Registry contract</span>
-            <a
-              href={`https://explorer.arc.io/address/${AUTOMATION_REGISTRY_ADDRESS}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: 'var(--accent)', display: 'inline-flex', alignItems: 'center', gap: 3, fontWeight: 600 }}
-            >
-              {formatAddress(AUTOMATION_REGISTRY_ADDRESS)}
-              <ExternalLink size={10} />
-            </a>
+          <div style={{ marginTop: 'auto' }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              fontSize: 12,
+              color: 'var(--muted)',
+            }}>
+              <span style={{ width: 5, height: 5, background: 'var(--success)', display: 'inline-block', flexShrink: 0 }} />
+              <span>Registry contract</span>
+              <a
+                href={`https://explorer.arc.io/address/${AUTOMATION_REGISTRY_ADDRESS}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 3,
+                  color: 'var(--ink-2)',
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: 11,
+                }}
+              >
+                {formatAddress(AUTOMATION_REGISTRY_ADDRESS)}
+                <ExternalLink size={10} strokeWidth={1.5} />
+              </a>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Stat row */}
-      <div style={{ display: 'grid', gap: 14, gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}>
+      <div style={{ display: 'grid', gap: 1, gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', border: '1px solid var(--border)' }}>
         <StatCard
           label="On-Chain Automations"
           value={!isConnected ? '—' : countLoading ? null : String(automationCount ?? 0)}
           note="Registry total"
-          accent
+          counter="01"
         />
         <StatCard
           label="Avg Gas Fee"
           value="< $0.01"
           note="USDC · Arc Mainnet"
+          counter="02"
         />
         <StatCard
-          label="Settlement Network"
+          label="Settlement"
           value="Arc"
           note="EVM · Chain 5042"
+          counter="03"
         />
         <StatCard
           label="Pending Payments"
           value="—"
-          note="Keeper service required"
+          note="Keeper required"
+          counter="04"
         />
       </div>
 
       {/* Recent Activity */}
       <SectionCard
-        title="Recent Activity"
+        label="01 / Recent Activity"
+        chamfer
         actions={
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span
-              style={{
-                fontSize: 11,
-                fontWeight: 600,
-                padding: '3px 9px',
-                borderRadius: 6,
-                background: 'var(--warning-dim)',
-                color: 'var(--warning)',
-                border: '1px solid var(--warning-border)',
-              }}
-            >
-              Demo data
-            </span>
+            <Badge variant="warning">Demo data</Badge>
             <button
               onClick={() => onNavigate('activity')}
               style={{
                 background: 'none',
                 border: 'none',
-                color: 'var(--accent)',
+                color: 'var(--muted)',
                 cursor: 'pointer',
-                fontSize: 13,
+                fontSize: 12,
                 fontWeight: 500,
                 padding: 0,
-                fontFamily: 'inherit',
+                fontFamily: "'JetBrains Mono', monospace",
                 display: 'flex',
                 alignItems: 'center',
                 gap: 4,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
               }}
             >
-              View all <ArrowUpRight size={13} />
+              View all <ArrowUpRight size={11} strokeWidth={1.5} />
             </button>
           </div>
         }
@@ -227,13 +304,21 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             {DEMO_ACTIVITY.map((row, i) => (
               <tr key={i}>
                 <td>
-                  <span style={{ fontSize: 12, color: 'var(--muted)' }}>{row.type}</span>
+                  <span style={{
+                    fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: 10,
+                    color: 'var(--subtle)',
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                  }}>{row.type}</span>
                 </td>
                 <td style={{ color: 'var(--ink)', fontWeight: 500 }}>{row.description}</td>
-                <td style={{ textAlign: 'right', fontFamily: 'JetBrains Mono, monospace', fontWeight: 600, color: 'var(--ink)' }}>
+                <td style={{ textAlign: 'right', fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: 'var(--ink)', fontSize: 13 }}>
                   ${row.amount}
                 </td>
-                <td className="mono" style={{ color: 'var(--muted)', fontSize: 12 }}>{row.date}</td>
+                <td style={{ fontFamily: "'JetBrains Mono', monospace", color: 'var(--subtle)', fontSize: 11, letterSpacing: '0.04em' }}>
+                  {row.date}
+                </td>
                 <td>
                   <Badge variant={row.status === 'completed' ? 'success' : 'warning'}>
                     {row.status === 'completed' ? 'Completed' : 'Pending'}
@@ -247,71 +332,86 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
 
       {/* Feature navigation grid */}
       <div>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 14 }}>
-          Treasury Features
+        <div style={{
+          fontFamily: "'JetBrains Mono', monospace",
+          fontSize: 10,
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+          color: 'var(--subtle)',
+          marginBottom: 16,
+        }}>
+          02 / Treasury Features
         </div>
-        <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))' }}>
-          {FEATURE_CARDS.map(({ page, label, desc, icon }) => (
+        <div style={{ display: 'grid', gap: 1, gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', border: '1px solid var(--border)' }}>
+          {FEATURE_CARDS.map(({ page, index, label, desc, icon }) => (
             <button
               key={page}
               onClick={() => onNavigate(page)}
               style={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 10,
-                padding: '16px 18px',
+                gap: 14,
+                padding: '20px 22px',
                 background: 'var(--surface)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius)',
+                border: 'none',
+                borderRight: '1px solid var(--border)',
+                borderBottom: '1px solid var(--border)',
                 cursor: 'pointer',
                 textAlign: 'left',
                 fontFamily: 'inherit',
-                transition: 'all 0.15s',
+                transition: 'background 0.15s',
               }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = 'var(--surface-hover)'
-                e.currentTarget.style.borderColor = 'var(--border-strong)'
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'var(--surface)'
-                e.currentTarget.style.borderColor = 'var(--border)'
-              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-hover)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface)' }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--accent)', opacity: 0.85 }}>{icon}</span>
-                <ArrowUpRight size={13} style={{ color: 'var(--subtle)' }} />
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--muted)', opacity: 0.9 }}>{icon}</span>
+                <span style={{
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: 10,
+                  color: 'var(--subtle)',
+                  letterSpacing: '0.06em',
+                }}>{index}</span>
               </div>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 3 }}>{label}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 4, letterSpacing: '-0.01em' }}>
+                  {label}
+                </div>
                 <div style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.5 }}>{desc}</div>
               </div>
+              <ArrowUpRight size={11} strokeWidth={1.5} style={{ color: 'var(--subtle)', marginTop: 'auto' }} />
             </button>
           ))}
         </div>
       </div>
 
-      {/* Roadmap */}
-      <div
-        style={{
-          background: 'rgba(232,184,76,0.04)',
-          border: '1px solid rgba(232,184,76,0.15)',
-          borderRadius: 'var(--radius)',
-          padding: '16px 20px',
-          display: 'flex',
-          gap: 12,
-          alignItems: 'flex-start',
-        }}
-      >
-        <div style={{ color: 'var(--warning)', marginTop: 1, flexShrink: 0 }}>ℹ</div>
+      {/* Architecture disclosures */}
+      <div style={{
+        background: 'var(--surface)',
+        border: '1px solid var(--border)',
+        borderLeft: '3px solid var(--warning)',
+        padding: '18px 22px',
+        display: 'flex',
+        gap: 14,
+        alignItems: 'flex-start',
+      }}>
         <div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--warning)', marginBottom: 4 }}>Architecture Disclosures</div>
-          <div style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.7 }}>
+          <div style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 10,
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            color: 'var(--warning)',
+            marginBottom: 8,
+          }}>Architecture Disclosures</div>
+          <div style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.8 }}>
             Approval policies, organisation roles, and scheduling rules are enforced at the application layer only — not by an on-chain contract.
             All records are stored in browser localStorage and are not shared across devices.
             Recurring payments and scheduled payroll require manual execution; no keeper service is currently deployed.
           </div>
         </div>
       </div>
+
     </div>
   )
 }
