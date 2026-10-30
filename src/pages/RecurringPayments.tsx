@@ -1,546 +1,196 @@
-/**
- * RecurringPayments page — create, manage, and monitor recurring USDC schedules.
- *
- * Each execution is a manual wallet-signed USDC ERC-20 transfer.
- * Automatic execution requires a keeper service (not yet deployed).
- */
-
-import { useState, useMemo } from 'react'
-import { useAccount } from 'wagmi'
-import { Plus, Clock, Search, Filter, PlayCircle, PauseCircle, Info, ArrowRight } from 'lucide-react'
-import Badge from '../components/ui/Badge'
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { usePublicClient } from 'wagmi'
+import { erc20Abi, isAddress, type Address } from 'viem'
 import PageHeader from '../components/ui/PageHeader'
-import StatCard from '../components/ui/StatCard'
-import { WalletRequired } from '../components/WalletGate'
-import CreateScheduleModal from '../components/recurring/CreateScheduleModal'
-import ScheduleDetail from '../components/recurring/ScheduleDetail'
+import SectionCard from '../components/ui/SectionCard'
+import Button from '../components/ui/Button'
+import Badge from '../components/ui/Badge'
+import V2Gate from '../components/v2/V2Gate'
+import TxStatus from '../components/v2/TxStatus'
+import ProposalCard from '../components/v2/ProposalCard'
+import { AddressLink, Field, Notice, inputStyle, memoToBytes32, mono, parseAmountInput, usdc } from '../components/v2/shared'
+import { useNow, useProposals, useTreasurySnapshot, useViewer } from '../hooks/v2/useTreasuryV2'
+import { useModuleV2, type ScheduleView } from '../hooks/v2/useModuleV2'
+import { useV2Tx } from '../hooks/v2/useV2Tx'
+import { MODULE_ACTION, MODULE_V2_ABI, TREASURY_V2_ABI } from '../lib/v2/abi'
+import { MODULE_V2_ADDRESS, TREASURY_V2_ADDRESS, V2_CHAIN_ID, V2_USDC_ADDRESS } from '../lib/v2/config'
 import {
-  type RecurringSchedule,
-  type ScheduleStatus,
-  type Frequency,
-  SCHEDULE_STATUS_LABELS,
-  FREQUENCY_LABELS,
-  scheduleStatusVariant,
-  formatUsdcBigint,
-  parseUsdcString,
-  formatScheduleId,
-  nextExecutionDate,
-} from '../lib/recurring'
-import {
-  useRecurringSchedules,
-  useRecurringStats,
-  useUsdcBalance,
-} from '../hooks/useRecurring'
-import { useNotifications } from '../context/NotificationContext'
+  ACTION, FREQUENCY_LABEL, MODULE_STATUS_LABEL, encodeResume, encodeScheduleParams, formatDuration, formatTimestamp, inspectScheduleExecution, nowSeconds,
+} from '../lib/v2/status'
 
-// ─── Schedule row ─────────────────────────────────────────────────────────────
+const ZERO = '0x0000000000000000000000000000000000000000' as Address
 
-function ScheduleRow({
-  schedule,
-  onClick,
-  onPause,
-  onResume,
-}: {
-  schedule: RecurringSchedule
-  onClick: () => void
-  onPause: () => void
-  onResume: () => void
-}) {
-  const next = nextExecutionDate(schedule)
-  let amountRaw = 0n
-  try { amountRaw = parseUsdcString(schedule.amountUsdc) } catch { /* noop */ }
-
-  const confirmedCount = schedule.executionHistory.filter(e => e.status === 'confirmed').length
-  const totalPaidRaw = schedule.executionHistory
-    .filter(e => e.status === 'confirmed')
-    .reduce((acc, e) => {
-      try { return acc + parseUsdcString(e.amountUsdc) } catch { return acc }
-    }, 0n)
-
+function ScheduleRow({ s, canStop, isApprover }: { s: ScheduleView; canStop: boolean; isApprover: boolean }) {
+  const now = useNow()
+  const { state, run, busy } = useV2Tx()
+  const meta = MODULE_STATUS_LABEL[s.status] ?? MODULE_STATUS_LABEL[0]
+  const call = (functionName: 'execute' | 'pause' | 'cancel', label: string) => {
+    void run(label, { address: MODULE_V2_ADDRESS!, abi: MODULE_V2_ABI, functionName, args: [s.id] }, functionName === 'execute' ? inspectScheduleExecution : undefined)
+  }
+  const waiting = s.status === 1 && !s.isDue ? Math.max(Number(s.nextDue), Number(s.nextRetryAt)) - now : 0
+  const restricted = s.executor !== ZERO && !isApprover
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: 16,
-        alignItems: 'center',
-        padding: '14px 16px',
-        borderBottom: '1px solid var(--border)',
-        cursor: 'pointer',
-        transition: 'background 0.12s',
-      }}
-      onClick={onClick}
-      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--surface-muted)' }}
-      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent' }}
-    >
-      {/* Name + details */}
-      <div style={{ minWidth: 0, flex: '1 1 240px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', overflowWrap: 'anywhere' }}>{schedule.name}</span>
-          <Badge variant={scheduleStatusVariant(schedule.status)}>
-            {SCHEDULE_STATUS_LABELS[schedule.status]}
-          </Badge>
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+          <span style={{ ...mono, fontSize: 12, color: 'var(--subtle)' }}>#{s.id.toString()}</span>
+          <strong>{usdc(s.amount)} USDC {FREQUENCY_LABEL[s.frequency]?.toLowerCase()}</strong>
+          <span style={{ fontSize: 12 }}>to <AddressLink address={s.recipient} /></span>
+          <Badge variant={meta.variant}>{meta.label}</Badge>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 12, color: 'var(--muted)', overflowWrap: 'anywhere' }}>
-            {formatScheduleId(schedule.id)}
-          </span>
-          <span style={{ fontSize: 12, color: 'var(--muted)' }}>
-            {FREQUENCY_LABELS[schedule.frequency]}
-          </span>
-          <span
-            style={{
-              fontSize: 12,
-              color: 'var(--muted)',
-              fontFamily: 'monospace',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              maxWidth: '100%',
-              display: 'block',
-            }}
-          >
-            {schedule.recipientAddress.slice(0, 6)}…{schedule.recipientAddress.slice(-4)}
-          </span>
-          {next && (
-            <span style={{ fontSize: 11, color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: 4 }}>
-              <Clock size={10} />
-              Next payment: {next.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-            </span>
-          )}
-        </div>
-        {confirmedCount > 0 && (
-          <div style={{ fontSize: 11, color: 'var(--subtle)', marginTop: 4 }}>
-            {confirmedCount} payment{confirmedCount !== 1 ? 's' : ''} confirmed · {formatUsdcBigint(totalPaidRaw)} USDC paid so far
-          </div>
-        )}
+        {s.status === 1 && <span style={{ ...mono, fontSize: 12, color: 'var(--muted)' }}>{s.isDue ? 'Due now' : `Due in ${formatDuration(waiting)}`}</span>}
       </div>
-
-      {/* Amount */}
-      <div style={{ textAlign: 'right', marginLeft: 'auto' }}>
-        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink)', whiteSpace: 'nowrap' }}>
-          {formatUsdcBigint(amountRaw)} USDC
-        </div>
-        <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>each payment</div>
+      <div style={{ ...mono, fontSize: 11, color: 'var(--subtle)', display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+        <span>Paid {s.executedCount}× · {usdc(s.totalPaid)} USDC</span>
+        <span>Failures {s.failures}</span>
+        <span>Next due {formatTimestamp(s.nextDue)}</span>
+        {s.executor !== ZERO && <span>Executor <AddressLink address={s.executor} /></span>}
       </div>
-
-      {/* Pause/resume */}
-      <div style={{ display: 'flex' }} onClick={e => e.stopPropagation()}>
-        {schedule.status === 'active' && (
-          <button
-            title="Pause schedule"
-            aria-label="Pause schedule"
-            onClick={onPause}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--warning)',
-              minWidth: 44,
-              minHeight: 44,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 0,
-              display: 'flex',
-            }}
-          >
-            <PauseCircle size={16} />
-          </button>
-        )}
-        {schedule.status === 'paused' && (
-          <button
-            title="Resume schedule"
-            aria-label="Resume schedule"
-            onClick={onResume}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--accent)',
-              minWidth: 44,
-              minHeight: 44,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 0,
-              display: 'flex',
-            }}
-          >
-            <PlayCircle size={16} />
-          </button>
-        )}
+      {s.status === 2 && <Notice tone="warning">Paused. Resuming needs a governance proposal (use "Propose resume" below).</Notice>}
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <Button size="sm" disabled={!s.isDue || restricted} loading={busy} onClick={() => call('execute', 'Execute payment')}>Execute payment</Button>
+        {canStop && s.status === 1 && <Button size="sm" variant="secondary" loading={busy} onClick={() => call('pause', 'Pause schedule')}>Pause</Button>}
+        {canStop && (s.status === 1 || s.status === 2) && <Button size="sm" variant="danger" loading={busy} onClick={() => call('cancel', 'Cancel schedule')}>Cancel</Button>}
       </div>
-
-      <ArrowRight size={14} style={{ color: 'var(--subtle)' }} />
+      {restricted && s.isDue && <span style={{ fontSize: 12, color: 'var(--muted)' }}>Only the schedule's executor or an approver can run this one.</span>}
+      <TxStatus state={state} />
     </div>
   )
 }
-
-// ─── Empty state ──────────────────────────────────────────────────────────────
-
-function EmptyState({ onCreateClick }: { onCreateClick: () => void }) {
-  return (
-    <div
-      style={{
-        padding: '64px 32px',
-        textAlign: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 16,
-      }}
-    >
-      <div
-        style={{
-          width: 52,
-          height: 52,
-          borderRadius: 0,
-          background: 'var(--accent-dim)',
-          border: '1px solid var(--accent-border)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Clock size={22} style={{ color: 'var(--accent)' }} />
-      </div>
-      <div>
-        <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)', marginBottom: 6 }}>
-          No recurring schedules yet
-        </div>
-        <div style={{ fontSize: 13, color: 'var(--muted)', maxWidth: 340, lineHeight: 1.6 }}>
-          Set up daily, weekly or monthly USDC payments to a wallet address.
-        </div>
-      </div>
-      <button
-        onClick={onCreateClick}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          padding: '10px 20px',
-          background: 'var(--accent)',
-          border: 'none',
-          borderRadius: 0,
-          minHeight: 44,
-          color: 'var(--bg)',
-          fontSize: 13,
-          fontWeight: 700,
-          cursor: 'pointer',
-          marginTop: 8,
-        }}
-      >
-        <Plus size={15} />
-        Create schedule
-      </button>
-    </div>
-  )
-}
-
-// ─── Main page ────────────────────────────────────────────────────────────────
-
-const ALL_STATUSES: ScheduleStatus[] = ['active', 'paused', 'completed', 'cancelled', 'failed']
 
 export default function RecurringPayments() {
-  const { isConnected, address } = useAccount()
-  const { emit } = useNotifications()
-  const {
-    schedules,
-    saveSchedule,
-    createSchedule,
-    pauseSchedule,
-    resumeSchedule,
-    cancelSchedule,
-  } = useRecurringSchedules({ onNotify: emit, actorAddress: address ?? undefined })
-  const stats = useRecurringStats(schedules)
-  const { formatted: balanceFormatted } = useUsdcBalance()
+  const { data: snap } = useTreasurySnapshot()
+  const viewer = useViewer(snap)
+  const { data: proposals } = useProposals(snap)
+  const { data: mod } = useModuleV2()
+  const client = usePublicClient({ chainId: V2_CHAIN_ID })
+  const cfgTx = useV2Tx(); const schedTx = useV2Tx(); const recoverTx = useV2Tx(); const resumeTx = useV2Tx()
 
-  const [showCreate, setShowCreate] = useState(false)
-  const [selected, setSelected] = useState<RecurringSchedule | null>(null)
-  const [statusFilter, setStatusFilter] = useState<ScheduleStatus | 'all'>('all')
-  const [freqFilter, setFreqFilter] = useState<Frequency | 'all'>('all')
-  const [search, setSearch] = useState('')
+  const { data: moduleBalance } = useQuery({
+    queryKey: ['v2', 'moduleBalance', MODULE_V2_ADDRESS],
+    enabled: !!client && !!MODULE_V2_ADDRESS && !!V2_USDC_ADDRESS,
+    refetchInterval: 15_000,
+    queryFn: () => client!.readContract({ address: V2_USDC_ADDRESS as Address, abi: erc20Abi, functionName: 'balanceOf', args: [MODULE_V2_ADDRESS as Address] }),
+  })
 
-  const filtered = useMemo(() => {
-    let result = [...schedules]
-    if (statusFilter !== 'all') result = result.filter(s => s.status === statusFilter)
-    if (freqFilter !== 'all') result = result.filter(s => s.frequency === freqFilter)
-    if (search.trim()) {
-      const q = search.trim().toLowerCase()
-      result = result.filter(
-        s =>
-          s.name.toLowerCase().includes(q) ||
-          s.recipientAddress.toLowerCase().includes(q) ||
-          formatScheduleId(s.id).toLowerCase().includes(q)
-      )
-    }
-    return result.sort((a, b) => b.createdAt - a.createdAt)
-  }, [schedules, statusFilter, freqFilter, search])
+  const [enable, setEnable] = useState(true)
+  const [perTx, setPerTx] = useState('10'); const [windowMax, setWindowMax] = useState('50'); const [windowSecs, setWindowSecs] = useState('86400')
+  const [recipient, setRecipient] = useState(''); const [amount, setAmount] = useState(''); const [frequency, setFrequency] = useState('1')
+  const [start, setStart] = useState(''); const [end, setEnd] = useState(''); const [maxExec, setMaxExec] = useState('0')
+  const [maxTotal, setMaxTotal] = useState(''); const [minBal, setMinBal] = useState(''); const [executor, setExecutor] = useState(''); const [memo, setMemo] = useState('')
+  const [resumeId, setResumeId] = useState(''); const [skipMissed, setSkipMissed] = useState(true)
 
-  // Keep selected in sync with latest state
-  const liveSelected = selected
-    ? (schedules.find(s => s.id === selected.id) ?? selected)
-    : null
-
-  function handleCreate(params: Parameters<typeof createSchedule>[0]) {
-    const created = createSchedule(params)
-    setSelected(created)
+  if (!MODULE_V2_ADDRESS) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <PageHeader eyebrow="Treasury" title="Recurring Payments" subtitle="Budget-limited scheduled payments." />
+        <V2Gate><Notice tone="warning">Set <code>VITE_RECURRING_MODULE_ADDRESS</code> to the deployed module address to use this page.</Notice></V2Gate>
+      </div>
+    )
   }
 
-  function handleUpdate(updated: RecurringSchedule) {
-    saveSchedule(updated)
-    if (selected?.id === updated.id) setSelected(updated)
-  }
+  const proposalExpiry = (delay: number) => BigInt(nowSeconds() + delay + 3600 + 600 + 24 * 3600)
+  const perTxRaw = parseAmountInput(perTx), winRaw = parseAmountInput(windowMax)
+  const cfgValid = viewer.isProposer && perTxRaw !== null && winRaw !== null && perTxRaw <= winRaw && Number(windowSecs) > 0 && Number(windowSecs) <= 31_536_000
+
+  const amountRaw = parseAmountInput(amount)
+  const toSecs = (v: string) => (v ? BigInt(Math.floor(new Date(v).getTime() / 1000)) : 0n)
+  const schedErrors: string[] = []
+  if (!isAddress(recipient)) schedErrors.push('Enter a valid recipient address.')
+  if (amountRaw === null) schedErrors.push('Enter an amount above zero.')
+  else if (snap?.module && amountRaw > snap.module.perTxMax) schedErrors.push(`Amount is above the module's per-payment limit (${usdc(snap.module.perTxMax)} USDC).`)
+  if (executor && !isAddress(executor)) schedErrors.push('Executor must be an address or blank (anyone).')
+  if (end && start && toSecs(end) <= toSecs(start)) schedErrors.push('End must be after start.')
+  const maxTotalRaw = maxTotal ? parseAmountInput(maxTotal) : 0n
+  const minBalRaw = minBal ? parseAmountInput(minBal) : 0n
+  if (maxTotal && maxTotalRaw === null) schedErrors.push('Maximum total is invalid.')
+  if (minBal && minBalRaw === null) schedErrors.push('Minimum treasury balance is invalid.')
+
+  const modulePending = (proposals ?? []).filter((p) => p.core.action === ACTION.ModuleConfig || p.core.action === ACTION.ModuleAction)
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <PageHeader
-        eyebrow="Treasury Operations"
-        title="Recurring Payments"
-        subtitle="Plan repeating USDC payments on Arc Mainnet."
-        action={
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-            {balanceFormatted && (
-              <div
-                style={{
-                  padding: '8px 14px',
-                  background: 'var(--surface)',
-                  border: '1px solid var(--border)',
-                  fontSize: 13,
-                  color: 'var(--muted)',
-                }}
-              >
-                Wallet balance: <strong style={{ color: 'var(--ink)' }}>{balanceFormatted} USDC</strong>
+      <PageHeader eyebrow="Treasury" title="Recurring Payments" subtitle="Schedules are created and enabled by quorum. The treasury enforces the budget on every payment; the module cannot spend beyond it." />
+      <V2Gate>
+        <SectionCard label="Module and budget">
+          <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 13 }}>Module <AddressLink address={MODULE_V2_ADDRESS} /></span>
+              {snap?.module && <Badge variant={snap.module.enabled ? 'success' : 'warning'}>{snap.module.enabled ? 'Enabled' : 'Disabled'}</Badge>}
+              {snap?.paused && <Badge variant="danger">Treasury paused</Badge>}
+            </div>
+            {snap?.module && (
+              <div style={{ ...mono, fontSize: 12, color: 'var(--muted)', display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                <span>Per payment ≤ {usdc(snap.module.perTxMax)}</span>
+                <span>Per window ≤ {usdc(snap.module.windowMax)} / {formatDuration(snap.module.windowLength)}</span>
+                <span>Window remaining {usdc(snap.module.remaining)} USDC</span>
               </div>
             )}
-            <button
-              onClick={() => setShowCreate(true)}
-              disabled={!isConnected}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: '10px 18px',
-                minHeight: 44,
-                background: isConnected ? 'var(--accent)' : 'var(--surface-muted)',
-                border: 'none',
-                borderRadius: 0,
-                color: isConnected ? 'var(--bg)' : 'var(--subtle)',
-                fontSize: 13,
-                fontWeight: 700,
-                cursor: isConnected ? 'pointer' : 'not-allowed',
-                transition: 'opacity 0.15s',
-              }}
-              title={!isConnected ? 'Connect your wallet to create a schedule' : undefined}
-            >
-              <Plus size={15} />
-              Create schedule
-            </button>
+            {mod && <div style={{ ...mono, fontSize: 12, color: 'var(--muted)' }}>Retry delay {formatDuration(mod.retryDelay)} · auto-pause after {mod.maxFailures} failures · {mod.scheduleCount.toString()} schedule(s)</div>}
+            {snap?.module && !snap.module.enabled && <Notice>The module is disabled. No schedule can pay until governance enables it (below).</Notice>}
+            {moduleBalance !== undefined && moduleBalance > 0n && <Notice tone="warning">The module holds {usdc(moduleBalance)} USDC of its own. Return it to the treasury with a quorum proposal.</Notice>}
           </div>
-        }
-      />
+        </SectionCard>
 
-      {!isConnected && (
-        <WalletRequired message="Connect your wallet to manage recurring payments." />
-      )}
-
-      {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(160px, 100%), 1fr))', gap: 16 }}>
-        <StatCard label="Schedules" value={stats.total} />
-        <StatCard label="Active" value={stats.active} />
-        <StatCard label="Paused" value={stats.paused} />
-        <StatCard label="Payments confirmed" value={stats.confirmedExecs} note="All schedules" />
-        <StatCard
-          label="Total paid (USDC)"
-          value={stats.totalConfirmedFormatted}
-          note="Confirmed payments"
-        />
-        <StatCard
-          label="Waiting to be sent"
-          value={stats.pendingExecs}
-          note="Active schedules"
-        />
-      </div>
-
-      {/* Manual execution notice */}
-      <div
-        style={{
-          display: 'flex',
-          gap: 10,
-          alignItems: 'flex-start',
-          padding: '12px 16px',
-          background: 'rgba(232,184,76,0.06)',
-          border: '1px solid rgba(232,184,76,0.15)',
-          borderRadius: 0,
-          fontSize: 13,
-          color: 'var(--muted)',
-          lineHeight: 1.6,
-        }}
-      >
-        <Info size={14} style={{ flexShrink: 0, color: 'var(--warning)', marginTop: 1 }} />
-        <div>
-          <strong style={{ color: 'var(--warning)' }}>Payments are not sent automatically.</strong>{' '}
-          Open a schedule and send each payment from your wallet when it is due. The automation
-          service that could send them for you is not available yet, so scheduled dates are for
-          planning only.
-        </div>
-      </div>
-
-      {/* Schedule list */}
-      <div
-        style={{
-          background: 'var(--surface)',
-          border: '1px solid var(--border)',
-          borderRadius: 0,
-          overflow: 'hidden',
-        }}
-      >
-        {/* Toolbar */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            padding: '14px 16px',
-            borderBottom: '1px solid var(--border)',
-            flexWrap: 'wrap',
-          }}
-        >
-          <div style={{ position: 'relative', flex: 1, minWidth: 'min(180px, 100%)' }}>
-            <Search
-              size={14}
-              style={{
-                position: 'absolute',
-                left: 10,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: 'var(--subtle)',
-                pointerEvents: 'none',
-              }}
-            />
-            <input
-              type="text"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Search by name, wallet address or ID"
-              style={{
-                width: '100%',
-                padding: '8px 12px 8px 32px',
-                minHeight: 44,
-                background: 'var(--surface-muted)',
-                border: '1px solid var(--border)',
-                borderRadius: 0,
-                color: 'var(--ink)',
-                fontSize: 13,
-                outline: 'none',
-                boxSizing: 'border-box',
-              }}
-            />
+        <SectionCard label="Enable or change the module budget (governance)">
+          <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>
+              <Field label="Action"><select style={inputStyle} value={enable ? 'on' : 'off'} onChange={(e) => setEnable(e.target.value === 'on')}><option value="on">Enable</option><option value="off">Disable</option></select></Field>
+              <Field label="Per payment max (USDC)"><input style={inputStyle} value={perTx} onChange={(e) => setPerTx(e.target.value)} /></Field>
+              <Field label="Per window max (USDC)"><input style={inputStyle} value={windowMax} onChange={(e) => setWindowMax(e.target.value)} /></Field>
+              <Field label="Window length (s)"><input style={inputStyle} value={windowSecs} onChange={(e) => setWindowSecs(e.target.value)} /></Field>
+            </div>
+            <div><Button loading={cfgTx.busy} disabled={!cfgValid || !snap} onClick={() => void cfgTx.run('Module configuration proposal', { address: TREASURY_V2_ADDRESS!, abi: TREASURY_V2_ABI, functionName: 'proposeModuleConfig', args: [MODULE_V2_ADDRESS, enable, perTxRaw, winRaw, Number(windowSecs), proposalExpiry(snap!.configDelay), memoToBytes32('module-config')] })}>Propose</Button></div>
+            <TxStatus state={cfgTx.state} />
           </div>
+        </SectionCard>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-            <Filter size={13} style={{ color: 'var(--subtle)' }} />
-            <select
-              value={statusFilter}
-              onChange={e => setStatusFilter(e.target.value as ScheduleStatus | 'all')}
-              style={{
-                padding: '7px 10px',
-                minHeight: 44,
-                background: 'var(--surface-muted)',
-                border: '1px solid var(--border)',
-                borderRadius: 0,
-                color: 'var(--ink)',
-                fontSize: 12,
-                cursor: 'pointer',
-                outline: 'none',
-              }}
-            >
-              <option value="all">All statuses</option>
-              {ALL_STATUSES.map(s => (
-                <option key={s} value={s}>{SCHEDULE_STATUS_LABELS[s]}</option>
-              ))}
-            </select>
-
-            <select
-              value={freqFilter}
-              onChange={e => setFreqFilter(e.target.value as Frequency | 'all')}
-              style={{
-                padding: '7px 10px',
-                minHeight: 44,
-                background: 'var(--surface-muted)',
-                border: '1px solid var(--border)',
-                borderRadius: 0,
-                color: 'var(--ink)',
-                fontSize: 12,
-                cursor: 'pointer',
-                outline: 'none',
-              }}
-            >
-              <option value="all">All frequencies</option>
-              <option value="daily">Daily</option>
-              <option value="weekly">Weekly</option>
-              <option value="monthly">Monthly</option>
-            </select>
+        <SectionCard label="New schedule (governance)">
+          <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))' }}>
+              <Field label="Recipient"><input style={inputStyle} value={recipient} onChange={(e) => setRecipient(e.target.value)} placeholder="0x…" /></Field>
+              <Field label="Amount per payment (USDC)"><input style={inputStyle} value={amount} onChange={(e) => setAmount(e.target.value)} /></Field>
+              <Field label="Frequency"><select style={inputStyle} value={frequency} onChange={(e) => setFrequency(e.target.value)}>{FREQUENCY_LABEL.map((f, i) => <option key={f} value={i}>{f}</option>)}</select></Field>
+              <Field label="Start (blank = on approval)"><input type="datetime-local" style={inputStyle} value={start} onChange={(e) => setStart(e.target.value)} /></Field>
+              <Field label="End (optional)"><input type="datetime-local" style={inputStyle} value={end} onChange={(e) => setEnd(e.target.value)} /></Field>
+              <Field label="Max payments (0 = none)"><input style={inputStyle} value={maxExec} onChange={(e) => setMaxExec(e.target.value)} /></Field>
+              <Field label="Max total USDC (optional)"><input style={inputStyle} value={maxTotal} onChange={(e) => setMaxTotal(e.target.value)} /></Field>
+              <Field label="Keep treasury ≥ (USDC, optional)"><input style={inputStyle} value={minBal} onChange={(e) => setMinBal(e.target.value)} /></Field>
+              <Field label="Executor (blank = anyone)"><input style={inputStyle} value={executor} onChange={(e) => setExecutor(e.target.value)} placeholder="0x…" /></Field>
+              <Field label="Memo"><input style={inputStyle} value={memo} maxLength={31} onChange={(e) => setMemo(e.target.value)} /></Field>
+            </div>
+            {schedErrors.map((e) => <Notice key={e} tone="danger">{e}</Notice>)}
+            <div><Button loading={schedTx.busy} disabled={!viewer.isProposer || schedErrors.length > 0 || !snap || !snap.module?.enabled} onClick={() => void schedTx.run('Schedule proposal', { address: TREASURY_V2_ADDRESS!, abi: TREASURY_V2_ABI, functionName: 'proposeModuleAction', args: [MODULE_V2_ADDRESS, MODULE_ACTION.CREATE_SCHEDULE, encodeScheduleParams({ recipient: recipient as Address, amount: amountRaw!, frequency: Number(frequency), startTime: toSecs(start), endTime: toSecs(end), maxExecutions: Number(maxExec) || 0, maxTotal: maxTotalRaw ?? 0n, minTreasuryBalanceAfter: minBalRaw ?? 0n, executor: (executor || ZERO) as Address, memoRef: memoToBytes32(memo) }), 0n, proposalExpiry(snap!.payrollDelay), memoToBytes32(memo)] })}>Propose schedule</Button></div>
+            <TxStatus state={schedTx.state} />
           </div>
+        </SectionCard>
 
-          <span style={{ fontSize: 12, color: 'var(--subtle)', whiteSpace: 'nowrap' }}>
-            {filtered.length} of {schedules.length}
-          </span>
+        <SectionCard label="Resume a paused schedule or return module funds (governance)">
+          <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+              <Field label="Schedule id"><input style={{ ...inputStyle, width: 120 }} value={resumeId} onChange={(e) => setResumeId(e.target.value)} /></Field>
+              <label style={{ fontSize: 13, display: 'flex', gap: 6, alignItems: 'center', height: 40 }}><input type="checkbox" checked={skipMissed} onChange={(e) => setSkipMissed(e.target.checked)} /> Skip missed periods</label>
+              <Button variant="secondary" loading={resumeTx.busy} disabled={!viewer.isProposer || !/^\d+$/.test(resumeId) || !snap} onClick={() => void resumeTx.run('Resume proposal', { address: TREASURY_V2_ADDRESS!, abi: TREASURY_V2_ABI, functionName: 'proposeModuleAction', args: [MODULE_V2_ADDRESS, MODULE_ACTION.RESUME_SCHEDULE, encodeResume(BigInt(resumeId), skipMissed), 0n, proposalExpiry(snap!.payrollDelay), memoToBytes32('resume')] })}>Propose resume</Button>
+              <Button variant="secondary" loading={recoverTx.busy} disabled={!viewer.isProposer || !moduleBalance || !snap} onClick={() => void recoverTx.run('Return-funds proposal', { address: TREASURY_V2_ADDRESS!, abi: TREASURY_V2_ABI, functionName: 'proposeModuleAction', args: [MODULE_V2_ADDRESS, MODULE_ACTION.RECOVER_FUNDS, '0x', 0n, proposalExpiry(snap!.payrollDelay), memoToBytes32('return-funds')] })}>Propose return of module funds</Button>
+            </div>
+            <TxStatus state={resumeTx.state} /><TxStatus state={recoverTx.state} />
+          </div>
+        </SectionCard>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <h2 style={{ margin: 0, fontSize: 16 }}>Schedules</h2>
+          {mod && mod.schedules.length === 0 && <Notice>No schedules yet. Create one with a proposal above.</Notice>}
+          {mod?.schedules.map((s) => <ScheduleRow key={s.id.toString()} s={s} canStop={viewer.isApprover || viewer.isGuardian} isApprover={viewer.isApprover} />)}
         </div>
 
-        {/* Local storage notice */}
-        <div
-          style={{
-            padding: '8px 16px',
-            background: 'rgba(100,116,139,0.06)',
-            borderBottom: '1px solid var(--border)',
-            fontSize: 11,
-            color: 'var(--subtle)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-          }}
-        >
-          <Info size={11} />
-          Schedules are saved in this browser only. They are not shared with other devices or team members.
-        </div>
-
-        {/* Rows */}
-        {schedules.length === 0 ? (
-          <EmptyState onCreateClick={() => setShowCreate(true)} />
-        ) : filtered.length === 0 ? (
-          <div style={{ padding: '32px', textAlign: 'center', color: 'var(--subtle)', fontSize: 13 }}>
-            No schedules match your search or filters.
+        {snap && modulePending.length > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <h2 style={{ margin: 0, fontSize: 16 }}>Module proposals</h2>
+            {modulePending.map((p) => <ProposalCard key={p.id.toString()} p={p} snapshot={snap} viewer={viewer} />)}
           </div>
-        ) : (
-          filtered.map(s => (
-            <ScheduleRow
-              key={s.id}
-              schedule={s}
-              onClick={() => setSelected(s)}
-              onPause={() => pauseSchedule(s.id)}
-              onResume={() => resumeSchedule(s.id)}
-            />
-          ))
         )}
-      </div>
-
-      {/* Modals */}
-      {showCreate && (
-        <CreateScheduleModal
-          onClose={() => setShowCreate(false)}
-          onCreate={handleCreate}
-        />
-      )}
-
-      {liveSelected && (
-        <ScheduleDetail
-          schedule={liveSelected}
-          onClose={() => setSelected(null)}
-          onUpdate={handleUpdate}
-          onPause={pauseSchedule}
-          onResume={resumeSchedule}
-          onCancel={id => { cancelSchedule(id); setSelected(null) }}
-        />
-      )}
+      </V2Gate>
     </div>
   )
 }

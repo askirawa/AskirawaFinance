@@ -7,14 +7,17 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {ITreasuryModule} from "./interfaces/ITreasuryModule.sol";
 import {IAskirawaTreasury} from "./interfaces/IAskirawaTreasury.sol";
+import {ITreasuryRecovery} from "./interfaces/ITreasuryRecovery.sol";
 
 /**
  * @title AskirawaTreasury
  * @notice UNAUDITED immutable USDC treasury with epoch-snapshotted quorum voting.
- * @dev D9 recovery remains unresolved: this implementation is option A, NO recovery.
- * There is no owner, backdoor, recovery role or upgrade path. Loss of quorum keys
- * can permanently lock funds. Changing that policy requires a new contract and
- * migration authorized by a still-live quorum through ordinary payroll.
+ * @dev Recovery (D9, option B-c on B-a) lives in the separate immutable TreasuryRecovery contract, because the
+ * combined bytecode would exceed the 24,576 byte contract size limit. This contract exposes exactly one narrow
+ * hook, `installRecovery`, callable only by that contract, which can install a replacement GOVERNANCE configuration
+ * after 30 days without an executed proposal and then blocks payroll and module draws for 7 days. It cannot move
+ * funds. This contract re-enforces the inactivity gate itself. There is still no owner, backdoor or upgrade path.
+ * UNREVIEWED: not independently audited.
  *
  * Payroll is strictly all-or-nothing. Funds are not reserved by proposals.
  * Every mutation shares a storage-based reentrancy lock, including module callbacks.
@@ -41,10 +44,16 @@ contract AskirawaTreasury is ReentrancyGuard, IAskirawaTreasury {
     uint64 public constant MAX_PROPOSAL_LIFETIME = 30 days;
     /// @notice Minimum proposal lifetime beyond the creation-time action delay.
     uint64 public constant MIN_EXECUTION_WINDOW = 1 hours;
+    /// @notice A recovery may install governance only after this long with no executed proposal.
+    uint64 public constant INACTIVITY_PERIOD = 30 days;
+    /// @notice After a recovery installs governance, payroll and module draws are blocked for this long.
+    uint64 public constant COOLING_PERIOD = 7 days;
     /// @notice Immutable USDC contract supplied at construction.
     IERC20 public immutable override usdc;
     /// @notice Immutable minimum configuration delay, in seconds.
     uint32 public immutable MIN_CONFIG_DELAY;
+    /// @notice The only contract allowed to call `installRecovery`. Fixed at construction.
+    address public immutable recovery;
     /// @notice Currently active governance epoch; starts at one.
     uint256 public currentEpoch;
     /// @notice True when all executions except Governance and Unpause are blocked.
@@ -144,6 +153,10 @@ contract AskirawaTreasury is ReentrancyGuard, IAskirawaTreasury {
     mapping(uint256 => address[]) private _voters;
     /// @notice Registration and current stored accounting for each module.
     mapping(address => ModuleConfig) public modules;
+    /// @notice Time of the last executed proposal or installed recovery. Gates recovery.
+    uint64 public lastActivityAt;
+    /// @notice Payroll and module draws are blocked until this time after a recovery; zero when none or acknowledged.
+    uint64 public coolingEnd;
 
     /// @notice A new, immutable epoch was created; full roster is available via getEpoch.
     event EpochCreated(uint256 indexed epoch, uint8 quorum, uint32 payrollDelay, uint32 configDelay, address guardian);
@@ -182,6 +195,10 @@ contract AskirawaTreasury is ReentrancyGuard, IAskirawaTreasury {
     event ModuleFunded(address indexed module, uint256 amount, bytes32 ref);
     /// @notice A non-USDC asset was rescued by quorum.
     event Rescued(uint256 indexed proposalId, address indexed token, address indexed to, uint256 amount);
+    /// @notice The recovery contract installed a replacement governance configuration; the cooling period began.
+    event RecoveryInstalled(uint256 indexed newEpoch, uint64 coolingEnd);
+    /// @notice Anyone acknowledged that the post-recovery spending cooling period is over.
+    event CoolingPeriodCompleted(uint256 indexed epoch, uint64 endedAt);
 
     /// @notice An address is zero, self, or otherwise disallowed for the operation.
     error InvalidAddress(address account);
@@ -249,6 +266,14 @@ contract AskirawaTreasury is ReentrancyGuard, IAskirawaTreasury {
     error CannotRescueUSDC();
     /// @notice A timestamp or epoch identifier cannot fit its snapshot representation.
     error SnapshotOverflow();
+    /// @notice Caller is not the recovery contract bound at construction.
+    error NotRecovery();
+    /// @notice Recovery is not yet allowed: the inactivity period has not passed.
+    error InactivityNotMet(uint64 eligibleAt);
+    /// @notice Payroll and module draws are blocked until the post-recovery cooling period ends.
+    error SpendingCoolingOff(uint64 until);
+    /// @notice The cooling period has not ended, or was already acknowledged.
+    error CoolingNotFinished(uint64 until);
 
     /**
      * @notice Constructs epoch one without assigning any authority to the deployer.
@@ -260,15 +285,22 @@ contract AskirawaTreasury is ReentrancyGuard, IAskirawaTreasury {
      * @param guardian_ Guardian or zero to disable; must not be the core itself.
      * @param payrollDelay_ Flat payroll, module-action and rescue delay, at most fourteen days.
      * @param configDelay_ Flat governance, module-config and unpause delay, within floor and maximum.
+     * @param recovery_ Deployed, not yet bound TreasuryRecovery contract; fixed forever.
      */
     constructor(address usdc_, uint32 minConfigDelay, address[] memory approvers_, address[] memory proposers_,
-        uint8 quorum_, address guardian_, uint32 payrollDelay_, uint32 configDelay_) {
+        uint8 quorum_, address guardian_, uint32 payrollDelay_, uint32 configDelay_, address recovery_) {
         if (usdc_.code.length == 0) revert NoCode(usdc_);
         usdc = IERC20(usdc_);
         MIN_CONFIG_DELAY = minConfigDelay;
         GovernancePayload memory config = GovernancePayload(approvers_, proposers_, quorum_, guardian_, payrollDelay_, configDelay_);
         _validateGovernance(config);
         _createEpoch(config);
+        if (recovery_.code.length == 0) revert NoCode(recovery_);
+        recovery = recovery_;
+        lastActivityAt = _time64(block.timestamp);
+        // One-time binding: the recovery contract records this treasury and checks its council is independent of
+        // the initial approvers and guardian. A recovery contract that is already bound elsewhere reverts here.
+        ITreasuryRecovery(recovery_).bindTreasury(approvers_, guardian_);
     }
 
     /// @notice Pulls positive USDC from the caller using their prior allowance.
@@ -425,7 +457,9 @@ contract AskirawaTreasury is ReentrancyGuard, IAskirawaTreasury {
         if (p.approvals < p.quorum) revert QuorumNotReached(id, p.approvals, p.quorum);
         if (block.timestamp < p.executableAt) revert DelayNotElapsed(p.executableAt);
         if (p.action != Action.Governance && p.action != Action.Unpause) _requireNotPaused();
+        if (p.action == Action.Payroll) _requireNotCooling();
         p.status = Status.Executed;
+        lastActivityAt = _time64(block.timestamp);
 
         if (p.action == Action.Payroll) {
             _executePayroll(id, p.totalAmount);
@@ -470,6 +504,7 @@ contract AskirawaTreasury is ReentrancyGuard, IAskirawaTreasury {
     /// @inheritdoc IAskirawaTreasury
     function payFromModule(address to, uint256 amount, bytes32 ref) external override nonReentrant {
         _requireNotPaused();
+        _requireNotCooling();
         _checkModule(msg.sender);
         _validateRecipient(to);
         _consumeBudget(msg.sender, amount);
@@ -480,8 +515,37 @@ contract AskirawaTreasury is ReentrancyGuard, IAskirawaTreasury {
     /// @inheritdoc IAskirawaTreasury
     function fundModule(uint256 amount, bytes32 ref) external override nonReentrant {
         _requireNotPaused();
+        _requireNotCooling();
         _checkModule(msg.sender);
         _fundModule(msg.sender, amount, ref);
+    }
+
+    /// @notice Installs a replacement governance configuration for the recovery contract. Moves no funds.
+    /// @dev Only the recovery contract bound at construction may call, and only after INACTIVITY_PERIOD without an
+    /// executed proposal (enforced here as well as there). Starts a new epoch, so every pending proposal is voided,
+    /// restarts the inactivity clock, and blocks payroll and module draws for COOLING_PERIOD. Works while paused.
+    /// @param config Replacement configuration, fully validated like any governance payload.
+    function installRecovery(GovernancePayload calldata config) external nonReentrant {
+        if (msg.sender != recovery) revert NotRecovery();
+        uint64 eligibleAt = lastActivityAt + INACTIVITY_PERIOD;
+        if (block.timestamp < eligibleAt) revert InactivityNotMet(eligibleAt);
+        _validateGovernance(config);
+        _createEpoch(config);
+        lastActivityAt = _time64(block.timestamp);
+        coolingEnd = _time64(block.timestamp + COOLING_PERIOD);
+        emit RecoveryInstalled(currentEpoch, coolingEnd);
+    }
+
+    /// @notice Reverts unless `config` is a valid governance configuration. Lets the recovery contract reject bad input early.
+    /// @param config Configuration to check.
+    function validateGovernance(GovernancePayload calldata config) external view { _validateGovernance(config); }
+
+    /// @notice Emits the end of the post-recovery cooling period. Callable by anyone once it has elapsed.
+    function completeCooling() external nonReentrant {
+        uint64 end = coolingEnd;
+        if (end == 0 || block.timestamp < end) revert CoolingNotFinished(end);
+        coolingEnd = 0;
+        emit CoolingPeriodCompleted(currentEpoch, end);
     }
 
     /// @notice Returns proposal metadata; nonexistent identifiers return a zero-valued struct.
@@ -779,6 +843,7 @@ contract AskirawaTreasury is ReentrancyGuard, IAskirawaTreasury {
 
     /// @dev Shared funding path, called only under the external reentrancy lock and after pin/pause checks.
     function _fundModule(address module, uint256 amount, bytes32 ref) private {
+        _requireNotCooling();
         _consumeBudget(module, amount);
         _transferUSDC(module, amount);
         emit ModuleFunded(module, amount, ref);
@@ -831,6 +896,11 @@ contract AskirawaTreasury is ReentrancyGuard, IAskirawaTreasury {
         if (rescue.token.code.length == 0) revert NoCode(rescue.token);
         if (rescue.to == address(0)) revert InvalidAddress(rescue.to);
         if (rescue.amount == 0) revert ZeroAmount();
+    }
+
+    /// @dev Payroll and module draws are blocked while a recovery's cooling period runs. Deposits and governance are not.
+    function _requireNotCooling() private view {
+        if (block.timestamp < coolingEnd) revert SpendingCoolingOff(coolingEnd);
     }
 
     /// @dev Shared recipient/role guard; guardian zero is handled separately and intentionally permitted.

@@ -234,3 +234,13 @@ Not evaluated because they violate the constraints: guardian-initiated recovery,
 7. What delay is acceptable: the evaluation intentionally gives no number; typical choices are weeks, not days.
 
 No option is selected until you answer. Contract implementation does not begin until D9 is decided.
+
+## 12. Implemented recovery (supersedes the open decision in section 11)
+
+D9 was resolved as **option B-c on B-a**: a 3-member council with threshold 2, a 30 day inactivity gate, a 14 day
+timelock with approver-quorum veto, and a 7 day post-recovery spending cooling period. Because the treasury plus the
+council logic exceeded the 24,576 byte contract size limit (27,716 bytes), the council logic is a separate immutable
+contract, `TreasuryRecovery`, and the treasury exposes one restricted hook, `installRecovery`, callable only by its
+immutable `recovery` address. Section 11 remains as the record of the evaluated options.
+
+Full description, permissions, limits and residual risks: `docs/recovery-design.md`. Not independently audited.

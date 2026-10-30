@@ -15,8 +15,12 @@
     "lint": "oxlint --type-aware src scripts --fix; s=$?; oxlint --fix .; exit $((s>0?s:$?))",
     "typecheck": "tsc --noEmit",
     "check": "bash scripts/check.sh",
+    "contracts:setup": "bun install --frozen-lockfile",
     "contracts:build": "forge build",
-    "contracts:test": "forge test"
+    "contracts:test": "forge test",
+    "contracts:test:v2": "forge test --match-path 'contracts/test/v2/*'",
+    "contracts:slither": "slither . --foundry-out-directory contracts/out --filter-paths 'lib|node_modules|contracts/test|contracts/script'",
+    "test:server": "bun test server"
   },
   "dependencies": {
     "@circle-fin/adapter-viem-v2": "^1.19.2",

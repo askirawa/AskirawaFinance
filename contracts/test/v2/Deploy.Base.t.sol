@@ -26,6 +26,9 @@ abstract contract DeployTestBase is Test {
     address internal ap3 = makeAddr("depApprover3");
     address internal pr1 = makeAddr("depProposer1");
     address internal guard = makeAddr("depGuardian");
+    address internal cn1 = makeAddr("depCouncil1");
+    address internal cn2 = makeAddr("depCouncil2");
+    address internal cn3 = makeAddr("depCouncil3");
 
     function _list(address a, address b) internal pure returns (address[] memory r) {
         r = new address[](2); r[0] = a; r[1] = b;
@@ -48,6 +51,8 @@ abstract contract DeployTestBase is Test {
         c.approvers = _list(ap1, ap2, ap3);
         c.proposers = _list(ap1, pr1);
         c.guardian = guard;
+        c.council = _list(cn1, cn2, cn3);
+        c.councilThreshold = 2;
         c.quorum = 2;
         c.minConfigDelay = 1 days;
         c.payrollDelay = 1 days;

@@ -8,16 +8,27 @@ Askirawa Finance is a programmable USDC treasury on Arc Mainnet. It supports ato
 
 ## Network
 
-- Chain: Arc Mainnet (chain ID 5042)
-- USDC: `0x3600000000000000000000000000000000000000`
-- Explorer: https://explorer.arc.io
+- Treasury v2 target: Arc Testnet (chain ID 5042002), USDC `0x3600000000000000000000000000000000000000` (6 decimals, verified read-only). Test funds only.
+- Automation Registry reads: Arc Mainnet (chain ID 5042). No treasury is deployed on mainnet and none should be until an independent audit is done.
+- Explorers: https://explorer.testnet.arc.io (testnet), https://explorer.arc.io (mainnet)
 
 ## Deployed Contracts
 
-| Contract | Address | Status |
-|---|---|---|
-| AskirawaFiTreasury | NOT DEPLOYED | Source ready — owner must deploy via `forge script` and set VITE_TREASURY_ADDRESS in .env |
-| Automation Registry | `0x5E13b82A35Ac827b368215141F4a4F8ADfb1F434` | Deployed on Arc Mainnet, ABI unverified |
+| Contract | Address | Network | Status |
+|---|---|---|---|
+| Automation Registry 1 | `0x5E13b82A35Ac827b368215141F4a4F8ADfb1F434` | Arc Mainnet 5042 | Deployed, `automationCount()` = 4. Deployer `0x6de807d5227f39e4235014e057bef76ed702f62b` (tx `0x7dc7b361b31e83c67ae1f41784e07d17dc9ad2fa5d80923a48742543c5331ebf`). Do not modify. |
+| Automation Registry 2 | `0x9b91860D5cb9A0CFCAA306B3DbA135a1E68336d3` | Arc Mainnet 5042 | Deployed, identical bytecode, `automationCount()` = 0 (tx `0x34925a9bcbf48df3fae0ba0bbebde147d9e691bfa04d566ca29781a17044fe77`). Do not modify. |
+| AskirawaTreasury (v2) | NOT DEPLOYED | Arc Testnet 5042002 | Prepared. Record address, tx hash and receipt block here after deployment. |
+| RecurringPaymentModule | NOT DEPLOYED | Arc Testnet 5042002 | Prepared; starts disabled. |
+| AskirawaFiTreasury (v1) | NOT DEPLOYED | n/a | Superseded by v2; kept in the repo, not used by the app. |
+
+## Treasury v2 migration notes
+
+- Frontend: `src/lib/v2/*` (ABI, config, state helpers), `src/hooks/v2/*` (reads, write-with-receipt hook, events), `src/components/v2/*`; pages Dashboard (overview), Payroll, Approvals, Governance, RecurringPayments, Activity, Transactions are v2. Analytics, Audit Log and Notifications are still browser-local and do not read chain state. The old v1 components and hooks (`useTreasury`, `ApprovalDetail`, `BatchDetail`, ...) remain unused.
+- A write is shown as successful only after a mined receipt with status success; module `execute` additionally checks the logs, because the module records a failed payment as a soft failure instead of reverting.
+- Keeper: `server/keeper-core.ts` (tested) and `server/keeper.ts`. Refuses mainnet unless `KEEPER_ALLOW_MAINNET=yes`.
+- Deploy policy (script only, the core contract is unchanged): 3+ approvers, quorum <= approvers - 1, min config delay >= 1h, payroll delay >= 5m, separate guardian or `GUARDIAN_DISABLED=yes`.
+- Recovery (option B-c on B-a) is implemented as a separate immutable contract `contracts/v2/TreasuryRecovery.sol` (a single contract would exceed the 24,576 byte limit). The treasury exposes one hook, `installRecovery`, callable only by its immutable `recovery` address. Config: council 3, threshold 2, 30 day inactivity, 14 day timelock with approver-quorum veto, 7 day cooling. Not independently audited. Design, limits and residual risks: `docs/recovery-design.md`. Deploy order: recovery, treasury (binds it), module.
 
 ## Implementation Status
 

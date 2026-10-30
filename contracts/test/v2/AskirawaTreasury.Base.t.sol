@@ -3,6 +3,7 @@ pragma solidity 0.8.28;
 
 import {Test} from "forge-std/Test.sol";
 import {AskirawaTreasury} from "../../v2/AskirawaTreasury.sol";
+import {TreasuryRecovery} from "../../v2/TreasuryRecovery.sol";
 import {V2MockUSDC} from "./mocks/V2MockUSDC.sol";
 import {V2MockModule} from "./mocks/V2MockModule.sol";
 
@@ -41,6 +42,22 @@ abstract contract AskirawaTreasuryTestBase is Test {
     address internal payee1 = makeAddr("payee1");
     address internal payee2 = makeAddr("payee2");
     address internal rescueTo = makeAddr("rescueTo");
+    address internal council1 = makeAddr("council1");
+    address internal council2 = makeAddr("council2");
+    address internal council3 = makeAddr("council3");
+    uint8 internal constant COUNCIL_THRESHOLD = 2;
+    TreasuryRecovery internal rec; // recovery contract bound to the most recently deployed default treasury
+
+    /// @dev Default recovery council: three members, none of them an approver or the guardian.
+    function _council() internal view returns (address[] memory r) {
+        r = new address[](3); r[0] = council1; r[1] = council2; r[2] = council3;
+    }
+
+    /// @dev A fresh, not yet bound recovery contract with the default council (2 of 3).
+    function _newRecovery() internal returns (TreasuryRecovery) {
+        rec = new TreasuryRecovery(_council(), COUNCIL_THRESHOLD);
+        return rec;
+    }
 
     function setUp() public virtual {
         usdc = new V2MockUSDC();
@@ -81,7 +98,7 @@ abstract contract AskirawaTreasuryTestBase is Test {
     function _deploy(AskirawaTreasury.GovernancePayload memory c, uint32 minDelay)
         internal returns (AskirawaTreasury) {
         return new AskirawaTreasury(address(usdc), minDelay, c.approvers, c.proposers, c.quorum,
-            c.guardian, c.payrollDelay, c.configDelay);
+            c.guardian, c.payrollDelay, c.configDelay, address(_newRecovery()));
     }
 
     // ------------------------------------------------------------ small utils

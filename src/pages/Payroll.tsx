@@ -1,407 +1,93 @@
-/**
- * Payroll Management page.
- *
- * What works (real on-chain):
- *   - USDC balance reads from Arc Mainnet ERC-20 contract
- *   - Each payment execution sends a real USDC `transfer()` on Arc Mainnet
- *   - Transaction hashes and confirmation status are verified on-chain
- *
- * What is local-only (not on-chain):
- *   - Batch records are stored in localStorage (not a contract or database)
- *   - Batch status is derived from individual payment confirmation state
- *   - Scheduling is UI-only — no keeper exists to auto-execute scheduled batches
- *
- * What requires future infrastructure:
- *   - Atomic batch execution (needs a dedicated PayrollBatch contract)
- *   - Automatic recurring payroll (needs a keeper/executor service)
- *   - Role-based access control (needs org roles contract or backend auth)
- */
-
-import { useState, useMemo } from 'react'
-import { useAccount } from 'wagmi'
+import { useState } from 'react'
+import { Plus, Trash2 } from 'lucide-react'
+import { isAddress, type Address } from 'viem'
 import PageHeader from '../components/ui/PageHeader'
+import SectionCard from '../components/ui/SectionCard'
 import Button from '../components/ui/Button'
-import {
-  Users,
-  Plus,
-  Search,
-  Filter,
-  AlertCircle,
-  Info,
-  ArrowUpRight,
-  CheckCircle2,
-  Clock,
-  XCircle,
-  Loader2,
-} from 'lucide-react'
-import Card, { CardHeader, CardBody } from '../components/ui/Card'
-import Badge from '../components/ui/Badge'
-import Spinner from '../components/ui/Spinner'
-import EmptyState from '../components/ui/EmptyState'
-import CreateBatchModal from '../components/payroll/CreateBatchModal'
-import BatchDetail from '../components/payroll/BatchDetail'
-import {
-  type PayrollBatch,
-  type BatchStatus,
-  BATCH_STATUS_LABELS,
-  batchStatusVariant,
-  getBatchStats,
-  formatTs,
-  formatBatchId,
-} from '../lib/payroll'
-import { usePayrollBatches, useUsdcBalance, usePayrollStats } from '../hooks/usePayroll'
-import { WalletRequired } from '../components/WalletGate'
-import { useNotifications } from '../context/NotificationContext'
+import V2Gate from '../components/v2/V2Gate'
+import TxStatus from '../components/v2/TxStatus'
+import TreasuryOverview from '../components/v2/TreasuryOverview'
+import ProposalCard from '../components/v2/ProposalCard'
+import { Field, Notice, inputStyle, memoToBytes32, parseAmountInput, usdc } from '../components/v2/shared'
+import { useProposals, useTreasurySnapshot, useViewer } from '../hooks/v2/useTreasuryV2'
+import { useV2Tx } from '../hooks/v2/useV2Tx'
+import { TREASURY_V2_ABI } from '../lib/v2/abi'
+import { TREASURY_V2_ADDRESS } from '../lib/v2/config'
+import { ACTION, formatDuration, nowSeconds } from '../lib/v2/status'
 
-// ─── Status filter options ────────────────────────────────────────────────────
+interface Row { to: string; amount: string }
+const MAX_ROWS = 100
 
-const STATUS_FILTERS: Array<{ id: BatchStatus | 'all'; label: string }> = [
-  { id: 'all', label: 'All' },
-  { id: 'ready', label: 'Ready to send' },
-  { id: 'processing', label: 'In progress' },
-  { id: 'completed', label: 'Completed' },
-  { id: 'partial', label: 'Partly paid' },
-  { id: 'failed', label: 'Failed' },
-  { id: 'draft', label: 'Draft' },
-]
-
-// ─── Batch row ────────────────────────────────────────────────────────────────
-
-function BatchRow({
-  batch,
-  onClick,
-}: {
-  batch: PayrollBatch
-  onClick: () => void
-}) {
-  const stats = getBatchStats(batch)
-
-  const statusIcon = {
-    draft: <Clock size={13} style={{ color: 'var(--subtle)' }} />,
-    ready: <Clock size={13} style={{ color: 'var(--accent)' }} />,
-    processing: <Loader2 size={13} className="animate-spin" style={{ color: 'var(--accent)' }} />,
-    completed: <CheckCircle2 size={13} style={{ color: 'var(--success)' }} />,
-    partial: <AlertCircle size={13} style={{ color: 'var(--warning)' }} />,
-    failed: <XCircle size={13} style={{ color: 'var(--danger)' }} />,
-  }[batch.status]
-
-  return (
-    <tr
-      onClick={onClick}
-      className="cursor-pointer transition-colors"
-      style={{ borderBottom: '1px solid var(--border)' }}
-      onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface-muted)')}
-      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-    >
-      <td className="px-6 py-4">
-        <div className="text-sm font-medium" style={{ color: 'var(--ink)' }}>{batch.name}</div>
-        <div className="text-xs mono mt-0.5" style={{ color: 'var(--subtle)', overflowWrap: 'anywhere' }}>{formatBatchId(batch.id)}</div>
-      </td>
-      <td className="px-6 py-4 text-sm" style={{ color: 'var(--muted)' }}>
-        {formatTs(batch.createdAt)}
-      </td>
-      <td className="px-6 py-4 text-sm" style={{ color: 'var(--muted)' }}>
-        {batch.scheduleType === 'scheduled' && batch.scheduledDate
-          ? <span style={{ color: 'var(--warning)' }}>{new Date(batch.scheduledDate).toLocaleDateString()}</span>
-          : batch.status === 'completed' && batch.completedAt
-          ? formatTs(batch.completedAt)
-          : <span style={{ color: 'var(--subtle)' }}>—</span>}
-      </td>
-      <td className="px-6 py-4 text-sm" style={{ color: 'var(--ink-2)' }}>
-        {stats.employeeCount} {stats.employeeCount === 1 ? 'employee' : 'employees'}
-      </td>
-      <td className="px-6 py-4 text-sm font-semibold mono" style={{ color: 'var(--ink)', fontVariantNumeric: 'tabular-nums' }}>
-        {stats.totalFormatted} USDC
-      </td>
-      <td className="px-6 py-4">
-        <div className="flex items-center gap-1.5">
-          {statusIcon}
-          <Badge variant={batchStatusVariant(batch.status)}>
-            {BATCH_STATUS_LABELS[batch.status]}
-          </Badge>
-        </div>
-      </td>
-      <td className="px-6 py-4">
-        <div className="flex items-center gap-1 text-xs" style={{ color: 'var(--muted)' }}>
-          <span style={{ color: 'var(--accent)' }}>{stats.confirmedCount}</span>/{stats.employeeCount}
-          {stats.failedCount > 0 && (
-            <span className="ml-1" style={{ color: 'var(--danger)' }}>
-              ({stats.failedCount} failed)
-            </span>
-          )}
-        </div>
-      </td>
-      <td className="px-6 py-4">
-        <ArrowUpRight size={14} style={{ color: 'var(--subtle)' }} />
-      </td>
-    </tr>
-  )
-}
-
-// ─── Main page ────────────────────────────────────────────────────────────────
-
+/** Payroll is an all-or-nothing batch proposal: it needs quorum and the payroll timelock before it can pay. */
 export default function Payroll() {
-  const { isConnected, address } = useAccount()
-  const { emit } = useNotifications()
-  const { batches, saveBatch, createDraft } = usePayrollBatches({ onNotify: emit })
-  const { formatted: balanceFormatted, isLoading: balanceLoading } = useUsdcBalance()
-  const stats = usePayrollStats(batches)
+  const { data: snap } = useTreasurySnapshot()
+  const viewer = useViewer(snap)
+  const { data: proposals } = useProposals(snap)
+  const { state, run, busy } = useV2Tx()
+  const [rows, setRows] = useState<Row[]>([{ to: '', amount: '' }])
+  const [memo, setMemo] = useState('')
+  const [hours, setHours] = useState('72')
 
-  const [showCreate, setShowCreate] = useState(false)
-  const [selectedBatch, setSelectedBatch] = useState<PayrollBatch | null>(null)
-  const [statusFilter, setStatusFilter] = useState<BatchStatus | 'all'>('all')
-  const [searchQuery, setSearchQuery] = useState('')
+  const parsed = rows.map((r) => ({ to: r.to.trim(), amount: parseAmountInput(r.amount) }))
+  const rowErrors = parsed.map((r) => (!isAddress(r.to) ? 'Enter a valid address' : r.to.toLowerCase() === TREASURY_V2_ADDRESS?.toLowerCase() ? 'Cannot pay the treasury itself' : r.amount === null ? 'Enter an amount above zero' : null))
+  const total = parsed.reduce((s, r) => s + (r.amount ?? 0n), 0n)
+  const h = Number(hours)
+  const minHours = snap ? Math.ceil((snap.payrollDelay + 3600 + 300) / 3600) : 2
+  const hoursOk = Number.isFinite(h) && h >= minHours && h <= 24 * 30 - 1
+  const valid = rowErrors.every((e) => e === null) && rows.length > 0 && hoursOk && viewer.isProposer
 
-  // Filtered + searched batches
-  const filteredBatches = useMemo(() => {
-    let result = batches
-    if (statusFilter !== 'all') result = result.filter(b => b.status === statusFilter)
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase()
-      result = result.filter(b =>
-        b.name.toLowerCase().includes(q) ||
-        formatBatchId(b.id).toLowerCase().includes(q) ||
-        b.payments.some(p =>
-          p.name.toLowerCase().includes(q) ||
-          p.walletAddress.toLowerCase().includes(q)
-        )
-      )
-    }
-    // Sort newest first
-    return [...result].sort((a, b) => b.createdAt - a.createdAt)
-  }, [batches, statusFilter, searchQuery])
-
-  function handleCreateSubmit(params: {
-    name: string
-    entries: import('../lib/payroll').EmployeeEntry[]
-    scheduleType: import('../lib/payroll').ScheduleType
-    scheduledDate?: string
-    note: string
-  }) {
-    const batch = createDraft({
-      ...params,
-      createdBy: address,
-    })
-    // Open the batch detail immediately after creation
-    setSelectedBatch(batch)
+  async function submit() {
+    const items = parsed.map((r) => ({ to: r.to as Address, amount: r.amount as bigint }))
+    const expiresAt = BigInt(nowSeconds() + Math.round(h * 3600))
+    const ok = await run('Payroll proposal', { address: TREASURY_V2_ADDRESS!, abi: TREASURY_V2_ABI, functionName: 'proposePayroll', args: [items, expiresAt, memoToBytes32(memo)] })
+    if (ok) { setRows([{ to: '', amount: '' }]); setMemo('') }
   }
 
-  function handleBatchUpdate(updated: PayrollBatch) {
-    saveBatch(updated)
-    // Keep selected batch in sync
-    if (selectedBatch?.id === updated.id) {
-      setSelectedBatch(updated)
-    }
-  }
+  const payroll = (proposals ?? []).filter((p) => p.core.action === ACTION.Payroll)
 
   return (
-    <div className="space-y-5">
-      <PageHeader
-        eyebrow="Treasury Operations"
-        title="Payroll"
-        subtitle="Create and manage USDC payroll batches on Arc Mainnet."
-        action={isConnected && (
-          <Button icon={<Plus size={15} />} onClick={() => setShowCreate(true)}>
-            Create Payroll
-          </Button>
-        )}
-      />
-
-      {/* Infrastructure notice */}
-      <Card style={{ border: '1px solid rgba(232,184,76,0.18)', background: 'rgba(232,184,76,0.04)' }}>
-        <CardBody className="flex items-start gap-3 py-3">
-          <Info size={15} className="mt-0.5 shrink-0" style={{ color: 'var(--warning)' }} />
-          <div className="text-xs" style={{ color: 'var(--muted)', lineHeight: 1.7 }}>
-            <span className="font-semibold" style={{ color: 'var(--ink-2)' }}>How payroll works today: </span>
-            Batches are saved in this browser only. Running a batch sends one USDC payment per employee on
-            Arc Mainnet, and each payment needs its own wallet confirmation. Payments are sent one at a time,
-            so some may succeed while others fail. Scheduled batches are not sent automatically.
-          </div>
-        </CardBody>
-      </Card>
-
-      {/* Stats row */}
-      <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))' }}>
-        {[
-          {
-            label: 'USDC Balance',
-            value: !isConnected ? '—' : balanceLoading ? null : `$${balanceFormatted ?? '0.00'}`,
-            note: 'Your connected wallet',
-            accent: true,
-          },
-          {
-            label: 'Employees',
-            value: String(stats.uniqueRecipients),
-            note: 'Unique wallet addresses',
-          },
-          {
-            label: 'Payroll Batches',
-            value: String(stats.totalBatches),
-            note: `${stats.completedBatches} completed · ${stats.draftBatches} not yet run`,
-          },
-          {
-            label: 'Confirmed Payments',
-            value: String(stats.confirmedPayments),
-            note: `${stats.pendingPayments} waiting · ${stats.failedPayments} failed`,
-          },
-        ].map(({ label, value, note, accent }) => (
-          <Card key={label} style={{ minHeight: 110 }}>
-            <CardBody className="flex flex-col justify-between" style={{ minHeight: 110 }}>
-              <div className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--muted)' }}>
-                {label}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <PageHeader eyebrow="Treasury" title="Payroll" subtitle="Propose a batch payment. Approvers vote, the timelock runs, then anyone can execute. The whole batch pays or none of it does." />
+      <V2Gate>
+        <TreasuryOverview />
+        <SectionCard label="New payroll proposal">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, padding: 16 }}>
+            {snap && !viewer.isProposer && <Notice tone="warning">Your wallet is not an approver or proposer, so it cannot create proposals.</Notice>}
+            {rows.map((r, i) => (
+              <div key={i} style={{ display: 'grid', gap: 10, gridTemplateColumns: 'minmax(0,2fr) minmax(0,1fr) auto', alignItems: 'end' }}>
+                <Field label={i === 0 ? 'Recipient' : ''} hint={r.to && rowErrors[i] ? rowErrors[i] : undefined}>
+                  <input style={inputStyle} placeholder="0x…" value={r.to} onChange={(e) => setRows(rows.map((x, j) => (j === i ? { ...x, to: e.target.value } : x)))} />
+                </Field>
+                <Field label={i === 0 ? 'Amount (USDC)' : ''}>
+                  <input style={inputStyle} inputMode="decimal" placeholder="0.00" value={r.amount} onChange={(e) => setRows(rows.map((x, j) => (j === i ? { ...x, amount: e.target.value } : x)))} />
+                </Field>
+                <Button variant="ghost" size="md" icon={<Trash2 size={14} />} aria-label="Remove row" disabled={rows.length === 1} onClick={() => setRows(rows.filter((_, j) => j !== i))} />
               </div>
-              {value === null ? (
-                <Spinner size={16} />
-              ) : (
-                <div
-                  className="display text-2xl font-bold"
-                  style={{ color: accent ? 'var(--accent)' : 'var(--ink)', fontVariantNumeric: 'tabular-nums' }}
-                >
-                  {value}
-                </div>
-              )}
-              <div className="text-xs mt-1" style={{ color: 'var(--subtle)' }}>{note}</div>
-            </CardBody>
-          </Card>
-        ))}
-      </div>
-
-      {/* Batch list */}
-      <Card>
-        <CardHeader>
-          <h2 className="text-base font-semibold" style={{ color: 'var(--ink)' }}>
-            Payroll Batches
-            <span className="ml-2 text-xs font-normal" style={{ color: 'var(--muted)' }}>
-              ({filteredBatches.length})
-            </span>
-          </h2>
-          <div className="text-xs font-medium px-2 py-1" style={{ background: 'rgba(232,184,76,0.1)', color: 'var(--warning)' }}>
-            Saved in this browser
-          </div>
-        </CardHeader>
-
-        {/* Toolbar */}
-        <div
-          className="flex flex-wrap items-center gap-3 px-6 py-3"
-          style={{ borderBottom: '1px solid var(--border)' }}
-        >
-          {/* Search */}
-          <div className="relative flex-1 min-w-48">
-            <Search size={13} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--subtle)' }} />
-            <input
-              type="search"
-              placeholder="Search by batch, employee or wallet address"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              style={{
-                width: '100%',
-                background: 'var(--surface-muted)',
-                border: '1px solid var(--border)',
-                borderRadius: 0,
-                color: 'var(--ink)',
-                fontSize: 13,
-                minHeight: 44,
-                padding: '7px 10px 7px 30px',
-                outline: 'none',
-              }}
-            />
-          </div>
-
-          {/* Status filter */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <Filter size={13} style={{ color: 'var(--subtle)' }} />
-            {STATUS_FILTERS.map(f => (
-              <button
-                key={f.id}
-                onClick={() => setStatusFilter(f.id)}
-                className="px-3 py-1 text-xs font-medium transition-colors"
-                style={{
-                  background: statusFilter === f.id ? 'var(--accent-dim)' : 'var(--surface-muted)',
-                  border: `1px solid ${statusFilter === f.id ? 'var(--accent-border)' : 'var(--border)'}`,
-                  color: statusFilter === f.id ? 'var(--accent)' : 'var(--muted)',
-                  cursor: 'pointer',
-                  minHeight: 40,
-                }}
-              >
-                {f.label}
-              </button>
             ))}
+            <div><Button variant="secondary" size="sm" icon={<Plus size={13} />} disabled={rows.length >= MAX_ROWS} onClick={() => setRows([...rows, { to: '', amount: '' }])}>Add recipient</Button></div>
+            <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+              <Field label="Memo (optional)" hint="Up to 31 characters are stored readable; longer text is stored as a hash.">
+                <input style={inputStyle} value={memo} onChange={(e) => setMemo(e.target.value)} maxLength={120} />
+              </Field>
+              <Field label="Expires in (hours)" hint={`Minimum ${minHours}h: the ${snap ? formatDuration(snap.payrollDelay) : '…'} timelock plus one hour. Maximum 719h.`}>
+                <input style={inputStyle} inputMode="numeric" value={hours} onChange={(e) => setHours(e.target.value)} />
+              </Field>
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--muted)' }}>
+              Total {usdc(total)} USDC to {rows.length} recipient{rows.length === 1 ? '' : 's'}.
+              {snap && total > snap.balance && ' This is more than the treasury currently holds: it cannot execute until the treasury is funded.'}
+            </div>
+            <div><Button loading={busy} disabled={!valid} onClick={() => void submit()}>Create proposal</Button></div>
+            <TxStatus state={state} />
           </div>
-        </div>
-
-        {/* Table or empty state */}
-        {!isConnected ? (
-          <CardBody>
-            <WalletRequired message="Connect your wallet to create and manage payroll." />
-          </CardBody>
-        ) : filteredBatches.length === 0 ? (
-          <CardBody>
-            <EmptyState
-              icon={Users}
-              title={batches.length === 0 ? 'No payroll batches yet' : 'No results match your filters'}
-              description={
-                batches.length === 0
-                  ? 'Create a payroll batch to pay several employees in USDC.'
-                  : 'Try a different search or filter.'
-              }
-              action={
-                batches.length === 0 ? (
-                  <button
-                    onClick={() => setShowCreate(true)}
-                    className="flex items-center gap-2 px-4 py-2 text-sm font-semibold"
-                    style={{ background: 'var(--accent)', border: 'none', color: 'var(--bg)', cursor: 'pointer', minHeight: 44 }}
-                  >
-                    <Plus size={14} />
-                    Create Payroll
-                  </button>
-                ) : undefined
-              }
-            />
-          </CardBody>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full" style={{ minWidth: 800 }}>
-              <thead>
-                <tr style={{ background: 'rgba(255,255,255,0.02)' }}>
-                  {['Batch', 'Created', 'Pay date', 'Employees', 'Amount', 'Status', 'Payments', ''].map(h => (
-                    <th
-                      key={h}
-                      className="text-left text-xs uppercase tracking-wider px-6 py-3"
-                      style={{ color: 'var(--subtle)', borderBottom: '1px solid var(--border)', fontSize: 10, letterSpacing: '0.07em' }}
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {filteredBatches.map(batch => (
-                  <BatchRow
-                    key={batch.id}
-                    batch={batch}
-                    onClick={() => setSelectedBatch(batch)}
-                  />
-                ))}
-              </tbody>
-            </table>
+        </SectionCard>
+        {snap && payroll.length > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <h2 style={{ margin: 0, fontSize: 16 }}>Payroll proposals</h2>
+            {payroll.map((p) => <ProposalCard key={p.id.toString()} p={p} snapshot={snap} viewer={viewer} />)}
           </div>
         )}
-      </Card>
-
-      {/* Modals */}
-      {showCreate && (
-        <CreateBatchModal
-          onClose={() => setShowCreate(false)}
-          onSubmit={handleCreateSubmit}
-        />
-      )}
-      {selectedBatch && (
-        <BatchDetail
-          batch={selectedBatch}
-          onClose={() => setSelectedBatch(null)}
-          onUpdate={handleBatchUpdate}
-        />
-      )}
+      </V2Gate>
     </div>
   )
 }

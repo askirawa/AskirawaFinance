@@ -30,16 +30,37 @@ contract DeployValidatorTest is DeployTestBase {
         assertFalse(s.guardianIsApprover);
     }
 
-    function test_Accepts_GuardianDisabledNoProposersAndOverlappingRoles() public view {
+    function test_Accepts_GuardianExplicitlyDisabledAndNoProposers() public view {
         V.Config memory c = _valid();
         c.guardian = address(0);
+        c.guardianDisabledAck = true;
         c.proposers = new address[](0);
         V.Summary memory s = h.validate(c, _noForbidden());
         assertFalse(s.guardianEnabled);
-        c.guardian = ap2; // guardian that is also an approver: allowed, flagged
-        c.proposers = _list(ap1, ap2);
+        c.guardianDisabledAck = false;
+        c.guardian = guard;
+        c.proposers = _list(ap1, ap2); // proposers may overlap approvers
         s = h.validate(c, _noForbidden());
-        assertTrue(s.guardianIsApprover);
+        assertFalse(s.guardianIsApprover);
+    }
+
+    // ------------------------------------------------------------ guardian policy
+    function test_Rejects_GuardianUnsetWithoutExplicitAcknowledgement() public {
+        V.Config memory c = _valid();
+        c.guardian = address(0);
+        _reject(c, abi.encodeWithSelector(V.GuardianNotConfigured.selector));
+    }
+
+    function test_Rejects_GuardianSetTogetherWithDisabledAcknowledgement() public {
+        V.Config memory c = _valid();
+        c.guardianDisabledAck = true;
+        _reject(c, abi.encodeWithSelector(V.GuardianConflict.selector, guard));
+    }
+
+    function test_Rejects_GuardianThatIsAlsoAnApprover() public {
+        V.Config memory c = _valid();
+        c.guardian = ap2;
+        _reject(c, abi.encodeWithSelector(V.GuardianIsApprover.selector, ap2));
     }
 
     function test_SharedPlatformWalletConstantIsTheDocumentedAddress() public pure {
@@ -68,12 +89,14 @@ contract DeployValidatorTest is DeployTestBase {
         c.approvers = new address[](1);
         c.approvers[0] = ap1;
         _reject(c, abi.encodeWithSelector(V.InvalidApproverCount.selector, 1));
+        c.approvers = _list(ap1, ap2); // policy minimum is three distinct approvers
+        _reject(c, abi.encodeWithSelector(V.InvalidApproverCount.selector, 2));
     }
 
     function test_Approver_Count_TwentyAcceptedTwentyOneRejected() public {
         V.Config memory c = _valid();
         c.approvers = _accts(20, 1);
-        c.quorum = 20;
+        c.quorum = 19;
         h.validate(c, _noForbidden());
         c.approvers = _accts(21, 1);
         c.quorum = 2;
@@ -184,6 +207,7 @@ contract DeployValidatorTest is DeployTestBase {
         address c_ = vm.addr(bound(k3, 1, n));
         address g = vm.addr(bound(k4, 1, n));
         if (a == b || a == c_ || b == c_ || a == usdcAddr || b == usdcAddr || c_ == usdcAddr || g == usdcAddr) return;
+        if (g == a || g == b || g == c_) return; // a guardian must be separate from every approver
         V.Config memory c = _valid();
         c.approvers = _list(a, b, c_);
         c.proposers = _list(a, b);
@@ -219,9 +243,9 @@ contract DeployValidatorTest is DeployTestBase {
         _reject(c, abi.encodeWithSelector(V.InvalidQuorum.selector, 4, 3));
         c.quorum = type(uint256).max;
         _reject(c, abi.encodeWithSelector(V.InvalidQuorum.selector, type(uint256).max, 3));
+        c.quorum = 3; // equal to the approver count: one lost key would lock the treasury
+        _reject(c, abi.encodeWithSelector(V.InvalidQuorum.selector, 3, 3));
         c.quorum = 2;
-        h.validate(c, _noForbidden());
-        c.quorum = 3;
         h.validate(c, _noForbidden());
     }
 
@@ -240,6 +264,26 @@ contract DeployValidatorTest is DeployTestBase {
         c.minConfigDelay = 14 days;
         c.payrollDelay = 14 days;
         c.configDelay = 14 days;
+        h.validate(c, _noForbidden());
+    }
+
+    function test_Delays_PolicyFloorsEnforced() public {
+        V.Config memory c = _valid();
+        c.minConfigDelay = 1 hours - 1;
+        c.configDelay = 1 hours - 1;
+        _reject(c, abi.encodeWithSelector(V.DelayTooShort.selector, V.DelayField.MinConfigDelay, 1 hours - 1, 1 hours));
+        c.minConfigDelay = 0;
+        c.configDelay = 0;
+        _reject(c, abi.encodeWithSelector(V.DelayTooShort.selector, V.DelayField.MinConfigDelay, 0, 1 hours));
+        c = _valid();
+        c.payrollDelay = 5 minutes - 1;
+        _reject(c, abi.encodeWithSelector(V.DelayTooShort.selector, V.DelayField.PayrollDelay, 5 minutes - 1, 5 minutes));
+        c.payrollDelay = 0;
+        _reject(c, abi.encodeWithSelector(V.DelayTooShort.selector, V.DelayField.PayrollDelay, 0, 5 minutes));
+        c = _valid();
+        c.minConfigDelay = 1 hours;
+        c.configDelay = 1 hours;
+        c.payrollDelay = 5 minutes;
         h.validate(c, _noForbidden());
     }
 
@@ -324,7 +368,58 @@ contract DeployValidatorTest is DeployTestBase {
         address burn = address(uint160(0xdead) << 144);
         assertFalse(h.isPlaceholder(burn));
         V.Config memory c = _valid();
-        c.approvers = _list(ap1, burn);
+        c.approvers = _list(ap1, burn, ap3);
+        h.validate(c, _noForbidden());
+    }
+
+    // ------------------------------------------------------------ recovery council policy
+    function test_Council_ExactlyThreeMembersWithThresholdTwo() public {
+        V.Config memory c = _valid();
+        c.council = _list(cn1, cn2);
+        _reject(c, abi.encodeWithSelector(V.InvalidCouncilCount.selector, 2));
+        c.council = new address[](0);
+        _reject(c, abi.encodeWithSelector(V.InvalidCouncilCount.selector, 0));
+        c.council = _accts(4, 9);
+        _reject(c, abi.encodeWithSelector(V.InvalidCouncilCount.selector, 4));
+        c = _valid();
+        c.councilThreshold = 1;
+        _reject(c, abi.encodeWithSelector(V.InvalidCouncilThreshold.selector, 1));
+        c.councilThreshold = 3;
+        _reject(c, abi.encodeWithSelector(V.InvalidCouncilThreshold.selector, 3));
+        c.councilThreshold = 0;
+        _reject(c, abi.encodeWithSelector(V.InvalidCouncilThreshold.selector, 0));
+    }
+
+    function test_Council_MustBeIndependentOfApproversAndGuardian() public {
+        V.Config memory c = _valid();
+        c.council = _list(cn1, ap2, cn3);
+        _reject(c, abi.encodeWithSelector(V.CouncilOverlapsApprover.selector, ap2));
+        c = _valid();
+        c.council = _list(cn1, cn2, guard);
+        _reject(c, abi.encodeWithSelector(V.CouncilIsGuardian.selector, guard));
+    }
+
+    function test_Council_ZeroPlaceholderDuplicateSharedAndForbiddenAddressesRejected() public {
+        V.Config memory c = _valid();
+        c.council = _list(cn1, address(0), cn3);
+        _reject(c, abi.encodeWithSelector(V.ZeroRoleAddress.selector, V.Role.Council, 1));
+        c.council = _list(cn1, address(uint160(1)), cn3);
+        _reject(c, abi.encodeWithSelector(V.PlaceholderRoleAddress.selector, V.Role.Council, 1, address(uint160(1))));
+        c.council = _list(cn1, cn2, cn1);
+        _reject(c, abi.encodeWithSelector(V.DuplicateRoleAddress.selector, V.Role.Council, 2, 0, cn1));
+        c.council = _list(cn1, SHARED, cn3);
+        _reject(c, abi.encodeWithSelector(V.SharedPlatformRoleAddress.selector, V.Role.Council, 1));
+        c.council = _list(cn1, cn2, usdcAddr);
+        address[] memory forbidden = new address[](1);
+        forbidden[0] = usdcAddr;
+        vm.expectRevert(abi.encodeWithSelector(V.ForbiddenRoleAddress.selector, V.Role.Council, 2, usdcAddr, 0));
+        h.validate(c, forbidden);
+    }
+
+    function test_Council_DisabledGuardianStillRequiresAnIndependentCouncil() public view {
+        V.Config memory c = _valid();
+        c.guardian = address(0);
+        c.guardianDisabledAck = true;
         h.validate(c, _noForbidden());
     }
 }

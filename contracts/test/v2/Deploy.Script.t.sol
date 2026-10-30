@@ -5,6 +5,7 @@ import {DeployScriptBase, DecimalsStub} from "./Deploy.ScriptBase.t.sol";
 import {DeployTreasuryV2} from "../../script/DeployTreasuryV2.s.sol";
 import {AskirawaTreasury} from "../../v2/AskirawaTreasury.sol";
 import {RecurringPaymentModule} from "../../v2/RecurringPaymentModule.sol";
+import {TreasuryRecovery} from "../../v2/TreasuryRecovery.sol";
 import {V2MockUSDC} from "./mocks/V2MockUSDC.sol";
 
 /// @notice DEP group, deployment script. The process environment is shared by every test thread, so ALL
@@ -36,6 +37,12 @@ contract DeployScriptTest is DeployScriptBase {
         vm.expectRevert(); // APPROVERS is required
         script.run();
         vm.setEnv("APPROVERS", _csv(e.approvers));
+        vm.expectRevert(); // RECOVERY_COUNCIL is required
+        script.run();
+        vm.setEnv("RECOVERY_COUNCIL", _csv(e.council));
+        vm.expectRevert(); // RECOVERY_THRESHOLD is required
+        script.run();
+        vm.setEnv("RECOVERY_THRESHOLD", "2");
         vm.expectRevert(); // QUORUM is required (PROPOSERS and GUARDIAN are optional)
         script.run();
         vm.setEnv("QUORUM", "2");
@@ -132,8 +139,8 @@ contract DeployScriptTest is DeployScriptBase {
         Env memory e = _good();
         _apply(e);
         _confirm("yes");
-        (AskirawaTreasury t, RecurringPaymentModule m) = script.run();
-        _assertDeployed(t, m, e);
+        (AskirawaTreasury t, RecurringPaymentModule m, TreasuryRecovery rc) = script.run();
+        _assertDeployed(t, m, rc, e);
         assertEq(t.guardian(), guard);
         assertEq(t.proposers().length, 2);
         assertEq(t.proposers()[0], ap1);
@@ -144,9 +151,10 @@ contract DeployScriptTest is DeployScriptBase {
         e = _good();
         e.proposers = "";
         e.guardian = "";
+        e.guardianDisabled = "yes"; // an unset guardian needs the explicit acknowledgement
         _apply(e);
-        (t, m) = script.run();
-        _assertDeployed(t, m, e);
+        (t, m, rc) = script.run();
+        _assertDeployed(t, m, rc, e);
         assertEq(t.guardian(), address(0), "guardian disabled");
         assertEq(t.proposers().length, 0);
         vm.chainId(31337);
@@ -155,7 +163,7 @@ contract DeployScriptTest is DeployScriptBase {
         e = _good();
         e.approvers = _accts(20, 3);
         e.proposers = vm.toString(e.approvers[5]); // overlap with an approver is allowed
-        e.guardian = vm.toString(e.approvers[0]); // guardian == approver is allowed (warning only)
+        e.guardian = vm.toString(vm.addr(9001)); // a guardian must be separate from every approver
         e.quorum = 11;
         e.minCfg = 14 days;
         e.payroll = 14 days;
@@ -166,8 +174,8 @@ contract DeployScriptTest is DeployScriptBase {
         e.windowMax = uint256(type(uint96).max);
         e.windowLen = 365 days;
         _apply(e);
-        (t, m) = script.run();
-        _assertDeployed(t, m, e);
+        (t, m, rc) = script.run();
+        _assertDeployed(t, m, rc, e);
         assertEq(t.approvers().length, 20);
 
         // 4. a token that merely behaves like six-decimal USDC is accepted
@@ -175,11 +183,17 @@ contract DeployScriptTest is DeployScriptBase {
         e = _good();
         e.usdc = address(sixStub);
         _apply(e);
-        (t, m) = script.run();
+        (t, m, rc) = script.run();
         assertEq(address(t.usdc()), address(sixStub));
     }
 
-    function _assertDeployed(AskirawaTreasury t, RecurringPaymentModule m, Env memory e) internal view {
+    function _assertDeployed(AskirawaTreasury t, RecurringPaymentModule m, TreasuryRecovery rc, Env memory e) internal view {
+        assertEq(address(rc.treasury()), address(t), "recovery bound to the treasury");
+        assertEq(t.recovery(), address(rc), "treasury points at the recovery");
+        assertEq(rc.councilThreshold(), 2);
+        assertEq(rc.councilMembers().length, 3);
+        assertTrue(rc.isCouncilMember(cn1));
+        assertEq(t.coolingEnd(), 0, "no cooling at deployment");
         assertGt(address(t).code.length, 0, "treasury deployed");
         assertGt(address(m).code.length, 0, "module deployed");
         assertTrue(address(t) != address(m));

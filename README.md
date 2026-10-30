@@ -1,6 +1,6 @@
 # Askirawa Finance
 
-Askirawa Finance — Programmable USDC Treasury built on Arc. Run payroll batches, approvals, recurring payments and team roles for your organization in USDC on Arc Mainnet.
+Askirawa Finance — Programmable USDC Treasury built on Arc. Run payroll batches, approvals, recurring payments and team roles for your organization in USDC. The Treasury v2 contracts are unaudited and are prepared for Arc Testnet only.
 
 Built with [Arc Studio](https://studio.arc.io)
 
@@ -10,15 +10,20 @@ Built with [Arc Studio](https://studio.arc.io)
 - Web3: wagmi v2, viem v2, ConnectKit
 - Contracts: Solidity 0.8.28 + Foundry
 - Backend: Bun server, SQLite (`bun:sqlite`), SIWE authentication
-- Chain: Arc Mainnet (chain ID 5042), USDC at `0x3600000000000000000000000000000000000000`
+- Chain: Arc Testnet (chain ID 5042002) for Treasury v2, USDC at `0x3600000000000000000000000000000000000000` (6 decimals). The existing Automation Registry reads use Arc Mainnet (5042)
 
 ## Features
 
-- **Payroll** — atomic USDC batch proposals; all recipients pay in a single transaction or nothing
-- **Approvals** — on-chain multi-approver voting with configurable quorum, expiry, and cancellation
-- **Schedules** — recurring daily/weekly/monthly USDC payments executed by the keeper worker
-- **Automations** — keeper integration with the deployed Automation Registry (ABI verification required)
+- **Treasury** — balance read from the contract, USDC deposits, quorum progress and timelock countdowns
+- **Payroll** — all-or-nothing USDC batch proposals; approvers vote, a timelock runs, then anyone can execute
+- **Approvals** — approve, reject, execute and cancel proposals, with clear pending, approved, executable, executed, cancelled, rejected, expired and voided states
+- **Governance** — view the approver set, rotate approvers, change quorum and delays, guardian pause and quorum-approved unpause
+- **Recurring payments** — budget-limited schedules, enabled and created through governance, run by a keeper worker
+- **Activity and transactions** — history read from contract events
+- **Automations** — read access to the existing Automation Registry contracts on Arc Mainnet
 - **Team** — SIWE-authenticated organization management with roles stored in a SQLite database
+
+Lost approver keys can be recovered by an independent council (3 members, 2 needed) after 30 days of inactivity, a 14 day timelock the approvers can veto, and a 7 day spending cooling period afterwards (see `docs/recovery-design.md`). This is not independently audited.
 
 ## Development
 
@@ -30,7 +35,7 @@ Built with [Arc Studio](https://studio.arc.io)
 ### Install
 
 ```bash
-bun install
+bun install --frozen-lockfile   # also provides @openzeppelin/contracts, which the Foundry remappings use
 ```
 
 ### Environment Variables
@@ -38,13 +43,19 @@ bun install
 | Variable | Required | Description |
 |---|---|---|
 | `VITE_WC_PROJECT_ID` | For mobile wallets | WalletConnect project ID from [cloud.reown.com](https://cloud.reown.com). Public identifier, read at build time |
-| `VITE_TREASURY_ADDRESS` | After deploy | Deployed AskirawaFiTreasury contract address |
+| `VITE_CHAIN_ID` | No | Target chain for Treasury v2 (default `5042002`, Arc Testnet) |
+| `VITE_TREASURY_ADDRESS` | After deploy | Deployed AskirawaTreasury (v2) address |
+| `VITE_RECURRING_MODULE_ADDRESS` | After deploy | Deployed RecurringPaymentModule address |
+| `VITE_RECOVERY_ADDRESS` | After deploy | Deployed TreasuryRecovery address |
+| `VITE_TREASURY_DEPLOY_BLOCK` | After deploy | Block of the treasury deployment receipt; history scans start here |
 | `SESSION_SECRET` | Server | Random 32-byte hex string for session cookies |
 | `DATABASE_URL` | No | SQLite file path (default: `./askira.db`) |
-| `KEEPER_PRIVATE_KEY` | Keeper | Private key of the keeper EOA wallet |
+| `KEEPER_PRIVATE_KEY` | Keeper | Key of a dedicated gas-only keeper wallet. Secret: private `.env` only |
 | `POLL_INTERVAL_MS` | No | Keeper poll frequency in ms (default: 60000) |
 | `MAX_SCHEDULES_PER_POLL` | No | Max schedules checked per round (default: 20) |
-| `RETRY_MAX` | No | Max retries per failed schedule (default: 1) |
+| `MAX_SCAN` | No | Newest schedules scanned per round (default: 500) |
+| `RETRY_MAX` | No | RPC read retries (default: 2) |
+| `RECEIPT_TIMEOUT_MS` | No | Wait for a transaction receipt (default: 90000) |
 | `RPC_PROXY_BASE_URL` | No | Arc Studio provisioned RPC proxy (optional outside Arc Studio) |
 | `RPC_PROXY_TOKEN` | No | Arc Studio RPC proxy token |
 | `RPC_PROXY_CHAINS` | No | Comma-separated proxy chain keys |
@@ -71,8 +82,15 @@ bunx vite build
 ### Test
 
 ```bash
-# Smart contract tests (Foundry)
+# Smart contract tests (Foundry): all, or Treasury v2 only
 bun run contracts:test
+bun run contracts:test:v2
+
+# Keeper and frontend-helper tests, plus a local anvil rehearsal (needs anvil and `forge build`)
+bun run test:server
+
+# Static analysis (needs Slither)
+bun run contracts:slither
 
 # Lint + typecheck
 bun run check
@@ -89,43 +107,22 @@ Desktop browser wallets work without any setup. Phone wallet apps (MetaMask Mobi
 
 To test on a phone: open the live site in your phone browser, tap **Connect wallet**, choose your wallet app, approve the connection, then switch to Arc Mainnet (chain ID 5042) when asked. Also try opening the site from inside your wallet app's built-in browser.
 
-## Contract Deployment
+## Contract Deployment (Treasury v2, Arc Testnet only)
 
-The `AskirawaFiTreasury` contract is not yet deployed. See `docs/deployment-checklist.md` for the full ordered process. Quick reference:
+Follow `docs/testnet-deployment-checklist.md`. In short: copy `contracts/script/deploy-v2.env.example` to a private
+`.env.deploy-v2`, fill in three distinct approvers, quorum 2, a separate guardian (or `GUARDIAN_DISABLED=yes`),
+delays of at least 1 hour (minimum configuration) and 5 minutes (payroll), preview with
+`forge script contracts/script/DeployTreasuryV2.s.sol --rpc-url arc_testnet`, then deploy with `CONFIRM_DEPLOY=yes`
+and a keystore or hardware signer. The script refuses any chain other than Arc Testnet and local anvil.
+The older `AskirawaFiTreasury` (v1) and its scripts remain in the repository but are not used by the app.
 
-```bash
-# 1. Build contracts
-bun run contracts:build
+## Recurring payments keeper
 
-# 2. Set your deployer wallet address, then run the deployment script
-export DEPLOYER_PRIVATE_KEY=0x<your-private-key>   # set in shell — never commit
-export DEPLOYER_ADDRESS=$(cast wallet address --private-key $DEPLOYER_PRIVATE_KEY)
-
-# Approvers: at least 2 addresses (a proposer cannot approve their own request).
-# Keep QUORUM below the approver count so a proposer can never lock the treasury.
-export APPROVERS=0xApprover1,0xApprover2,0xApprover3
-export QUORUM=2
-
-DEPLOYER_ADDRESS=$DEPLOYER_ADDRESS \
-forge script contracts/script/DeployTreasury.s.sol \
-  --rpc-url https://rpc.mainnet.arc.io \
-  --broadcast \
-  --private-key $DEPLOYER_PRIVATE_KEY \
-  -vvvv
-
-# 3. Record the deployed address, then add to .env
-#    VITE_TREASURY_ADDRESS=0x<deployed-address>
-```
-
-The script deploys to Arc Mainnet (chain ID 5042), enforces this with a `require(block.chainid == 5042)` guard, and prints next steps. USDC is fixed in the script at `0x3600000000000000000000000000000000000000`; the owner, approvers and quorum come from the environment variables above.
-
-## Recurring payments service (not current)
-
-`server/keeper.ts` and `src/contracts.ts` were written for an earlier treasury design that had on-chain schedules and a keeper. The current `AskirawaFiTreasury` contract has no schedules and no keeper, so that service cannot work against it and recurring payments are run by hand in the app. Treat those two files as outdated until they are rewritten.
+`server/keeper.ts` executes due schedules through `RecurringPaymentModule`. See `docs/keeper-setup.md`.
 
 ## Security Notes
 
-- The treasury contract has NOT been independently audited. Foundry tests live under `contracts/test` (`bun run contracts:test`)
+- The contracts have NOT been independently audited. Foundry tests live under `contracts/test` (`bun run contracts:test`)
 - On-chain proposal payloads are immutable once created
 - SIWE nonces are single-use and expire after 5 minutes
 - All backend role checks are server-side; frontend role values are never trusted

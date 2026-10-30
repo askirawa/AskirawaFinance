@@ -75,7 +75,7 @@ contract RecurringPaymentModuleAuthTest is RpmP2Base {
         rtok = new V2ReentrantToken();
         AskirawaTreasury.GovernancePayload memory c = _cfg();
         t = new AskirawaTreasury(address(rtok), MIN_CONFIG_DELAY, c.approvers, c.proposers, c.quorum,
-            c.guardian, c.payrollDelay, c.configDelay);
+            c.guardian, c.payrollDelay, c.configDelay, address(_newRecovery()));
         rpm = new RecurringPaymentModule(address(t), RETRY_DELAY, MAX_FAILURES);
         rtok.mint(address(t), TREASURY_FUNDS);
         _configureRpm(true, RPM_PER_TX, RPM_WINDOW_MAX, RPM_WINDOW_LEN);

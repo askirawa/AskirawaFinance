@@ -7,13 +7,16 @@ import {AskirawaTreasuryTestBase} from "./AskirawaTreasury.Base.t.sol";
 /// @notice G-GOV 01-07: constructor + governance proposal validation, epoch creation, MIN_QUORUM.
 contract AskirawaTreasuryGovernanceTest is AskirawaTreasuryTestBase {
     // ------------------------------------------------------------ helpers
+    /// @dev Address the NEXT treasury will get: the recovery contract is created first, so it is the second CREATE.
     function _predicted() internal view returns (address) {
-        return vm.computeCreateAddress(address(this), vm.getNonce(address(this)));
+        return vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
     }
 
     function _ctorReverts(bytes memory err, AskirawaTreasury.GovernancePayload memory c) internal {
+        address r = address(_newRecovery()); // created first: a pending expectRevert applies to the next call
         vm.expectRevert(err);
-        _deploy(c, MIN_CONFIG_DELAY);
+        new AskirawaTreasury(address(usdc), MIN_CONFIG_DELAY, c.approvers, c.proposers, c.quorum, c.guardian,
+            c.payrollDelay, c.configDelay, r);
     }
 
     function _govReverts(bytes memory err, AskirawaTreasury.GovernancePayload memory c) internal {
@@ -173,10 +176,12 @@ contract AskirawaTreasuryGovernanceTest is AskirawaTreasuryTestBase {
     function test_GOV02_CtorRejectsUsdcWithoutCode() public {
         AskirawaTreasury.GovernancePayload memory c = _cfg();
         address eoa = makeAddr("noCodeToken");
+        address r1 = address(_newRecovery());
         vm.expectRevert(abi.encodeWithSelector(AskirawaTreasury.NoCode.selector, eoa));
-        new AskirawaTreasury(eoa, MIN_CONFIG_DELAY, c.approvers, c.proposers, c.quorum, c.guardian, c.payrollDelay, c.configDelay);
+        new AskirawaTreasury(eoa, MIN_CONFIG_DELAY, c.approvers, c.proposers, c.quorum, c.guardian, c.payrollDelay, c.configDelay, r1);
+        address r2 = address(_newRecovery());
         vm.expectRevert(abi.encodeWithSelector(AskirawaTreasury.NoCode.selector, address(0)));
-        new AskirawaTreasury(address(0), MIN_CONFIG_DELAY, c.approvers, c.proposers, c.quorum, c.guardian, c.payrollDelay, c.configDelay);
+        new AskirawaTreasury(address(0), MIN_CONFIG_DELAY, c.approvers, c.proposers, c.quorum, c.guardian, c.payrollDelay, c.configDelay, r2);
     }
 
     // ------------------------------------------------------------ G-GOV-03 (proposal duplicates)
@@ -392,7 +397,7 @@ contract AskirawaTreasuryGovernanceTest is AskirawaTreasuryTestBase {
         AskirawaTreasury.GovernancePayload memory c = _govCfgFor(count, q);
         bool ok;
         try new AskirawaTreasury(address(usdc), MIN_CONFIG_DELAY, c.approvers, c.proposers, c.quorum, c.guardian,
-            c.payrollDelay, c.configDelay) returns (AskirawaTreasury n) {
+            c.payrollDelay, c.configDelay, address(_newRecovery())) returns (AskirawaTreasury n) {
             ok = true;
             assertGe(n.quorum(), 2);
         } catch { ok = false; }

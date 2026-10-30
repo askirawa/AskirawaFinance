@@ -1,0 +1,148 @@
+--ignore-compile used, if something goes wrong, consider removing the ignore compile flag
+'forge config --json' running
+INFO:Detectors:
+Detector: incorrect-equality
+AskirawaTreasury._delay(AskirawaTreasury.Action,uint256) (contracts/v2/AskirawaTreasury.sol#771-776) uses a dangerous strict equality:
+	- action == Action.Governance || action == Action.ModuleConfig || action == Action.Unpause (contracts/v2/AskirawaTreasury.sol#772)
+AskirawaTreasury.getPayload(uint256) (contracts/v2/AskirawaTreasury.sol#574-580) uses a dangerous strict equality:
+	- proposals[id].action == Action.Payroll (contracts/v2/AskirawaTreasury.sol#575)
+RecurringPaymentModule.onApproved(uint256,uint8,bytes) (contracts/v2/RecurringPaymentModule.sol#103-119) uses a dangerous strict equality:
+	- amount == 0 (contracts/v2/RecurringPaymentModule.sol#113)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#dangerous-strict-equalities
+INFO:Detectors:
+Detector: uninitialized-local
+RecurringPaymentModule.dueSchedules(uint256,uint256).matches (contracts/v2/RecurringPaymentModule.sol#202) is a local variable never initialized
+RecurringPaymentModule.dueSchedules(uint256,uint256).cursor (contracts/v2/RecurringPaymentModule.sol#209) is a local variable never initialized
+AskirawaTreasury.proposePayroll(AskirawaTreasury.Payment[],uint64,bytes32).total (contracts/v2/AskirawaTreasury.sol#328) is a local variable never initialized
+AskirawaFiTreasury._executePayments(bytes32,address[],uint256[]).totalUsdc (contracts/AskirawaFiTreasury.sol#515) is a local variable never initialized
+PayrollBatch.executeBatch(bytes32,address[],uint256[]).totalUsdc (contracts/PayrollBatch.sol#154) is a local variable never initialized
+RecurringPaymentModule._resume(uint256,bool).skipped (contracts/v2/RecurringPaymentModule.sol#276) is a local variable never initialized
+AskirawaTreasury._executePayroll(uint256,uint96).total (contracts/v2/AskirawaTreasury.sol#781) is a local variable never initialized
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#uninitialized-local-variables
+INFO:Detectors:
+Detector: unused-return
+RecurringPaymentModule._create(uint256,IRecurringPaymentModule.ScheduleParams) (contracts/v2/RecurringPaymentModule.sol#237-267) ignores return value by (None,None,perTxMax,None,None,None,None) = IRecurringTreasuryBudget(treasury).modules(address(this)) (contracts/v2/RecurringPaymentModule.sol#241)
+RecurringPaymentModule._create(uint256,IRecurringPaymentModule.ScheduleParams) (contracts/v2/RecurringPaymentModule.sol#237-267) ignores return value by ScheduleMath.add(start,p.frequency,0) (contracts/v2/RecurringPaymentModule.sol#248)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unused-return
+INFO:Detectors:
+Detector: calls-loop
+RecurringPaymentModule._allowed(IRecurringPaymentModule.Schedule,address) (contracts/v2/RecurringPaymentModule.sol#321-323) has external calls inside a loop: s.executor == address(0) || s.executor == caller || IAskirawaTreasury(treasury).isApprover(caller) (contracts/v2/RecurringPaymentModule.sol#322)
+	Calls stack containing the loop:
+		RecurringPaymentModule.dueSchedules(uint256,uint256)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation/#calls-inside-a-loop
+INFO:Detectors:
+Detector: timestamp
+AskirawaFiTreasury.vote(bytes32) (contracts/AskirawaFiTreasury.sol#412-426) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp >= p.expiresAt (contracts/AskirawaFiTreasury.sol#417)
+AskirawaFiTreasury.cancel(bytes32) (contracts/AskirawaFiTreasury.sol#436-445) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp >= p.expiresAt (contracts/AskirawaFiTreasury.sol#441)
+AskirawaFiTreasury.execute(bytes32,address[],uint256[]) (contracts/AskirawaFiTreasury.sol#468-506) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp >= p.expiresAt (contracts/AskirawaFiTreasury.sol#479)
+AskirawaFiTreasury._validateExpiry(uint64) (contracts/AskirawaFiTreasury.sol#579-583) uses timestamp for comparisons
+	Dangerous comparisons:
+	- expiresAt < lo || expiresAt > hi (contracts/AskirawaFiTreasury.sol#582)
+AskirawaTreasury.cancel(uint256) (contracts/v2/AskirawaTreasury.sol#434-446) uses timestamp for comparisons
+	Dangerous comparisons:
+	- isGuardian = currentGuardian != address(0) && msg.sender == currentGuardian (contracts/v2/AskirawaTreasury.sol#439)
+	- ! isGuardian || p.action == Action.Governance || p.action == Action.Unpause (contracts/v2/AskirawaTreasury.sol#440)
+AskirawaTreasury.execute(uint256) (contracts/v2/AskirawaTreasury.sol#453-488) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp < p.executableAt (contracts/v2/AskirawaTreasury.sol#458)
+AskirawaTreasury.pause() (contracts/v2/AskirawaTreasury.sol#494-502) uses timestamp for comparisons
+	Dangerous comparisons:
+	- isGuardian = currentGuardian != address(0) && msg.sender == currentGuardian (contracts/v2/AskirawaTreasury.sol#496)
+	- ! isApprover(msg.sender) && ! isGuardian (contracts/v2/AskirawaTreasury.sol#497)
+AskirawaTreasury.installRecovery(AskirawaTreasury.GovernancePayload) (contracts/v2/AskirawaTreasury.sol#528-537) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp < eligibleAt (contracts/v2/AskirawaTreasury.sol#531)
+AskirawaTreasury.completeCooling() (contracts/v2/AskirawaTreasury.sol#544-549) uses timestamp for comparisons
+	Dangerous comparisons:
+	- end == 0 || block.timestamp < end (contracts/v2/AskirawaTreasury.sol#546)
+AskirawaTreasury.getPayload(uint256) (contracts/v2/AskirawaTreasury.sol#574-580) uses timestamp for comparisons
+	Dangerous comparisons:
+	- proposals[id].action == Action.Payroll (contracts/v2/AskirawaTreasury.sol#575)
+AskirawaTreasury.status(uint256) (contracts/v2/AskirawaTreasury.sol#643-654) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp >= p.expiresAt (contracts/v2/AskirawaTreasury.sol#649)
+	- block.timestamp < p.executableAt (contracts/v2/AskirawaTreasury.sol#652)
+AskirawaTreasury.moduleSpendRemaining(address) (contracts/v2/AskirawaTreasury.sol#665-670) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp >= uint256(config.windowStart) + config.windowLength (contracts/v2/AskirawaTreasury.sol#668)
+AskirawaTreasury._propose(AskirawaTreasury.Action,bytes,uint96,uint64,bytes32) (contracts/v2/AskirawaTreasury.sol#716-737) uses timestamp for comparisons
+	Dangerous comparisons:
+	- expiresAt < block.timestamp + delay + MIN_EXECUTION_WINDOW || expiresAt > block.timestamp + MAX_PROPOSAL_LIFETIME (contracts/v2/AskirawaTreasury.sol#720-721)
+AskirawaTreasury._recordVote(uint256,AskirawaTreasury.Proposal,uint8) (contracts/v2/AskirawaTreasury.sol#748-762) uses timestamp for comparisons
+	Dangerous comparisons:
+	- choice == 2 && p.rejections > _epochs[p.epoch].approvers.length - p.quorum (contracts/v2/AskirawaTreasury.sol#758)
+AskirawaTreasury._pendingUnexpired(uint256,AskirawaTreasury.Proposal) (contracts/v2/AskirawaTreasury.sol#765-768) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp >= p.expiresAt (contracts/v2/AskirawaTreasury.sol#767)
+AskirawaTreasury._delay(AskirawaTreasury.Action,uint256) (contracts/v2/AskirawaTreasury.sol#771-776) uses timestamp for comparisons
+	Dangerous comparisons:
+	- action == Action.Governance || action == Action.ModuleConfig || action == Action.Unpause (contracts/v2/AskirawaTreasury.sol#772)
+AskirawaTreasury._rollWindow(AskirawaTreasury.ModuleConfig) (contracts/v2/AskirawaTreasury.sol#864-869) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp >= uint256(config.windowStart) + config.windowLength (contracts/v2/AskirawaTreasury.sol#865)
+AskirawaTreasury._requireNotCooling() (contracts/v2/AskirawaTreasury.sol#902-904) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp < coolingEnd (contracts/v2/AskirawaTreasury.sol#903)
+AskirawaTreasury._time64(uint256) (contracts/v2/AskirawaTreasury.sol#915-918) uses timestamp for comparisons
+	Dangerous comparisons:
+	- timestamp > type()(uint64).max (contracts/v2/AskirawaTreasury.sol#916)
+RecurringPaymentModule.execute(uint256) (contracts/v2/RecurringPaymentModule.sol#140-185) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp < s.nextDue (contracts/v2/RecurringPaymentModule.sol#143)
+	- block.timestamp < s.nextRetryAt (contracts/v2/RecurringPaymentModule.sol#144)
+	- s.nextDue > catchUpUntil[id] && period + MAX_BACKLOG <= lastPeriod && ScheduleMath.add(s.startTime,s.frequency,period + MAX_BACKLOG) <= block.timestamp (contracts/v2/RecurringPaymentModule.sol#153-154)
+RecurringPaymentModule.isDue(uint256) (contracts/v2/RecurringPaymentModule.sol#191-194) uses timestamp for comparisons
+	Dangerous comparisons:
+	- s.status == ScheduleStatus.Active && block.timestamp >= s.nextDue && block.timestamp >= s.nextRetryAt (contracts/v2/RecurringPaymentModule.sol#193)
+RecurringPaymentModule.dueSchedules(uint256,uint256) (contracts/v2/RecurringPaymentModule.sol#197-214) uses timestamp for comparisons
+	Dangerous comparisons:
+	- isDue(id) && _allowed(schedules[id],msg.sender) (contracts/v2/RecurringPaymentModule.sol#206)
+	- isDue(id_scope_1) && _allowed(schedules[id_scope_1],msg.sender) (contracts/v2/RecurringPaymentModule.sol#212)
+RecurringPaymentModule._create(uint256,IRecurringPaymentModule.ScheduleParams) (contracts/v2/RecurringPaymentModule.sol#237-267) uses timestamp for comparisons
+	Dangerous comparisons:
+	- p.startTime > block.timestamp + 31622400 || (p.endTime != 0 && p.endTime <= start) || (p.maxTotal != 0 && p.maxTotal < p.amount) (contracts/v2/RecurringPaymentModule.sol#245-246)
+	- p.startTime > now64 (contracts/v2/RecurringPaymentModule.sol#244)
+RecurringPaymentModule._resume(uint256,bool) (contracts/v2/RecurringPaymentModule.sol#273-292) uses timestamp for comparisons
+	Dangerous comparisons:
+	- nextPeriod > currentPeriod (contracts/v2/RecurringPaymentModule.sol#281)
+RecurringPaymentModule._fail(uint256,IRecurringPaymentModule.Schedule,uint256,IRecurringPaymentModule.FailureReason) (contracts/v2/RecurringPaymentModule.sol#310-318) uses timestamp for comparisons
+	Dangerous comparisons:
+	- s.failures >= maxFailures (contracts/v2/RecurringPaymentModule.sol#314)
+RecurringPaymentModule._time64(uint256) (contracts/v2/RecurringPaymentModule.sol#364-367) uses timestamp for comparisons
+	Dangerous comparisons:
+	- timestamp > type()(uint64).max (contracts/v2/RecurringPaymentModule.sol#365)
+TreasuryRecovery.initiateRecovery(AskirawaTreasury.GovernancePayload,address[],uint8) (contracts/v2/TreasuryRecovery.sol#171-194) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp < eligibleAt (contracts/v2/TreasuryRecovery.sol#176)
+TreasuryRecovery.executeRecovery(uint256) (contracts/v2/TreasuryRecovery.sol#249-263) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp < r.executableAt (contracts/v2/TreasuryRecovery.sol#254)
+TreasuryRecovery.recoveryEligibleAt() (contracts/v2/TreasuryRecovery.sol#269-272) uses timestamp for comparisons
+	Dangerous comparisons:
+	- a > lastResetAt (contracts/v2/TreasuryRecovery.sol#271)
+TreasuryRecovery._staleReason(AskirawaTreasury,TreasuryRecovery.Recovery) (contracts/v2/TreasuryRecovery.sol#305-310) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp >= deadline (contracts/v2/TreasuryRecovery.sol#309)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+INFO:Detectors:
+Detector: cyclomatic-complexity
+AskirawaTreasury.execute(uint256) (contracts/v2/AskirawaTreasury.sol#453-488) has a high cyclomatic complexity (13).
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#cyclomatic-complexity
+INFO:Detectors:
+Detector: naming-convention
+Variable AskirawaTreasury.MIN_CONFIG_DELAY (contracts/v2/AskirawaTreasury.sol#54) is not in mixedCase
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
+INFO:Detectors:
+Detector: cache-array-length
+Loop condition i < _council.length (contracts/v2/TreasuryRecovery.sol#153) should use cached array length instead of referencing `length` member of the storage array.
+ Loop condition i < _approverList.length (contracts/AskirawaFiTreasury.sol#555) should use cached array length instead of referencing `length` member of the storage array.
+ Loop condition i < _council.length (contracts/v2/TreasuryRecovery.sol#350) should use cached array length instead of referencing `length` member of the storage array.
+ Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#cache-array-length
+INFO:Slither:. analyzed (20 contracts with 102 detectors), 48 result(s) found
+slither-exit=255

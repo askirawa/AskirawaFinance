@@ -38,6 +38,9 @@ abstract contract DeployScriptBase is DeployTestBase {
         address[] approvers;
         string proposers;
         string guardian;
+        string guardianDisabled;
+        address[] council;
+        uint256 councilThreshold;
         uint256 quorum;
         uint256 minCfg;
         uint256 payroll;
@@ -61,6 +64,8 @@ abstract contract DeployScriptBase is DeployTestBase {
         e.approvers = _list(ap1, ap2, ap3);
         e.proposers = string.concat(vm.toString(ap1), ",", vm.toString(pr1));
         e.guardian = vm.toString(guard);
+        e.council = _list(cn1, cn2, cn3);
+        e.councilThreshold = 2;
         e.quorum = 2;
         e.minCfg = 1 days;
         e.payroll = 1 days;
@@ -77,6 +82,9 @@ abstract contract DeployScriptBase is DeployTestBase {
         vm.setEnv("APPROVERS", _csv(e.approvers));
         vm.setEnv("PROPOSERS", e.proposers);
         vm.setEnv("GUARDIAN", e.guardian);
+        vm.setEnv("GUARDIAN_DISABLED", e.guardianDisabled);
+        vm.setEnv("RECOVERY_COUNCIL", _csv(e.council));
+        vm.setEnv("RECOVERY_THRESHOLD", vm.toString(e.councilThreshold));
         vm.setEnv("QUORUM", vm.toString(e.quorum));
         vm.setEnv("MIN_CONFIG_DELAY", vm.toString(e.minCfg));
         vm.setEnv("PAYROLL_DELAY", vm.toString(e.payroll));
@@ -129,12 +137,17 @@ abstract contract DeployScriptBase is DeployTestBase {
 
     function _phaseValidatorErrorsSurfaceThroughTheScript() internal {
         Env memory e = _good();
-        e.approvers = _list(ap1, address(0));
+        e.approvers = _list(ap1, address(0), ap3);
         _rejects(e, abi.encodeWithSelector(V.ZeroRoleAddress.selector, V.Role.Approver, 1));
 
         e = _good();
-        e.approvers = _list(ap1, ap1);
-        _rejects(e, abi.encodeWithSelector(V.DuplicateRoleAddress.selector, V.Role.Approver, 1, 0, ap1));
+        e.approvers = _list(ap1, ap2); // fewer than three approvers
+        e.quorum = 2;
+        _rejects(e, abi.encodeWithSelector(V.InvalidApproverCount.selector, 2));
+
+        e = _good();
+        e.approvers = _list(ap1, ap2, ap1);
+        _rejects(e, abi.encodeWithSelector(V.DuplicateRoleAddress.selector, V.Role.Approver, 2, 0, ap1));
 
         e = _good();
         address[] memory one = new address[](1);
@@ -148,15 +161,15 @@ abstract contract DeployScriptBase is DeployTestBase {
         _rejects(e, abi.encodeWithSelector(V.InvalidApproverCount.selector, 21));
 
         e = _good();
-        e.approvers = _list(ap1, address(uint160(1)));
+        e.approvers = _list(ap1, address(uint160(1)), ap3);
         _rejects(e, abi.encodeWithSelector(V.PlaceholderRoleAddress.selector, V.Role.Approver, 1, address(uint160(1))));
-        e.approvers = _list(ap1, address(uint160(57005)));
+        e.approvers = _list(ap1, address(uint160(57005)), ap3);
         _rejects(e, abi.encodeWithSelector(V.PlaceholderRoleAddress.selector, V.Role.Approver, 1, address(uint160(57005))));
-        e.approvers = _list(ap1, address(uint160(type(uint160).max)));
+        e.approvers = _list(ap1, address(uint160(type(uint160).max)), ap3);
         _rejects(e, abi.encodeWithSelector(V.PlaceholderRoleAddress.selector, V.Role.Approver, 1, address(uint160(type(uint160).max))));
 
         e = _good();
-        e.approvers = _list(ap1, SHARED);
+        e.approvers = _list(ap1, SHARED, ap3);
         _rejects(e, abi.encodeWithSelector(V.SharedPlatformRoleAddress.selector, V.Role.Approver, 1));
         e = _good();
         e.proposers = vm.toString(SHARED);
@@ -166,19 +179,50 @@ abstract contract DeployScriptBase is DeployTestBase {
         _rejects(e, abi.encodeWithSelector(V.SharedPlatformRoleAddress.selector, V.Role.Guardian, 0));
 
         e = _good();
-        e.approvers = _list(ap1, address(token)); // the token itself is forbidden as a role
+        e.approvers = _list(ap1, address(token), ap3); // the token itself is forbidden as a role
         _rejects(e, abi.encodeWithSelector(V.ForbiddenRoleAddress.selector, V.Role.Approver, 1, address(token), 0));
 
         e = _good();
         e.usdc = address(0);
         _rejects(e, abi.encodeWithSelector(V.ZeroUsdc.selector));
 
-        uint256[3] memory badQuorum = [uint256(0), 1, 4];
+        uint256[4] memory badQuorum = [uint256(0), 1, 3, 4];
         for (uint256 i; i < badQuorum.length; ++i) {
             e = _good();
             e.quorum = badQuorum[i];
             _rejects(e, abi.encodeWithSelector(V.InvalidQuorum.selector, badQuorum[i], 3));
         }
+
+        e = _good();
+        e.council = _list(cn1, cn2);
+        _rejects(e, abi.encodeWithSelector(V.InvalidCouncilCount.selector, 2));
+        e = _good();
+        e.councilThreshold = 3;
+        _rejects(e, abi.encodeWithSelector(V.InvalidCouncilThreshold.selector, 3));
+        e = _good();
+        e.council = _list(cn1, ap3, cn3);
+        _rejects(e, abi.encodeWithSelector(V.CouncilOverlapsApprover.selector, ap3));
+        e = _good();
+        e.council = _list(cn1, cn2, guard);
+        _rejects(e, abi.encodeWithSelector(V.CouncilIsGuardian.selector, guard));
+
+        e = _good();
+        e.guardian = "";
+        _rejects(e, abi.encodeWithSelector(V.GuardianNotConfigured.selector));
+        e = _good();
+        e.guardianDisabled = "yes";
+        _rejects(e, abi.encodeWithSelector(V.GuardianConflict.selector, guard));
+        e = _good();
+        e.guardian = vm.toString(ap2);
+        _rejects(e, abi.encodeWithSelector(V.GuardianIsApprover.selector, ap2));
+
+        e = _good();
+        e.minCfg = 1 hours - 1;
+        e.cfg = 1 hours;
+        _rejects(e, abi.encodeWithSelector(V.DelayTooShort.selector, V.DelayField.MinConfigDelay, 1 hours - 1, 1 hours));
+        e = _good();
+        e.payroll = 5 minutes - 1;
+        _rejects(e, abi.encodeWithSelector(V.DelayTooShort.selector, V.DelayField.PayrollDelay, 5 minutes - 1, 5 minutes));
 
         e = _good();
         e.payroll = 14 days + 1;

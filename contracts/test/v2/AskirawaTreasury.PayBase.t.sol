@@ -41,7 +41,7 @@ abstract contract AskirawaTreasuryPayBase is AskirawaTreasuryTestBase {
     function _deployWith(address token) internal returns (AskirawaTreasury) {
         AskirawaTreasury.GovernancePayload memory c = _cfg();
         return new AskirawaTreasury(token, MIN_CONFIG_DELAY, c.approvers, c.proposers, c.quorum,
-            c.guardian, c.payrollDelay, c.configDelay);
+            c.guardian, c.payrollDelay, c.configDelay, address(_newRecovery()));
     }
 
     /// @dev Mint to `who`, approve and deposit through the treasury.

@@ -9,6 +9,7 @@ import Transactions from './pages/Transactions'
 import Payroll from './pages/Payroll'
 import RecurringPayments from './pages/RecurringPayments'
 import Approvals from './pages/Approvals'
+import Governance from './pages/Governance'
 import Organization from './pages/Organization'
 import Analytics from './pages/Analytics'
 import Notifications from './pages/Notifications'
@@ -24,6 +25,7 @@ export type Page =
   | 'payroll'
   | 'recurring'
   | 'approvals'
+  | 'governance'
   | 'organization'
   | 'analytics'
   | 'notifications'
@@ -79,6 +81,7 @@ export default function App() {
                 {activePage === 'payroll'       && <Payroll />}
                 {activePage === 'recurring'     && <RecurringPayments />}
                 {activePage === 'approvals'     && <Approvals />}
+                {activePage === 'governance'    && <Governance />}
                 {activePage === 'organization'  && <Organization />}
                 {activePage === 'analytics'     && <Analytics />}
                 {activePage === 'notifications' && <Notifications />}

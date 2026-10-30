@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, Wallet, RefreshCw, CheckSquare,
-  BarChart2, Bell, BookOpen, Activity, Zap, List, Building2,
+  BarChart2, Bell, BookOpen, Activity, Zap, List, Building2, ShieldCheck,
 } from 'lucide-react'
 import type { Page } from '../../App'
 
@@ -21,6 +21,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { id: 'payroll',     label: 'Payroll',            icon: <Wallet {...ICON} /> },
       { id: 'recurring',   label: 'Recurring Payments', icon: <RefreshCw {...ICON} /> },
       { id: 'approvals',   label: 'Approvals',          icon: <CheckSquare {...ICON} /> },
+      { id: 'governance',  label: 'Governance',         icon: <ShieldCheck {...ICON} /> },
       { id: 'automations', label: 'Automations',        icon: <Zap {...ICON} /> },
     ],
   },
@@ -51,6 +52,7 @@ export const PAGE_TITLES: Record<Page, string> = {
   payroll:       'Payroll',
   recurring:     'Recurring Payments',
   approvals:     'Approvals',
+  governance:    'Governance',
   automations:   'Automations',
   organization:  'Team & Roles',
   analytics:     'Analytics',

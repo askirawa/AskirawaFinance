@@ -14,6 +14,8 @@ import { AUTOMATION_REGISTRY_CHAIN_ID, AUTOMATION_REGISTRY_ADDRESS, formatAddres
 import { useAutomationCount } from '../hooks/useAutomations'
 import { getUsdc } from '../onchain-facts'
 import { Amount, usdcDecimalsFor } from '../onchain-money'
+import V2Gate from '../components/v2/V2Gate'
+import TreasuryOverview from '../components/v2/TreasuryOverview'
 import type { Page } from '../App'
 
 interface DashboardProps {
@@ -70,6 +72,11 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
         title="Dashboard"
         subtitle="Your USDC balance and recent activity."
       />
+
+      {/* Treasury v2: live contract state and USDC deposits */}
+      <V2Gate>
+        <TreasuryOverview />
+      </V2Gate>
 
       {/* Hero row: balance (light card) + network status */}
       <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))' }}>
