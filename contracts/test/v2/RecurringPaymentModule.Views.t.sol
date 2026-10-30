@@ -145,7 +145,9 @@ contract RecurringPaymentModuleViewsTest is RecurringPaymentModuleTestBase {
     }
 
     function test_Views_NoEditOrAdminFunctionsExistByName() public {
-        string[24] memory sigs = [
+        string[30] memory sigs = [
+            "recover()", "recoverFunds()", "sweep(address)", "setCatchUpUntil(uint256,uint64)",
+            "recoverFunds(address)", "returnFunds(address,uint256)",
             "editSchedule(uint256,address,uint96)",
             "updateSchedule(uint256,address,uint96,uint8)",
             "modifySchedule(uint256,address,uint96)",
@@ -187,79 +189,6 @@ contract RecurringPaymentModuleViewsTest is RecurringPaymentModuleTestBase {
         assertFalse(sent, "no receive / payable fallback");
     }
 
-    /// @dev Walks the deployed bytecode, skipping PUSH immediates and the CBOR metadata tail, collecting every
-    /// 4-byte constant that is compared with EQ (how the dispatcher and interface-id checks test equality).
-    function _push4s(bytes memory code) internal pure returns (bytes4[] memory out) {
-        uint256 end = code.length;
-        uint256 metaLen = (uint256(uint8(code[end - 2])) << 8) | uint256(uint8(code[end - 1]));
-        if (metaLen + 2 < end) end -= metaLen + 2;
-        bytes4[] memory tmp = new bytes4[](end);
-        uint256 n;
-        for (uint256 i; i < end;) {
-            uint8 op = uint8(code[i]);
-            if (op >= 0x60 && op <= 0x7f) {
-                uint256 len = op - 0x5f;
-                if (len == 4 && i + 5 < end && uint8(code[i + 5]) == 0x14) { // PUSH4 <x> EQ: selector / id comparison
-                    tmp[n++] = bytes4(
-                        (uint32(uint8(code[i + 1])) << 24) | (uint32(uint8(code[i + 2])) << 16)
-                            | (uint32(uint8(code[i + 3])) << 8) | uint32(uint8(code[i + 4]))
-                    );
-                }
-                i += len + 1;
-            } else {
-                ++i;
-            }
-        }
-        out = new bytes4[](n);
-        for (uint256 j; j < n; ++j) out[j] = tmp[j];
-    }
-
-    function _contains(bytes4[] memory list, bytes4 x) internal pure returns (bool) {
-        for (uint256 i; i < list.length; ++i) if (list[i] == x) return true;
-        return false;
-    }
-
-    function _expectedFunctions() internal pure returns (bytes4[] memory f) {
-        string[20] memory sigs = [
-            "treasury()", "onApproved(uint256,uint8,bytes)", "supportsInterface(bytes4)", "CREATE_SCHEDULE()",
-            "RESUME_SCHEDULE()", "MAX_BACKLOG()", "retryDelay()", "maxFailures()", "nextScheduleId()",
-            "schedules(uint256)", "skippedPeriods(uint256)", "pause(uint256)", "cancel(uint256)", "execute(uint256)",
-            "getSchedule(uint256)", "isDue(uint256)", "dueSchedules(uint256,uint256)", "nextDueAt(uint256)",
-            "remaining(uint256)", "scheduleCount()"
-        ];
-        f = new bytes4[](sigs.length);
-        for (uint256 i; i < sigs.length; ++i) f[i] = bytes4(keccak256(bytes(sigs[i])));
-    }
-
-    /// @dev Everything the dispatcher can route to must be an intended function; every other 4-byte constant in the
-    /// code must be an error / interface id / external-call selector the contract legitimately uses.
-    function _knownNonFunctions() internal pure returns (bytes4[] memory k) {
-        string[35] memory sigs = [
-            // module errors
-            "OnlyTreasury()", "Unauthorized()", "InvalidTreasury()", "InvalidRetryConfiguration()",
-            "InvalidRecipient(address)", "InvalidAmount(uint96,uint96)", "InvalidScheduleParameters()",
-            "UnknownAction(uint8)", "UnknownSchedule(uint256)", "InvalidStatus(uint256,uint8)", "NotDue(uint64)",
-            "RetryNotReady(uint64)", "SnapshotOverflow()", "DateOutOfRange()", "InvalidDate()",
-            "ReentrancyGuardReentrantCall()",
-            // compiler
-            "Panic(uint256)", "Error(string)",
-            // external core calls the module makes
-            "isApprover(address)", "guardian()", "balance()", "payFromModule(address,uint256,bytes32)",
-            "modules(address)",
-            // failure classification selectors
-            "TreasuryPaused()", "BudgetExceeded()", "InsufficientBalance(uint256,uint256)",
-            "BalanceDeltaMismatch(uint256,uint256,uint256)", "SafeERC20FailedOperation(address)",
-            "ERC20InsufficientBalance(address,uint256,uint256)", "ERC20InvalidSender(address)",
-            "ERC20InvalidReceiver(address)", "ERC20InsufficientAllowance(address,uint256,uint256)",
-            "ERC20InvalidApprover(address)", "ERC20InvalidSpender(address)", "EnforcedPause()"
-        ];
-        k = new bytes4[](sigs.length + 3);
-        for (uint256 i; i < sigs.length; ++i) k[i] = bytes4(keccak256(bytes(sigs[i])));
-        k[sigs.length] = type(IERC165).interfaceId;
-        k[sigs.length + 1] = type(ITreasuryModule).interfaceId;
-        k[sigs.length + 2] = type(IRecurringPaymentModule).interfaceId;
-    }
-
     function test_Views_BytecodeDispatcherExposesExactlyTheDocumentedFunctions() public {
         bytes4[] memory pushed = _push4s(address(rpm).code);
         bytes4[] memory fns = _expectedFunctions();
@@ -285,6 +214,7 @@ contract RecurringPaymentModuleViewsTest is RecurringPaymentModuleTestBase {
         assertEq(rpm.MAX_BACKLOG(), 3);
         assertEq(rpm.CREATE_SCHEDULE(), 1);
         assertEq(rpm.RESUME_SCHEDULE(), 2);
+        assertEq(rpm.ACTION_RECOVER_FUNDS(), 3);
         assertTrue(rpm.supportsInterface(type(IERC165).interfaceId));
         assertTrue(rpm.supportsInterface(type(ITreasuryModule).interfaceId));
         assertTrue(rpm.supportsInterface(type(IRecurringPaymentModule).interfaceId));

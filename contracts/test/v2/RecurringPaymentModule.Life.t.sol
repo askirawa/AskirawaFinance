@@ -29,7 +29,10 @@ contract RecurringPaymentModuleLifeTest is RecurringPaymentModuleTestBase {
         execAt = _now();
         vm.expectEmit(true, false, false, true, address(rpm));
         emit IRecurringPaymentModule.ScheduleResumed(sid, expectedSkipDelta);
+        vm.expectEmit(true, false, false, true, address(rpm));
+        emit IRecurringPaymentModule.CatchUpAuthorized(sid, skip ? 0 : execAt);
         _exec(pid);
+        assertEq(rpm.catchUpUntil(sid), skip ? 0 : execAt, "boundary: resume timestamp, or zero when skipping");
     }
 
     // ------------------------------------------------------------ pause
@@ -185,6 +188,7 @@ contract RecurringPaymentModuleLifeTest is RecurringPaymentModuleTestBase {
         assertEq(_payOnce(sid, outsider), 2);
         assertEq(_s(sid).executedCount, 3);
         assertEq(usdc.balanceOf(payee1), 3 * AMOUNT);
+        assertEq(rpm.catchUpUntil(sid), execAt, "boundary persists after the range is consumed");
         vm.expectRevert(abi.encodeWithSelector(IRecurringPaymentModule.NotDue.selector, s + 3 days));
         rpm.execute(sid);
     }

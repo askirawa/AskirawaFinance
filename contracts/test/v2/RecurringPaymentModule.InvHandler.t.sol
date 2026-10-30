@@ -31,6 +31,10 @@ contract RpmHandler is Test {
     uint256 public ghostPayroll;
     uint256 public ghostPaidTotal;
     uint256 public ghostCorePaid;
+    uint256 public ghostPrefunded; // ModuleFunded events for the module (prefunded actions)
+    uint256 public ghostDonated; // USDC pushed straight into the module
+    uint256 public ghostRecovered; // FundsReturned events
+    uint256 public sinkInitial;
     uint256[] public ids;
     mapping(uint256 => uint256) public ghostPaid;
     mapping(uint256 => uint256) public paidCount;
@@ -51,6 +55,11 @@ contract RpmHandler is Test {
     bool public wrongPayment; // recipient / amount / executor / dueAt differ from stored terms or the caller
     bool public failureMovedState;
     bool public multiPayInOneCall;
+    bool public wrongRecovery; // FundsReturned count/amount, module remainder or treasury delta is off
+    bool public recoveryFailedWithFunds; // action 3 could not execute although the module held USDC
+    bool public wrongBoundary; // catchUpUntil after a resume is not (now | 0)
+    bool public backlogInsideRange; // BACKLOG auto-pause although nextDue <= catchUpUntil
+    bool public paidBeyondGuard; // paid a period beyond the boundary that the ordinary guard must have paused
 
     // ---- coverage counters (reported, and required to be non-zero across a run)
     uint256 public nPayments;
@@ -66,6 +75,12 @@ contract RpmHandler is Test {
     uint256 public nCoreUnpauses;
     uint256 public nRetryRejected;
     uint256 public nBlockToggles;
+    uint256 public nPrefunds;
+    uint256 public nRecoveries;
+    uint256 public nRecoverEmpty;
+    uint256 public nDonations;
+    uint256 public nNoSkipResumes;
+    uint256 public nCatchUpPayments; // payments the backlog guard would have blocked without the authorization
 
     constructor(AskirawaTreasury t_, RecurringPaymentModule rpm_, V2MockUSDC usdc_, address[3] memory approvers_,
         address guardian_, address keeper_, address sink_) {
@@ -79,6 +94,7 @@ contract RpmHandler is Test {
         for (uint256 i; i < 6; ++i) actors[i] = vm.addr(80_000 + i);
         callers = [actors[0], actors[1], keeper, approvers_[0], approvers_[1], approvers_[2], vm.addr(81_000)];
         initialBalance = usdc_.balanceOf(address(t_));
+        sinkInitial = usdc_.balanceOf(sink_);
     }
 
     function idsLength() external view returns (uint256) { return ids.length; }
@@ -90,9 +106,13 @@ contract RpmHandler is Test {
     // ------------------------------------------------------------ core flow plumbing
     /// @dev Real approval flow for a module action. Returns whether the proposal executed.
     function _action(uint8 code, bytes memory data, bytes32 memo) internal returns (bool ok) {
+        return _actionFunded(code, data, memo, 0);
+    }
+
+    function _actionFunded(uint8 code, bytes memory data, bytes32 memo, uint96 funding) internal returns (bool ok) {
         uint64 exp = _now() + 30 days;
         vm.prank(approvers[0]);
-        try t.proposeModuleAction(address(rpm), code, data, 0, exp, memo) returns (uint256 pid) {
+        try t.proposeModuleAction(address(rpm), code, data, funding, exp, memo) returns (uint256 pid) {
             vm.prank(approvers[1]);
             try t.approve(pid) {} catch { return false; }
             vm.warp(vm.getBlockTimestamp() + t.payrollDelay());
@@ -203,7 +223,72 @@ contract RpmHandler is Test {
         if (!has) return;
         if (rpm.getSchedule(id).status != IRPM.ScheduleStatus.Paused) return;
         if (_action(2, abi.encode(id, skipMissed), bytes32(id)) &&
-            rpm.getSchedule(id).status == IRPM.ScheduleStatus.Active) ++nResumes;
+            rpm.getSchedule(id).status == IRPM.ScheduleStatus.Active) {
+            ++nResumes;
+            if (!skipMissed) ++nNoSkipResumes;
+            // the boundary is the approval-execution time for a no-skip resume and zero for a skip resume
+            if (rpm.catchUpUntil(id) != (skipMissed ? 0 : _now())) wrongBoundary = true;
+        }
+        _observe();
+    }
+
+    // ------------------------------------------------------------ module-held USDC (prefunding, donations, action 3)
+    /// @dev CREATE with fundingAmount > 0: budget is consumed and the USDC stays in the module.
+    function prefundCreate(uint256 seed) external {
+        uint96 funding = uint96(bound(seed >> 120, 1e6, 300e6));
+        uint256 before_ = rpm.scheduleCount();
+        IRPM.ScheduleParams memory p = _params(seed, false);
+        vm.recordLogs();
+        bool ok = _actionFunded(1, abi.encode(p), bytes32(seed), funding);
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+        if (ok && rpm.scheduleCount() == before_ + 1) {
+            ids.push(rpm.scheduleCount());
+            ++nCreates;
+        }
+        for (uint256 i; i < logs.length; ++i) {
+            if (logs[i].emitter == address(t) && logs[i].topics[0] == AskirawaTreasury.ModuleFunded.selector) {
+                (uint256 amount,) = abi.decode(logs[i].data, (uint256, bytes32));
+                ghostPrefunded += amount;
+                ++nPrefunds;
+            }
+        }
+        _observe();
+    }
+
+    function donate(uint256 amount) external {
+        amount = bound(amount, 1e6, 50e6);
+        usdc.mint(address(rpm), amount);
+        ghostDonated += amount;
+        ++nDonations;
+    }
+
+    /// @dev Action 3 through the real quorum flow; checks the event, the module remainder and the treasury delta.
+    function recover(uint256 seed) external {
+        uint256 modBal = usdc.balanceOf(address(rpm));
+        uint256 treBefore = usdc.balanceOf(address(t));
+        bool wasPaused = t.paused();
+        vm.recordLogs();
+        bool ok = _action(3, "", bytes32(seed));
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+        if (ok) {
+            uint256 events;
+            uint256 returned;
+            for (uint256 i; i < logs.length; ++i) {
+                if (logs[i].emitter == address(rpm) && logs[i].topics[0] == IRPM.FundsReturned.selector) {
+                    ++events;
+                    returned = abi.decode(logs[i].data, (uint256));
+                }
+            }
+            ghostRecovered += returned;
+            ++nRecoveries;
+            if (events != 1 || returned != modBal || usdc.balanceOf(address(rpm)) != 0
+                || usdc.balanceOf(address(t)) != treBefore + returned) wrongRecovery = true;
+            if (wasPaused) wrongRecovery = true; // the core pause must stop every module action
+        } else if (modBal == 0) {
+            ++nRecoverEmpty;
+        } else if (!wasPaused) {
+            recoveryFailedWithFunds = true;
+        }
         _observe();
     }
 
@@ -315,7 +400,10 @@ contract RpmHandler is Test {
                 ++nFailures;
             } else if (sig == IRPM.ScheduleAutoPaused.selector) {
                 if (abi.decode(l.data, (uint8)) == uint8(IRPM.AutoPauseReason.FAILURES)) ++nAutoPauseFailures;
-                else ++nAutoPauseBacklog;
+                else {
+                    ++nAutoPauseBacklog;
+                    if (b.nextDue <= rpm.catchUpUntil(id)) backlogInsideRange = true;
+                }
             } else if (sig == IRPM.ScheduleCompleted.selector) {
                 ++nCompletions;
             }
@@ -338,11 +426,23 @@ contract RpmHandler is Test {
         ghostPaid[id] += amount;
         ghostPaidTotal += amount;
         ++nPayments;
+        _accountCatchUp(id, b);
         (,,,,, uint64 ws,) = t.modules(address(rpm));
         if (!windowSeen[ws]) {
             windowSeen[ws] = true;
             windowStarts.push(ws);
         }
         windowPaid[ws] += amount;
+    }
+
+    /// @dev A payment the ordinary guard would have blocked is legal ONLY when nextDue <= catchUpUntil.
+    function _accountCatchUp(uint256 id, IRPM.Schedule memory b) internal {
+        uint256 period = uint256(b.executedCount) + rpm.skippedPeriods(id);
+        uint256 lastPeriod = ScheduleMath.maxPeriod(b.startTime, b.frequency);
+        bool guardWouldFire = period + 3 <= lastPeriod
+            && ScheduleMath.add(b.startTime, b.frequency, period + 3) <= _now();
+        if (!guardWouldFire) return;
+        if (b.nextDue <= rpm.catchUpUntil(id)) ++nCatchUpPayments;
+        else paidBeyondGuard = true;
     }
 }

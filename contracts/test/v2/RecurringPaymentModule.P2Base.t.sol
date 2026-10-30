@@ -86,13 +86,19 @@ abstract contract RpmP2Base is RecurringPaymentModuleTestBase {
         (ok,) = address(rpm).call(abi.encodeCall(IRPM.execute, (sid)));
     }
 
-    /// @dev Resume through a real proposal, asserting the exact ScheduleResumed arguments.
-    function _resumeExpecting(uint256 sid, bool skipMissed, uint256 skipped) internal {
+    /// @dev Resume through a real proposal, asserting the exact ScheduleResumed and CatchUpAuthorized arguments
+    /// (the boundary is the approval-execution timestamp for a no-skip resume, zero for a skip resume).
+    /// Returns the execution timestamp.
+    function _resumeExpecting(uint256 sid, bool skipMissed, uint256 skipped) internal returns (uint64 execAt) {
         uint256 pid = _proposeResume(sid, skipMissed);
         _reachQuorum(pid);
         _warpToExecutable(pid);
+        execAt = _now();
         vm.expectEmit(true, false, false, true, address(rpm));
         emit IRPM.ScheduleResumed(sid, skipped);
+        vm.expectEmit(true, false, false, true, address(rpm));
+        emit IRPM.CatchUpAuthorized(sid, skipMissed ? 0 : execAt);
         _exec(pid);
+        assertEq(rpm.catchUpUntil(sid), skipMissed ? 0 : execAt, "boundary stored");
     }
 }

@@ -101,8 +101,11 @@ contract RecurringPaymentModuleCreateTest is RecurringPaymentModuleTestBase {
 
     function test_Sched01_UnknownActionCodeRevertsThroughTheCore() public {
         bytes memory data = abi.encode(_p(payee1, AMOUNT, DAILY, _now() + 5 days));
-        uint256 pid = _proposeRaw(3, data);
-        _expectCallbackRevert(pid, abi.encodeWithSelector(IRecurringPaymentModule.UnknownAction.selector, uint8(3)));
+        // 3 is ACTION_RECOVER_FUNDS now; the first unassigned code is 4
+        uint256 pid = _proposeRaw(4, data);
+        _expectCallbackRevert(pid, abi.encodeWithSelector(IRecurringPaymentModule.UnknownAction.selector, uint8(4)));
+        pid = _proposeRaw(255, data);
+        _expectCallbackRevert(pid, abi.encodeWithSelector(IRecurringPaymentModule.UnknownAction.selector, uint8(255)));
         pid = _proposeRaw(0, data);
         _expectCallbackRevert(pid, abi.encodeWithSelector(IRecurringPaymentModule.UnknownAction.selector, uint8(0)));
         assertEq(rpm.scheduleCount(), 0);

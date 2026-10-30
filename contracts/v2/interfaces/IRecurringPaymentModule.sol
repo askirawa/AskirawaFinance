@@ -79,6 +79,12 @@ interface IRecurringPaymentModule is ITreasuryModule {
     event SchedulePaused(uint256 indexed scheduleId, address indexed by);
     /// @notice Quorum-authorized resume; skippedPeriods is this resume's delta, not its lifetime total.
     event ScheduleResumed(uint256 indexed scheduleId, uint256 skippedPeriods);
+    /// @notice Catch-up boundary set by quorum resume; zero clears any previous authorization.
+    /// @dev Nonzero authorizes one payment per execute for due dates at or before this boundary,
+    /// subject to all existing payment checks, retry handling, schedule limits and core budget caps.
+    event CatchUpAuthorized(uint256 indexed scheduleId, uint64 catchUpUntil);
+    /// @notice Entire module USDC balance returned only to the bound treasury by quorum action 3.
+    event FundsReturned(uint256 indexed proposalId, uint256 amount);
     /// @notice Terminal cancellation by a current approver or nonzero current guardian.
     event ScheduleCancelled(uint256 indexed scheduleId, address indexed by);
     /// @notice Terminal completion due to a limit or the supported arithmetic horizon.
@@ -98,6 +104,8 @@ interface IRecurringPaymentModule is ITreasuryModule {
     error InvalidAmount(uint96 amount, uint96 perTxMax);
     /// @notice Start, end or total constraint is invalid.
     error InvalidScheduleParameters();
+    /// @notice Quorum recovery found no USDC held by the module.
+    error NothingToRecover();
     /// @notice Unknown module action discriminator.
     error UnknownAction(uint8 actionCode);
     /// @notice A schedule id has never been assigned.

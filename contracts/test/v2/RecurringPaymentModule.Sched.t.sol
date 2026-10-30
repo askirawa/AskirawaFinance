@@ -46,8 +46,9 @@ contract RecurringPaymentModuleSchedTest is RpmP2Base {
         assertEq(_payOnce(sid, outsider), 0, "2 days 23:59:59 overdue is within the tolerance");
     }
 
-    function test_MSched10_BacklogAutoPauseThenResumeWithoutSkipRepausesThenSkipPaysOnlyNextPeriod() public {
-        uint256 sid = _mkDaily();
+    /// @dev Drives a fresh daily schedule into a BACKLOG auto-pause (exactly 3 periods overdue) and asserts that
+    /// the maintenance call emitted only the auto-pause event and changed nothing but the status.
+    function _backlogPause(uint256 sid) internal {
         uint64 start = _s(sid).startTime;
         vm.warp(start + 3 days); // periods 0..2 unpaid, add(start, 3) <= now
         bytes32 d = _digest(sid);
@@ -77,26 +78,54 @@ contract RecurringPaymentModuleSchedTest is RpmP2Base {
         assertTrue(_digest(sid) != d);
         vm.expectRevert(abi.encodeWithSelector(IRPM.InvalidStatus.selector, sid, IRPM.ScheduleStatus.Paused));
         _run(sid, outsider);
+    }
 
-        // resume WITHOUT skipping: backlog persists, the very first execute re-pauses and still pays nothing
-        _resumeExpecting(sid, false, 0);
+    function test_MSched10_BacklogAutoPauseThenResumeWithoutSkipNoLongerRepausesAndPaysEveryDuePeriod() public {
+        uint256 sid = _mkDaily();
+        uint64 start = _s(sid).startTime;
+        _backlogPause(sid);
+
+        // resume WITHOUT skipping: the quorum snapshots the approval time as the catch-up boundary
+        uint64 boundary = _resumeExpecting(sid, false, 0);
+        assertEq(boundary, start + 4 days, "approval executes one payroll delay after the pause");
+        assertEq(rpm.catchUpUntil(sid), boundary);
         assertEq(uint8(_st(sid)), uint8(IRPM.ScheduleStatus.Active));
         assertEq(rpm.skippedPeriods(sid), 0);
-        vm.expectEmit(true, false, false, true, address(rpm));
-        emit IRPM.ScheduleAutoPaused(sid, IRPM.AutoPauseReason.BACKLOG);
-        _run(sid, keeper);
-        assertEq(uint8(_st(sid)), uint8(IRPM.ScheduleStatus.Paused));
-        assertEq(usdc.balanceOf(payee1), 0);
-        assertEq(_s(sid).executedCount, 0);
+        assertEq(_s(sid).nextDue, start, "resume does not move the calendar");
 
-        // resume WITH skipMissed: calendar jumps to the first period strictly after now; only that one is paid
+        // the very first execute pays period 0 (it used to re-pause with BACKLOG)
+        // periods 0..4 are due at or before the boundary: five payments, one per call
+        for (uint256 i; i < 5; ++i) {
+            assertEq(_payOnce(sid, i % 2 == 0 ? keeper : outsider), i, "oldest unpaid period first");
+            assertEq(usdc.balanceOf(payee1), (i + 1) * AMOUNT);
+            assertEq(uint8(_st(sid)), uint8(IRPM.ScheduleStatus.Active), "no re-pause on the authorized range");
+        }
+        assertEq(_s(sid).executedCount, 5);
+        assertEq(_s(sid).nextDue, start + 5 days);
+        vm.expectRevert(abi.encodeWithSelector(IRPM.NotDue.selector, start + 5 days));
+        _run(sid, outsider);
+    }
+
+    function test_MSched10_BacklogAutoPauseThenSkipResumePaysOnlyNextPeriodAndClearsBoundary() public {
+        uint256 sid = _mkDaily();
+        uint64 start = _s(sid).startTime;
+        _backlogPause(sid);
+        // a prior no-skip resume left a boundary; a later skip resume must clear it
+        _resumeExpecting(sid, false, 0);
+        assertGt(rpm.catchUpUntil(sid), 0);
+        vm.prank(approver1);
+        rpm.pause(sid);
+
         uint256 pid = _proposeResume(sid, true);
         _reachQuorum(pid);
         _warpToExecutable(pid);
         uint256 n = (_now() - start) / 1 days + 1;
         vm.expectEmit(true, false, false, true, address(rpm));
         emit IRPM.ScheduleResumed(sid, n);
+        vm.expectEmit(true, false, false, true, address(rpm));
+        emit IRPM.CatchUpAuthorized(sid, 0);
         _exec(pid);
+        assertEq(rpm.catchUpUntil(sid), 0, "skip clears the boundary");
         assertEq(rpm.skippedPeriods(sid), n);
         assertEq(_s(sid).nextDue, start + n * 1 days);
         assertEq(_s(sid).executedCount, 0, "skipped periods are not payments");

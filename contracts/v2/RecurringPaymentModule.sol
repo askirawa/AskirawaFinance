@@ -3,6 +3,8 @@ pragma solidity 0.8.28;
 
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {ITreasuryModule} from "./interfaces/ITreasuryModule.sol";
 import {IAskirawaTreasury} from "./interfaces/IAskirawaTreasury.sol";
 import {IRecurringPaymentModule} from "./interfaces/IRecurringPaymentModule.sol";
@@ -35,18 +37,26 @@ interface IRecurringTreasuryBudget {
 /**
  * @title RecurringPaymentModule
  * @notice UNAUDITED immutable Treasury v2 recurring payments and automation rules.
- * @dev The legacy Automation Registry is never called. No owner, upgrade path or recovery policy.
+ * @dev The legacy Automation Registry is never called. No owner or upgrade path.
  * Quorum authorization is exclusively the core's responsibility. Creation/resume callbacks do not draw funds.
+ * Recurring schedules never need prefunding: a positive fundingAmount in CREATE/RESUME is wasted
+ * budget and must be recovered via action 3 (ACTION_RECOVER_FUNDS); recovery does not refund budget usage.
+ * No executor, approver or guardian can withdraw module funds except through this quorum action.
+ * Module-held USDC can only be sent to the bound treasury, never to any other address.
  * Every mutation uses OpenZeppelin's STORAGE reentrancy guard, compatible with the Paris EVM.
  * Only execute draws funds, exclusively via the core's codehash-pinned, budget-limited payFromModule.
  * executedCount counts successful payments; a separate skippedPeriods mapping advances calendar indices.
  * All dates are UTC. End time constrains due dates, not actual late execution times, as specified in Part 2.
  */
 contract RecurringPaymentModule is IRecurringPaymentModule, ReentrancyGuard {
+    using SafeERC20 for IERC20;
+
     /// @notice Approved action code for abi.encode(ScheduleParams).
     uint8 public constant CREATE_SCHEDULE = 1;
     /// @notice Approved action code for abi.encode(uint256 scheduleId, bool skipMissed).
     uint8 public constant RESUME_SCHEDULE = 2;
+    /// @notice Quorum-only return of all module-held USDC to the treasury; action data is ignored.
+    uint8 public constant ACTION_RECOVER_FUNDS = 3;
     /// @notice Maximum outstanding periods allowed before protective auto-pause.
     uint8 public constant MAX_BACKLOG = 3;
     /// @inheritdoc ITreasuryModule
@@ -61,6 +71,11 @@ contract RecurringPaymentModule is IRecurringPaymentModule, ReentrancyGuard {
     mapping(uint256 => Schedule) public schedules;
     /// @inheritdoc IRecurringPaymentModule
     mapping(uint256 => uint256) public override skippedPeriods;
+    /// @notice Inclusive quorum-authorized due-date boundary for catch-up; zero means no authorization.
+    /// @dev RESUME without skipping snapshots approval-execution time; each execute still pays one period.
+    /// Previously skipped periods stay skipped. All payment checks, retries, count/total/endTime limits
+    /// and core budget caps still apply; due dates beyond this boundary retain backlog protection.
+    mapping(uint256 => uint64) public catchUpUntil;
 
     /**
      * @notice Binds this module to an existing treasury without assigning deployer privileges.
@@ -92,6 +107,12 @@ contract RecurringPaymentModule is IRecurringPaymentModule, ReentrancyGuard {
         } else if (actionCode == RESUME_SCHEDULE) {
             (uint256 id, bool skipMissed) = abi.decode(data, (uint256, bool));
             _resume(id, skipMissed);
+        } else if (actionCode == ACTION_RECOVER_FUNDS) {
+            IERC20 token = IAskirawaTreasury(treasury).usdc();
+            uint256 amount = token.balanceOf(address(this));
+            if (amount == 0) revert NothingToRecover();
+            token.safeTransfer(treasury, amount);
+            emit FundsReturned(proposalId, amount);
         } else {
             revert UnknownAction(actionCode);
         }
@@ -129,7 +150,7 @@ contract RecurringPaymentModule is IRecurringPaymentModule, ReentrancyGuard {
         uint256 period = uint256(s.executedCount) + skippedPeriods[id];
         uint256 lastPeriod = ScheduleMath.maxPeriod(s.startTime, s.frequency);
         // A nonexistent period beyond the calendar horizon is never treated as overdue.
-        if (period + MAX_BACKLOG <= lastPeriod &&
+        if (s.nextDue > catchUpUntil[id] && period + MAX_BACKLOG <= lastPeriod &&
             ScheduleMath.add(s.startTime, s.frequency, period + MAX_BACKLOG) <= block.timestamp) {
             s.status = ScheduleStatus.Paused;
             emit ScheduleAutoPaused(id, AutoPauseReason.BACKLOG);
@@ -245,11 +266,15 @@ contract RecurringPaymentModule is IRecurringPaymentModule, ReentrancyGuard {
             p.endTime, p.maxExecutions, p.maxTotal, p.minTreasuryBalanceAfter, p.executor, p.memoRef);
     }
 
-    /// @dev Calendar skips never consume paid execution count or total limits. No-skip retains backlog protection.
+    /// @dev Calendar skips never consume paid execution count or total limits and clear catch-up authorization.
+    /// No-skip authorizes one payment per execute for each remaining due date through the current timestamp,
+    /// inclusive, without changing nextDue or skippedPeriods. Only the backlog guard is bypassed in that range;
+    /// all other checks and limits remain in force, including endTime as a due-date (not execution-time) cap.
     function _resume(uint256 id, bool skipMissed) private {
         Schedule storage s = _known(id);
         if (s.status != ScheduleStatus.Paused) revert InvalidStatus(id, s.status);
         uint256 skipped;
+        catchUpUntil[id] = skipMissed ? 0 : _time64(block.timestamp);
         if (skipMissed) {
             uint256 currentPeriod = uint256(s.executedCount) + skippedPeriods[id];
             uint256 nextPeriod = ScheduleMath.firstPeriodAfter(s.startTime, s.frequency, block.timestamp);
@@ -263,6 +288,7 @@ contract RecurringPaymentModule is IRecurringPaymentModule, ReentrancyGuard {
         s.nextRetryAt = 0;
         s.status = ScheduleStatus.Active;
         emit ScheduleResumed(id, skipped);
+        emit CatchUpAuthorized(id, catchUpUntil[id]);
     }
 
     /// @dev Includes explicit due-date/count/total hard stops and implicit storage-capacity limits.
