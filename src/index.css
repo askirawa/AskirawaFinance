@@ -1,0 +1,232 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* ── Backgrounds ─────────────────────────────── */
+  --bg:             #0A0A0A;
+  --bg-2:           #141414;
+  --sidebar-bg:     #101010;
+  --surface:        #141414;
+  --surface-2:      #1A1A1A;
+  --surface-hover:  #1F1F1F;
+  --surface-muted:  #181818;
+
+  /* ── Text ────────────────────────────────────── */
+  --ink:     #FFFFFF;
+  --ink-2:   #E0E0E0;
+  --muted:   #9A9A9A;
+  --subtle:  #6B6B6B;
+
+  /* ── Borders ─────────────────────────────────── */
+  --border:        #2A2A2A;
+  --border-strong: #333333;
+  --border-focus:  #FFFFFF;
+
+  /* ── Hero card (light) ───────────────────────── */
+  --hero-bg-from:  #F2F2F2;
+  --hero-bg-to:    #E0E0E0;
+  --hero-ink:      #111111;
+  --hero-ink-2:    #444444;
+  --hero-border:   #CCCCCC;
+
+  /* ── Semantic (kept for functional UI only) ──── */
+  --success:        #4CAF7D;
+  --success-dim:    rgba(76,175,125,0.10);
+  --success-border: rgba(76,175,125,0.22);
+  --warning:        #C8973A;
+  --warning-dim:    rgba(200,151,58,0.10);
+  --warning-border: rgba(200,151,58,0.22);
+  --danger:         #C85C6A;
+  --danger-dim:     rgba(200,92,106,0.10);
+  --danger-border:  rgba(200,92,106,0.22);
+  --info:           #5A8FA8;
+  --info-dim:       rgba(90,143,168,0.10);
+  --info-border:    rgba(90,143,168,0.22);
+
+  /* ── Accent (monochrome identity: white on dark) ─ */
+  --accent:         #FFFFFF;
+  --accent-dim:     rgba(255,255,255,0.08);
+  --accent-border:  rgba(255,255,255,0.28);
+  --surface-strong: #262626;
+  --surface-elevated: #1A1A1A;
+
+  /* ── Active nav accent ───────────────────────── */
+  --nav-active-bg:  #1F1F1F;
+  --nav-active-bar: #FFFFFF;
+
+  /* ── Shape ───────────────────────────────────── */
+  --radius-sm:  0px;
+  --radius:     0px;
+  --radius-lg:  0px;
+  --radius-xl:  0px;
+  --chamfer:    24px;
+
+  /* ── Sizing ──────────────────────────────────── */
+  --sidebar-w: 248px;
+  --topbar-h:  56px;
+}
+
+/* ── Reset ───────────────────────────────────────── */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+img, svg { max-width: 100%; }
+button { font-family: inherit; }
+
+/* ── Dot-grid background texture ─────────────────── */
+body {
+  margin: 0;
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Typography helpers ───────────────────────────── */
+.display {
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: -0.03em;
+}
+
+.mono {
+  font-family: 'JetBrains Mono', Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Chamfered card clip ──────────────────────────── */
+.card-chamfer {
+  clip-path: polygon(0 0, calc(100% - var(--chamfer)) 0, 100% var(--chamfer), 100% 100%, 0 100%);
+}
+
+/* ── Card accent tick (top-left edge ornament) ───────
+   Use as ::before on a positioned parent */
+.card-tick::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 90px;
+  height: 1px;
+  background: var(--ink);
+  opacity: 0.25;
+}
+
+/* ── Scrollbar ────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ── Focus ────────────────────────────────────────── */
+:focus-visible { outline: 1px solid var(--border-focus); outline-offset: 2px; }
+
+/* ── Table baseline ───────────────────────────────── */
+table { border-collapse: collapse; width: 100%; }
+th {
+  text-align: left;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--subtle);
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+td {
+  padding: 14px 16px;
+  font-size: 13.5px;
+  color: var(--ink-2);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--surface-hover); }
+
+/* ── Input baseline ───────────────────────────────── */
+input, select, textarea {
+  background: var(--surface-muted);
+  border: 1px solid var(--border-strong);
+  border-radius: 0;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 14px;
+  padding: 10px 12px;
+  width: 100%;
+  transition: border-color 0.15s;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--border-focus);
+}
+input[type="checkbox"], input[type="radio"], input[type="range"] {
+  width: auto; min-height: 0; padding: 0; background: transparent;
+}
+input::placeholder, textarea::placeholder { color: var(--subtle); }
+label {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+/* ── Sidebar active nav helper ────────────────────── */
+.sidebar-link-active {
+  background: var(--nav-active-bg) !important;
+  color: var(--ink) !important;
+  border-color: transparent !important;
+}
+
+/* ── Transition helpers ───────────────────────────── */
+.transition-fast { transition: all 0.15s ease; }
+.transition-med  { transition: all 0.2s ease; }
+
+/* ── Circular progress ring ───────────────────────── */
+.progress-ring-track { stroke: var(--border-strong); }
+.progress-ring-fill  { stroke: var(--ink); }
+
+
+/* ── Layout shell ─────────────────────────────────── */
+.app-content { max-width: 1200px; margin: 0 auto; padding: 40px 32px 96px; }
+.app-footer {
+  max-width: 1200px; margin: 0 auto; padding: 16px 32px 28px;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+
+/* Wide tables scroll sideways inside their card instead of stretching the page */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+
+/* ── Mobile ───────────────────────────────────────── */
+@media (max-width: 1023px) {
+  .app-content { padding: 24px 16px 96px; }
+  .app-footer { padding: 16px 16px 28px; }
+}
+
+@media (max-width: 640px) {
+  body { overflow-x: hidden; }
+  /* 16px inputs stop iOS Safari zooming the page on focus */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea { font-size: 16px; }
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select { min-height: 44px; }
+  /* Tables become horizontally scrollable blocks */
+  table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+  th, td { padding-left: 12px; padding-right: 12px; }
+  /* Page headers: stack title and action */
+  h1 { overflow-wrap: anywhere; }
+}
+
+/* Keep the Arc Studio watermark clear of content on small screens */
+@media (max-width: 640px) {
+  a[href="https://studio.arc.io/"] { bottom: 8px !important; right: 8px !important; padding: 6px 10px !important; }
+}

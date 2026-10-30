@@ -1,0 +1,46 @@
+# ── Secrets and environment ───────────────────────────────────────────────────
+.env
+.env.*
+!env.example
+*.key
+*.pem
+*.p12
+*.pfx
+recovery_file*.dat
+.circle/
+
+# ── Node / Bun ────────────────────────────────────────────────────────────────
+node_modules/
+.bun/
+
+# ── Foundry build artifacts ───────────────────────────────────────────────────
+contracts/out/
+contracts/cache/
+cache/
+broadcast/
+
+# ── Frontend build output ─────────────────────────────────────────────────────
+dist/
+
+# ── Database and runtime files ────────────────────────────────────────────────
+*.db
+*.db-shm
+*.db-wal
+askira.db
+
+# ── Arc Studio sandbox runtime logs (already in history — excluded going forward)
+console.jsonl
+traces.jsonl
+
+# ── Editor and OS ─────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# ── TypeScript ────────────────────────────────────────────────────────────────
+*.tsbuildinfo
