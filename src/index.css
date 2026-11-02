@@ -230,3 +230,19 @@ label {
 @media (max-width: 640px) {
   a[href="https://studio.arc.io/"] { bottom: 8px !important; right: 8px !important; padding: 6px 10px !important; }
 }
+
+/* ── Footer note ──────────────────────────────────── */
+.footer-note {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--subtle);
+}
+
+/* ── Feature icons are white everywhere (single source of truth) ──
+   Navigation, stat cards, empty states and page headers render lucide icons inside these
+   wrappers. Text, buttons and status colors are not affected. */
+.feature-icon, .feature-icon svg { color: var(--ink) !important; }
+/* ...except on the white primary button, where a white icon would be invisible */
+[class*="bg-[var(--ink)]"] .feature-icon, [class*="bg-[var(--ink)]"] .feature-icon svg { color: var(--bg) !important; }

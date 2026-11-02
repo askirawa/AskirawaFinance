@@ -14,7 +14,7 @@ export default function EmptyState({ icon: Icon, title, description, action }: E
       style={{ color: 'var(--muted)' }}
     >
       <div
-        className="mb-4 flex items-center justify-center rounded-2xl"
+        className="mb-4 flex items-center justify-center rounded-2xl feature-icon"
         style={{
           width: 52,
           height: 52,

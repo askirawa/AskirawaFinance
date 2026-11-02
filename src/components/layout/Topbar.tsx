@@ -1,70 +1,26 @@
 import { ConnectKitButton } from 'connectkit'
-import { useAccount, useSwitchChain } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { Menu, X } from 'lucide-react'
-import { ARC_MAINNET_CHAIN_ID } from '../../config'
-import NotificationPanel from '../notifications/NotificationPanel'
+import { NETWORK, TREASURY_CHAIN_ID } from '../../chain/config'
 import { PAGE_TITLES } from './navItems'
-import type { Page } from '../../App'
+import type { Page } from '../../nav'
 
 interface TopbarProps {
   activePage?: Page
-  onNavigate: (page: Page) => void
   onMobileMenuToggle: () => void
   mobileMenuOpen?: boolean
 }
 
 const MONO = "'JetBrains Mono', monospace"
 
-export default function Topbar({ activePage = 'dashboard', onNavigate, onMobileMenuToggle, mobileMenuOpen }: TopbarProps) {
+export default function Topbar({ activePage = 'dashboard', onMobileMenuToggle, mobileMenuOpen }: TopbarProps) {
   const { isConnected, chainId } = useAccount()
-  const { switchChain, isPending: isSwitching } = useSwitchChain()
 
-  const isWrongChain = isConnected && chainId !== ARC_MAINNET_CHAIN_ID
+  const isWrongChain = isConnected && chainId !== TREASURY_CHAIN_ID
   const pageTitle = PAGE_TITLES[activePage] ?? 'Askirawa Finance'
 
   return (
     <div style={{ flexShrink: 0, position: 'sticky', top: 0, zIndex: 20, background: 'var(--bg)' }}>
-
-      {isWrongChain && (
-        <div
-          role="alert"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexWrap: 'wrap',
-            gap: '6px 12px',
-            padding: '8px 16px',
-            background: 'var(--warning-dim)',
-            borderBottom: '1px solid var(--warning-border)',
-            fontSize: 13,
-            color: 'var(--warning)',
-          }}
-        >
-          <span>Your wallet is on the wrong network. Switch to Arc Mainnet to continue.</span>
-          <button
-            onClick={() => switchChain({ chainId: ARC_MAINNET_CHAIN_ID })}
-            disabled={isSwitching}
-            style={{
-              background: 'transparent',
-              color: 'var(--warning)',
-              border: '1px solid var(--warning-border)',
-              padding: '0 14px',
-              height: 36,
-              fontSize: 12,
-              fontWeight: 600,
-              cursor: isSwitching ? 'default' : 'pointer',
-              opacity: isSwitching ? 0.5 : 1,
-              fontFamily: MONO,
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-              borderRadius: 0,
-            }}
-          >
-            {isSwitching ? 'Switching…' : 'Switch network'}
-          </button>
-        </div>
-      )}
 
       <div style={{
         height: 'var(--topbar-h)',
@@ -141,10 +97,8 @@ export default function Topbar({ activePage = 'dashboard', onNavigate, onMobileM
               display: 'inline-block',
               flexShrink: 0,
             }} />
-            Arc Mainnet
+            {NETWORK.name} · USDC
           </div>
-
-          <NotificationPanel onViewAll={onNavigate} />
 
           <ConnectKitButton.Custom>
             {({ isConnected: ckConnected, isConnecting, show, address, truncatedAddress }) => (

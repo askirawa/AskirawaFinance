@@ -9,19 +9,20 @@ Built with [Arc Studio](https://studio.arc.io)
 - Frontend: React 18, Vite, TypeScript, Tailwind CSS
 - Web3: wagmi v2, viem v2, ConnectKit
 - Contracts: Solidity 0.8.28 + Foundry
-- Backend: Bun server, SQLite (`bun:sqlite`), SIWE authentication
-- Chain: Arc Testnet (chain ID 5042002) for Treasury v2, USDC at `0x3600000000000000000000000000000000000000` (6 decimals). The existing Automation Registry reads use Arc Mainnet (5042)
+- Backend (optional, not used by the treasury screens): Bun server, SQLite (`bun:sqlite`), SIWE authentication
+- Chain: Arc Testnet (chain ID 5042002, the default) for Treasury v2, USDC at `0x3600000000000000000000000000000000000000` (6 decimals). The existing Automation Registry reads use Arc Mainnet (5042)
 
 ## Features
 
-- **Treasury** — balance read from the contract, USDC deposits, quorum progress and timelock countdowns
-- **Payroll** — all-or-nothing USDC batch proposals; approvers vote, a timelock runs, then anyone can execute
-- **Approvals** — approve, reject, execute and cancel proposals, with clear pending, approved, executable, executed, cancelled, rejected, expired and voided states
-- **Governance** — view the approver set, rotate approvers, change quorum and delays, guardian pause and quorum-approved unpause
-- **Recurring payments** — budget-limited schedules, enabled and created through governance, run by a keeper worker
-- **Activity and transactions** — history read from contract events
-- **Automations** — read access to the existing Automation Registry contracts on Arc Mainnet
-- **Team** — SIWE-authenticated organization management with roles stored in a SQLite database
+- **Dashboard**: available treasury balance, pending approvals, upcoming payments, total paid, recent transactions, Add funds
+- **Payroll**: step-by-step batches (names, wallet addresses, USDC amounts, CSV paste or file import), a dry run against the contract, then a request for approval. The whole batch is paid together or not at all
+- **Recurring Payments**: daily, weekly or calendar-month schedules created through an approval request. A registered schedule pays only when its due payment is triggered; automatic triggering needs the keeper
+- **Approvals**: one place to review, approve, reject, pay, start or cancel requests, with every status read from the treasury contract
+- **Team**: approvers, initiators, emergency pause contact and recovery contract read from the contract; display names are saved in this browser only
+- **Governance**: rotate approvers, change the approval rule and delays, pause and unpause (quorum proposals)
+- **Activity**: history read from contract events, starting at the deployment block, with CSV export
+- **Settings**: network, contracts, treasury rules, wallet. A read-only viewer for the legacy Automation Registry is reachable from here
+- **Escrow and Vesting**: Coming Soon. Not built, not deployed
 
 Lost approver keys can be recovered by an independent council (3 members, 2 needed) after 30 days of inactivity, a 14 day timelock the approvers can veto, and a 7 day spending cooling period afterwards (see `docs/recovery-design.md`). This is not independently audited.
 
@@ -43,12 +44,15 @@ bun install --frozen-lockfile   # also provides @openzeppelin/contracts, which t
 | Variable | Required | Description |
 |---|---|---|
 | `VITE_WC_PROJECT_ID` | For mobile wallets | WalletConnect project ID from [cloud.reown.com](https://cloud.reown.com). Public identifier, read at build time |
-| `VITE_CHAIN_ID` | No | Target chain for Treasury v2 (default `5042002`, Arc Testnet) |
+| `VITE_CHAIN_ID` | No | Target chain for Treasury v2: `5042002` Arc Testnet (default) or `5042` Arc Mainnet (only when set explicitly) |
 | `VITE_TREASURY_ADDRESS` | After deploy | Deployed AskirawaTreasury (v2) address |
 | `VITE_RECURRING_MODULE_ADDRESS` | After deploy | Deployed RecurringPaymentModule address |
 | `VITE_RECOVERY_ADDRESS` | After deploy | Deployed TreasuryRecovery address |
 | `VITE_TREASURY_DEPLOY_BLOCK` | After deploy | Block of the treasury deployment receipt; history scans start here |
-| `SESSION_SECRET` | Server | Random 32-byte hex string for session cookies |
+| `SESSION_SECRET` | Server | Random 32-byte hex string; signs the session cookie. Required in production |
+| `ALLOWED_ORIGINS` | Server | Comma list of browser origins allowed to call the backend with credentials. No cross-origin access when empty in production |
+| `SIWE_ALLOWED_DOMAINS` | Server | Comma list of hosts allowed in sign-in messages (for example `app.example.com`). Required in production |
+| `SIWE_CHAIN_IDS` | No | Chain IDs accepted in sign-in messages (default `5042,5042002`) |
 | `DATABASE_URL` | No | SQLite file path (default: `./askira.db`) |
 | `KEEPER_PRIVATE_KEY` | Keeper | Key of a dedicated gas-only keeper wallet. Secret: private `.env` only |
 | `POLL_INTERVAL_MS` | No | Keeper poll frequency in ms (default: 60000) |
@@ -105,7 +109,7 @@ Desktop browser wallets work without any setup. Phone wallet apps (MetaMask Mobi
 3. **Redeploy.** Vite reads `VITE_` variables when the app is built, so changing the value has no effect until a new build runs.
 4. In the Reown dashboard, add your site domain (for example `askirawa-finance.vercel.app`) to the project's allowed domains.
 
-To test on a phone: open the live site in your phone browser, tap **Connect wallet**, choose your wallet app, approve the connection, then switch to Arc Mainnet (chain ID 5042) when asked. Also try opening the site from inside your wallet app's built-in browser.
+To test on a phone: open the live site in your phone browser, tap **Connect wallet**, choose your wallet app, approve the connection, then approve the network switch the app asks for (it shows which network it needs). Also try opening the site from inside your wallet app's built-in browser.
 
 ## Contract Deployment (Treasury v2, Arc Testnet only)
 
@@ -124,5 +128,6 @@ The older `AskirawaFiTreasury` (v1) and its scripts remain in the repository but
 
 - The contracts have NOT been independently audited. Foundry tests live under `contracts/test` (`bun run contracts:test`)
 - On-chain proposal payloads are immutable once created
-- SIWE nonces are single-use and expire after 5 minutes
-- All backend role checks are server-side; frontend role values are never trusted
+- Sign-in messages must contain the nonce the server issued, an allowed domain and chain, and a short validity window. Nonces are single-use. The session cookie is signed, HttpOnly and SameSite=Strict (Secure in production). Sign-in and nonce requests are rate limited
+- Backend roles are labels. The treasury app does not call the backend, and no backend role grants any on-chain permission
+- Display names and unsent form drafts live in this browser only. They are never proof of identity, approval or payment

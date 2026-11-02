@@ -19,7 +19,8 @@ import { WagmiProvider } from 'wagmi'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ConnectKitProvider } from 'connectkit'
 import { Toaster } from 'sonner'
-import { config, ARC_MAINNET_CHAIN_ID } from './config'
+import { config } from './config'
+import { TREASURY_CHAIN_ID } from './chain/config'
 import App from './App'
 import './index.css'
 
@@ -83,7 +84,7 @@ createRoot(document.getElementById('root')!).render(
             '--ck-overlay-background': 'rgba(0,0,0,0.75)',
           }}
           options={{
-            initialChainId: ARC_MAINNET_CHAIN_ID,
+            initialChainId: TREASURY_CHAIN_ID,
             enforceSupportedChains: false,
             walletConnectName: 'WalletConnect',
             walletConnectCTA: 'both',

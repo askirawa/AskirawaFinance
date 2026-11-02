@@ -8,6 +8,7 @@ import { mainnet } from 'wagmi/chains'
 import { arcTestnet } from 'viem/chains'
 import { injected, walletConnect, coinbaseWallet } from 'wagmi/connectors'
 import { registerChain } from './tracing'
+import { TREASURY_CHAIN_ID } from './chain/config'
 
 export const APP_NAME = 'Askirawa Finance'
 export const APP_DESCRIPTION = 'Askirawa Finance — Programmable USDC Treasury built on Arc.'
@@ -22,6 +23,10 @@ export const arcMainnet = {
   },
   blockExplorers: {
     default: { name: 'Arc Explorer', url: 'https://explorer.arc.io' },
+  },
+  // Canonical Multicall3 is deployed on Arc Mainnet (verified with eth_getCode). wagmi batches reads through it.
+  contracts: {
+    multicall3: { address: '0xcA11bde05977b3631167028862bE2a173976CA11' },
   },
 } as const
 
@@ -76,7 +81,8 @@ if (isWalletConnectConfigured) {
 }
 
 export const config = createConfig({
-  chains: [arcMainnet, arcTestnet, mainnet],
+  // The treasury's own network is listed first so a wallet is never asked to move to a different network on connect.
+  chains: TREASURY_CHAIN_ID === arcTestnet.id ? [arcTestnet, arcMainnet, mainnet] : [arcMainnet, arcTestnet, mainnet],
   connectors,
   transports: {
     [arcMainnet.id]: http(),

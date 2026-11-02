@@ -1,63 +1,54 @@
-import {
-  LayoutDashboard, Wallet, RefreshCw, CheckSquare,
-  BarChart2, Bell, BookOpen, Activity, Zap, List, Building2, ShieldCheck,
-} from 'lucide-react'
-import type { Page } from '../../App'
+import { LayoutDashboard, Wallet, RefreshCw, CheckSquare, Users, Activity, Settings, Lock, Hourglass, Landmark } from 'lucide-react'
+import type { Page } from '../../nav'
 
-export type NavItem = { id: Page; label: string; icon: React.ReactNode }
+export type NavItem = { id: Page; label: string; icon: React.ReactNode; /** Not available yet: shown with a "Soon" tag. */ soon?: boolean }
 export type NavGroup = { label: string; items: NavItem[] }
 
 const ICON = { size: 16, strokeWidth: 1.5 } as const
 
-/** Single source of truth for desktop sidebar and mobile drawer navigation. */
+/** Single source of truth for desktop sidebar and mobile drawer navigation. Icons are white via .feature-icon. */
 export const NAV_GROUPS: NavGroup[] = [
   {
     label: 'Overview',
     items: [{ id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard {...ICON} /> }],
   },
   {
-    label: 'Treasury',
+    label: 'Payments',
     items: [
-      { id: 'payroll',     label: 'Payroll',            icon: <Wallet {...ICON} /> },
-      { id: 'recurring',   label: 'Recurring Payments', icon: <RefreshCw {...ICON} /> },
-      { id: 'approvals',   label: 'Approvals',          icon: <CheckSquare {...ICON} /> },
-      { id: 'governance',  label: 'Governance',         icon: <ShieldCheck {...ICON} /> },
-      { id: 'automations', label: 'Automations',        icon: <Zap {...ICON} /> },
+      { id: 'payroll', label: 'Payroll', icon: <Wallet {...ICON} /> },
+      { id: 'recurring', label: 'Recurring Payments', icon: <RefreshCw {...ICON} /> },
+      { id: 'approvals', label: 'Approvals', icon: <CheckSquare {...ICON} /> },
     ],
   },
   {
-    label: 'Team',
-    items: [{ id: 'organization', label: 'Team & Roles', icon: <Building2 {...ICON} /> }],
-  },
-  {
-    label: 'Insights',
+    label: 'Coming soon',
     items: [
-      { id: 'analytics',    label: 'Analytics',    icon: <BarChart2 {...ICON} /> },
-      { id: 'activity',     label: 'Activity',     icon: <Activity {...ICON} /> },
-      { id: 'transactions', label: 'Transactions', icon: <List {...ICON} /> },
+      { id: 'escrow', label: 'Escrow', icon: <Lock {...ICON} />, soon: true },
+      { id: 'vesting', label: 'Vesting', icon: <Hourglass {...ICON} />, soon: true },
     ],
   },
   {
-    label: 'Records',
+    label: 'Company',
     items: [
-      { id: 'notifications', label: 'Notifications', icon: <Bell {...ICON} /> },
-      { id: 'audit',         label: 'Audit Log',     icon: <BookOpen {...ICON} /> },
+      { id: 'team', label: 'Team', icon: <Users {...ICON} /> },
+      { id: 'governance', label: 'Governance', icon: <Landmark {...ICON} /> },
+      { id: 'activity', label: 'Activity', icon: <Activity {...ICON} /> },
+      { id: 'settings', label: 'Settings', icon: <Settings {...ICON} /> },
     ],
   },
 ]
 
 /** Page titles shown in the top bar. */
 export const PAGE_TITLES: Record<Page, string> = {
-  dashboard:     'Dashboard',
-  payroll:       'Payroll',
-  recurring:     'Recurring Payments',
-  approvals:     'Approvals',
-  governance:    'Governance',
-  automations:   'Automations',
-  organization:  'Team & Roles',
-  analytics:     'Analytics',
-  activity:      'Activity',
-  transactions:  'Transactions',
-  notifications: 'Notifications',
-  audit:         'Audit Log',
+  dashboard: 'Dashboard',
+  payroll: 'Payroll',
+  recurring: 'Recurring Payments',
+  approvals: 'Approvals',
+  team: 'Team',
+  activity: 'Activity',
+  settings: 'Settings',
+  escrow: 'Escrow',
+  vesting: 'Vesting',
+  governance: 'Governance',
+  automations: 'Legacy registry',
 }

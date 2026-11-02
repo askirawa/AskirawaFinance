@@ -14,7 +14,7 @@ import {
   CATEGORY_LABELS,
   formatNotifTs,
 } from '../../lib/notifications'
-import type { Page } from '../../App'
+import type { LegacyPage as Page } from '../../nav'
 
 const PANEL_MAX_WIDTH = 360
 const VIEWPORT_MARGIN = 12

@@ -47,13 +47,18 @@ export default function NavLinkButton({ item, active, count = 0, height = 48, fo
         }
       }}
     >
-      <span style={{ flexShrink: 0, display: 'flex', opacity: active ? 1 : 0.7 }}>{item.icon}</span>
+      <span className="feature-icon" style={{ flexShrink: 0, display: 'flex' }}>{item.icon}</span>
       <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
         {item.label}
       </span>
+      {item.soon && (
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--subtle)', border: '1px solid var(--border-strong)', padding: '2px 6px', flexShrink: 0 }}>
+          Soon
+        </span>
+      )}
       {count > 0 && (
         <span
-          aria-label={`${count} unread`}
+          aria-label={`${count} need attention`}
           style={{
             fontFamily: "'JetBrains Mono', monospace",
             fontSize: 11,

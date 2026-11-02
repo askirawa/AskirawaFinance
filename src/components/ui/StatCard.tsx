@@ -36,7 +36,7 @@ export default function StatCard({ label, value, note, accent: _accent, icon, tr
           {label}
         </span>
         {icon ? (
-          <span style={{ color: 'var(--subtle)', opacity: 0.7 }}>{icon}</span>
+          <span className="feature-icon">{icon}</span>
         ) : null}
       </div>
 

@@ -2,7 +2,7 @@ import { ConnectKitButton } from 'connectkit'
 import { useAccount, useSwitchChain } from 'wagmi'
 import { ARC_MAINNET_CHAIN_ID } from '../config'
 import NotificationPanel from './notifications/NotificationPanel'
-import type { Page } from '../App'
+import type { LegacyPage as Page } from '../nav'
 
 interface HeaderProps {
   activePage: Page

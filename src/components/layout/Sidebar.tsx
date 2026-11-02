@@ -1,5 +1,6 @@
-import { useNotifications } from '../../context/NotificationContext'
-import type { Page } from '../../App'
+import { NETWORK } from '../../chain/config'
+import { useRequests } from '../../chain/hooks'
+import type { Page } from '../../nav'
 import { NAV_GROUPS } from './navItems'
 import NavLinkButton from './NavLinkButton'
 import BrandMark from './BrandMark'
@@ -10,7 +11,8 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ activePage, onNavigate }: SidebarProps) {
-  const { unreadCount } = useNotifications()
+  const { items } = useRequests(40)
+  const waiting = items.filter((r) => r.status === 1 || r.status === 3).length
 
   return (
     <aside
@@ -60,7 +62,7 @@ export default function Sidebar({ activePage, onNavigate }: SidebarProps) {
                 key={item.id}
                 item={item}
                 active={activePage === item.id}
-                count={item.id === 'notifications' ? unreadCount : 0}
+                count={item.id === 'approvals' ? waiting : 0}
                 height={44}
                 fontSize={13}
                 onSelect={() => onNavigate(item.id)}
@@ -81,7 +83,7 @@ export default function Sidebar({ activePage, onNavigate }: SidebarProps) {
         color: 'var(--subtle)',
         lineHeight: 1.8,
       }}>
-        Arc Mainnet (chain ID 5042)
+        {NETWORK.name} · chain ID {NETWORK.id}
       </div>
     </aside>
   )

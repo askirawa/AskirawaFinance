@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
 import { X } from 'lucide-react'
-import { useNotifications } from '../../context/NotificationContext'
-import type { Page } from '../../App'
+import { NETWORK } from '../../chain/config'
+import { useRequests } from '../../chain/hooks'
+import type { Page } from '../../nav'
 import { NAV_GROUPS } from './navItems'
 import NavLinkButton from './NavLinkButton'
 import BrandMark from './BrandMark'
@@ -13,7 +14,8 @@ interface MobileNavProps {
 }
 
 export default function MobileNav({ activePage, onNavigate, onClose }: MobileNavProps) {
-  const { unreadCount } = useNotifications()
+  const { items } = useRequests(40)
+  const waiting = items.filter((r) => r.status === 1 || r.status === 3).length
 
   // Close on Escape and stop the page scrolling behind the drawer
   useEffect(() => {
@@ -109,7 +111,7 @@ export default function MobileNav({ activePage, onNavigate, onClose }: MobileNav
                   key={item.id}
                   item={item}
                   active={activePage === item.id}
-                  count={item.id === 'notifications' ? unreadCount : 0}
+                  count={item.id === 'approvals' ? waiting : 0}
                   height={52}
                   fontSize={15}
                   onSelect={() => onNavigate(item.id)}
@@ -128,7 +130,7 @@ export default function MobileNav({ activePage, onNavigate, onClose }: MobileNav
           textTransform: 'uppercase',
           color: 'var(--subtle)',
         }}>
-          Arc Mainnet (chain ID 5042)
+          {NETWORK.name} · chain ID {NETWORK.id}
         </div>
       </div>
     </>
